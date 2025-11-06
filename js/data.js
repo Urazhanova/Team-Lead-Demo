@@ -8,6 +8,7 @@ var Data = {
    * Loaded course data
    */
   courseData: null,
+  lessons: [],
   lessonCache: {},
 
   /**
@@ -89,7 +90,9 @@ var Data = {
       .then(function(data) {
         // Cache the data
         self.courseData = data;
-        console.log("Lessons loaded successfully");
+        // Also expose lessons array directly
+        self.lessons = data.lessons || [];
+        console.log("Lessons loaded successfully: " + self.lessons.length + " lessons");
         callback(null, data);
       })
       .catch(function(error) {
