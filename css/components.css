@@ -173,6 +173,40 @@ a:focus {
   }
 }
 
+/* Mobile optimizations for intro screens (< 768px) */
+@media (max-width: var(--breakpoint-tablet)) {
+  .card-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+    align-items: stretch;
+  }
+
+  .card-content .content-left,
+  .card-content .content-right {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-content .content-right {
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--space-lg);
+  }
+
+  /* Improve readability for text content */
+  .card-content {
+    padding: var(--space-md);
+  }
+
+  .card-content h2,
+  .card-content h3,
+  .card-content p {
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+}
+
 .card-image {
   display: flex;
   align-items: center;
@@ -184,6 +218,19 @@ a:focus {
   width: 100%;
   height: auto;
   object-fit: contain;
+}
+
+/* Mobile responsive images in card-content */
+@media (max-width: var(--breakpoint-tablet)) {
+  .card-content img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    display: block;
+    margin: var(--space-lg) auto;
+    padding: 0 var(--space-md);
+    object-fit: contain;
+  }
 }
 
 .card-quiz {
@@ -700,6 +747,9 @@ textarea {
 
 .content-left {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .content-right {
@@ -713,6 +763,42 @@ textarea {
   .content-left,
   .content-right {
     flex: 100%;
+  }
+}
+
+/* Mobile text optimization (< 768px) */
+@media (max-width: var(--breakpoint-tablet)) {
+  .content-left {
+    padding: 0;
+  }
+
+  .content-left h2 {
+    font-size: 22px;
+    line-height: 1.4;
+    margin-bottom: var(--space-lg);
+    word-spacing: 0.05em;
+    hyphens: auto;
+  }
+
+  .content-left h3 {
+    font-size: 16px;
+    line-height: 1.4;
+    margin-bottom: var(--space-md);
+    word-spacing: 0.05em;
+  }
+
+  .content-left p {
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .content-right {
+    justify-content: center;
+    padding: var(--space-md) 0;
   }
 }
 
@@ -736,6 +822,10 @@ textarea {
     width: 100%;
     max-width: var(--character-width-mobile);
     height: auto;
+    display: block;
+    margin: var(--space-md) auto;
+    padding: var(--space-md) 0;
+    object-fit: contain;
   }
 }
 
@@ -1504,37 +1594,92 @@ textarea {
 
 /* ========== SCREEN TYPE ADAPTATIONS (480px and below) ========== */
 
-/* Intro/Story Screen */
-@media (max-width: var(--breakpoint-mobile-lg)) {
+/* Intro/Story Screen - Mobile Optimization (< 768px) */
+@media (max-width: var(--breakpoint-tablet)) {
   .story-content {
-    padding: var(--space-lg);
+    padding: var(--space-md) var(--space-sm);
+    display: flex;
+    flex-direction: column;
   }
 
   .story-content h1 {
-    font-size: 22px;
+    font-size: 20px;
+    line-height: 1.4;
     margin-bottom: var(--space-lg);
+    word-spacing: 0.05em;
+    hyphens: auto;
+  }
+
+  .story-content h2 {
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: var(--space-md);
+    word-spacing: 0.05em;
   }
 
   .story-content p {
-    font-size: 14px;
+    font-size: 15px;
+    line-height: 1.6;
     margin-bottom: var(--space-md);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
   }
 
   .story-questions {
     padding-left: var(--space-lg);
+    margin-top: var(--space-md);
   }
 
   .story-questions li {
     font-size: 14px;
-    margin-bottom: var(--space-sm);
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
 
   .story-content-left {
     margin-bottom: var(--space-lg);
+    order: 1;
   }
 
   .story-content-right {
     text-align: center;
+    order: 2;
+    margin-top: var(--space-lg);
+  }
+
+  .story-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    margin: 0 auto;
+    padding: var(--space-md) 0;
+  }
+}
+
+/* Intro/Story Screen - Small Mobile (< 480px) */
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .story-content {
+    padding: var(--space-md);
+  }
+
+  .story-content h1 {
+    font-size: 18px;
+  }
+
+  .story-content h2 {
+    font-size: 16px;
+  }
+
+  .story-content p {
+    font-size: 14px;
+  }
+
+  .story-image {
+    max-width: 200px;
+    margin: 0 auto var(--space-lg);
   }
 }
 
@@ -1671,5 +1816,89 @@ textarea {
 
   .modal-footer .btn {
     width: 100%;
+  }
+}
+
+/* ========== COMPREHENSIVE MOBILE INTRO SCREEN FIX (< 768px) ========== */
+
+@media (max-width: var(--breakpoint-tablet)) {
+  /* Ensure all intro screens use single column layout */
+  .screen[data-type="intro"] .card-content,
+  .screen[data-type="story"] .card-content,
+  .screen[data-type="intro"] .story-content,
+  .screen[data-type="story"] .story-content {
+    grid-template-columns: 1fr !important;
+    flex-direction: column;
+  }
+
+  /* Text blocks optimization */
+  .screen[data-type="intro"] h2,
+  .screen[data-type="story"] h2,
+  .screen[data-type="intro"] h3,
+  .screen[data-type="story"] h3,
+  .screen[data-type="intro"] p,
+  .screen[data-type="story"] p {
+    word-break: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    max-width: 100%;
+  }
+
+  /* Intro card specific */
+  .screen[data-type="intro"] .card {
+    padding: var(--space-md);
+  }
+
+  .screen[data-type="intro"] .content-left h2 {
+    font-size: 22px;
+    line-height: 1.4;
+  }
+
+  .screen[data-type="intro"] .content-left p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Image centering and sizing */
+  .screen[data-type="intro"] img,
+  .screen[data-type="story"] img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: var(--space-md) auto;
+    padding: 0 var(--space-sm);
+  }
+
+  .screen[data-type="intro"] .character-image,
+  .screen[data-type="story"] .character-image {
+    max-width: 280px;
+  }
+
+  /* Remove icon font size issues */
+  .screen[data-type="intro"] [style*="font-size: 64px"] {
+    font-size: 48px !important;
+    margin-top: var(--space-lg) !important;
+  }
+
+  /* Subtitle styling for intro screens */
+  .screen[data-type="intro"] h3[style*="color: var(--brand-secondary)"],
+  .screen[data-type="story"] h3[style*="color: var(--brand-secondary)"] {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    margin-bottom: var(--space-md) !important;
+  }
+
+  /* Ensure text doesn't overflow in narrow columns */
+  .screen[data-type="intro"] .content-left,
+  .screen[data-type="story"] .content-left {
+    width: 100%;
+    padding: 0;
+  }
+
+  .screen[data-type="intro"] .content-right,
+  .screen[data-type="story"] .content-right {
+    width: 100%;
+    margin-top: var(--space-lg);
+    padding: 0;
   }
 }

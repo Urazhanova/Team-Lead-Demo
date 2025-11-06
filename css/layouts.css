@@ -139,6 +139,21 @@ main.container {
   }
 }
 
+/* Extra mobile optimization for intro screens */
+@media (max-width: var(--breakpoint-tablet)) {
+  .screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: auto;
+  }
+
+  .screen .card {
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
 .screen.hidden {
   display: none;
 }
