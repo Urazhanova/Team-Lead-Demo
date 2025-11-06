@@ -125,8 +125,8 @@ var Navigation = {
 
     console.log("[Navigation] Initializing with " + this.screens.length + " screens");
 
-    // Show first screen
-    this.showScreen(0);
+    // Show first screen (without animation for first load)
+    this.showScreen(0, false);
 
     // Bind navigation buttons
     this.bindNavigation();
