@@ -113,10 +113,7 @@ var Navigation = {
   },
 
   /**
-      // Hide loading screen as content is ready
-      if (typeof LoadingManager !== "undefined") {
-        LoadingManager.onContentReady();
-      }   * Complete navigation initialization after screens are ready
+   * Complete navigation initialization after screens are ready
    */
   initializeNavigation: function() {
     console.log("[Navigation] initializeNavigation() called");
@@ -141,6 +138,11 @@ var Navigation = {
     this.updateHeaderInfo();
 
     console.log("[Navigation] Initialization complete");
+
+    // Hide loading screen as content is ready
+    if (typeof LoadingManager !== "undefined") {
+      LoadingManager.onContentReady();
+    }
   },
 
   /**
