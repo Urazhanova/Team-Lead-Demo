@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="Team Lead Academy - интерактивный курс по лидерству для руководителей">
+  <meta name="theme-color" content="#163F6F">
+
+  <title>Team Lead Academy | Онлайн-курс по лидерству</title>
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layouts.css">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="fonts/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: 'var(--brand-primary)',
+            secondary: 'var(--brand-secondary)',
+            accent: 'var(--brand-accent)',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body>
+  <!-- Main App Container -->
+  <div id="app">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-logo">
+        <i class="fas fa-graduation-cap"></i> Team Lead Academy
+      </div>
+      <div class="header-progress">
+        Урок <span id="currentLessonNumber">1</span> из <span id="totalLessonNumber">12</span>
+      </div>
+      <!-- Hamburger Menu Button -->
+      <button id="hamburger-btn" class="hamburger-btn" aria-label="Открыть меню">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav id="sidebar-nav" class="sidebar-nav">
+      <div class="sidebar-header">
+        <button id="close-sidebar-btn" class="close-sidebar-btn" aria-label="Закрыть меню">×</button>
+      </div>
+
+      <div class="sidebar-content">
+        <h3 class="sidebar-title">📚 Уроки</h3>
+        <ul id="lessons-list" class="lessons-list">
+          <!-- Динамически заполняется JavaScript -->
+        </ul>
+
+        <div class="sidebar-divider"></div>
+
+        <ul class="sidebar-menu">
+          <li><a href="#" class="sidebar-link">⚙️ Настройки</a></li>
+          <li><a href="#" class="sidebar-link">❓ Справка</a></li>
+          <li><a href="#" class="sidebar-link">👤 О курсе</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" style="margin: 0;">
+      <div class="progress-bar" id="globalProgress" style="width: 0%"></div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="container" id="mainContent" style="min-height: calc(100vh - var(--header-height));"></main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; 2025 Team Lead Academy. Все права защищены.</p>
+    </footer>
+  </div>
+
+  <!-- SCORM Hidden Iframe -->
+  <iframe
+    id="scormIframe"
+    name="scormIframe"
+    style="display: none;"
+    src="about:blank">
+  </iframe>
+
+  <!-- JavaScript Files -->
+  <!-- Debug Console (shows logs on page) -->
+  <script src="js/debug-console.js"></script>
+
+  <!-- Utilities (must load first) -->
+  <script src="js/utilities.js"></script>
+
+  <!-- SCORM API -->
+  <script src="js/scorm-api.js"></script>
+
+  <!-- Data (loads lessons.json) -->
+  <script src="js/data.js"></script>
+
+  <!-- Screen Renderer (generates dynamic screens) -->
+  <script src="js/screen-renderer.js"></script>
+
+  <!-- Navigation (uses Screen Renderer) -->
+  <script src="js/navigation.js"></script>
+
+  <!-- Sidebar Menu (hamburger navigation) -->
+  <script src="js/sidebar-menu.js"></script>
+
+  <!-- Quiz Logic -->
+  <script src="js/quiz.js"></script>
+
+  <!-- Modals -->
+  <script src="js/modals.js"></script>
+
+  <!-- Timeline -->
+  <script src="js/timeline.js"></script>
+
+  <!-- Debug Loader -->
+  <script src="js/debug-loader.js"></script>
+
+  <!-- Main App -->
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+/* ============================================
+   TEAM LEAD ACADEMY - CSS VARIABLES
+   Design System v1.0
+   ============================================ */
+
+:root {
+  /* ========== COLORS ========== */
+
+  /* Primary Colors */
+  --brand-primary: #163F6F;
+  --brand-primary-light: #2557A0;
+  --brand-primary-dark: #0D2847;
+
+  /* Secondary Colors */
+  --brand-secondary: #7C0004;
+  --brand-secondary-light: #A31D23;
+  --brand-secondary-dark: #5A0003;
+
+  /* Accent Colors */
+  --brand-accent: #7B68EE;
+  --brand-accent-light: #9D8DF5;
+  --brand-accent-dark: #5A48CC;
+
+  /* Neutral Colors */
+  --neutral-white: #FFFFFF;
+  --neutral-50: #FAFAFA;
+  --neutral-100: #F5F5F5;
+  --neutral-200: #EEEEEE;
+  --neutral-300: #E0E0E0;
+  --neutral-400: #BDBDBD;
+  --neutral-500: #9E9E9E;
+  --neutral-700: #616161;
+  --neutral-900: #212121;
+
+  /* Semantic Colors */
+  --success: #4CAF50;
+  --success-light: #81C784;
+  --error: #F44336;
+  --error-light: #E57373;
+  --warning: #FF9800;
+  --warning-light: #FFB74D;
+  --info: #2196F3;
+  --info-light: #64B5F6;
+
+  /* ========== TYPOGRAPHY ========== */
+
+  /* Fonts */
+  --font-primary: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-secondary: 'Roboto', sans-serif;
+
+  /* Heading Sizes */
+  --h1-size: 32px;
+  --h1-weight: 700;
+  --h1-line-height: 1.25;
+
+  --h2-size: 28px;
+  --h2-weight: 700;
+  --h2-line-height: 1.3;
+
+  --h3-size: 24px;
+  --h3-weight: 600;
+  --h3-line-height: 1.4;
+
+  --h4-size: 20px;
+  --h4-weight: 600;
+  --h4-line-height: 1.4;
+
+  /* Body Text Sizes */
+  --body-large-size: 18px;
+  --body-large-weight: 400;
+  --body-large-line-height: 1.6;
+
+  --body-medium-size: 16px;
+  --body-medium-weight: 400;
+  --body-medium-line-height: 1.6;
+
+  --body-small-size: 14px;
+  --body-small-weight: 400;
+  --body-small-line-height: 1.5;
+
+  /* Button Text */
+  --button-size: 16px;
+  --button-weight: 600;
+  --button-line-height: 1.2;
+
+  /* Caption */
+  --caption-size: 12px;
+  --caption-weight: 400;
+  --caption-line-height: 1.4;
+
+  /* ========== SPACING ========== */
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* ========== BORDER RADIUS ========== */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 100px;
+
+  /* ========== SHADOWS ========== */
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+  /* ========== TRANSITIONS ========== */
+
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.6s ease;
+
+  /* ========== Z-INDEX ========== */
+
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 1000;
+  --z-modal: 1001;
+  --z-tooltip: 1100;
+
+  /* ========== LAYOUT ========== */
+
+  --container-max-width: 1200px;
+  --container-padding-desktop: 40px;
+  --container-padding-tablet: 32px;
+  --container-padding-mobile: 16px;
+
+  /* Header */
+  --header-height: 80px;
+
+  /* ========== COMPONENT SIZES ========== */
+
+  /* Button Sizes */
+  --button-height: 48px;
+  --button-height-sm: 40px;
+  --button-padding-x: 32px;
+  --button-padding-y: 14px;
+
+  /* Icon Button */
+  --icon-button-size: 40px;
+
+  /* Progress Bar */
+  --progress-bar-height: 8px;
+
+  /* Character Image */
+  --character-width-desktop: 400px;
+  --character-height-desktop: 500px;
+  --character-width-tablet: 300px;
+  --character-height-tablet: 375px;
+  --character-width-mobile: 240px;
+  --character-height-mobile: 300px;
+
+  /* ========== CARD ========== */
+
+  --card-padding-desktop: 32px;
+  --card-padding-tablet: 28px;
+  --card-padding-mobile: 20px;
+  --card-max-width: 1200px;
+
+  /* ========== RESPONSIVE ========== */
+
+  --breakpoint-mobile: 320px;
+  --breakpoint-mobile-lg: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-tablet-lg: 1024px;
+  --breakpoint-desktop: 1280px;
+  --breakpoint-desktop-xl: 1920px;
+}
+
+/* ========== FONT IMPORTS ========== */
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
