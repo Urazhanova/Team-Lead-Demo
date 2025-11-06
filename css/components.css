@@ -1306,6 +1306,162 @@ textarea {
 
 /* ========== RESPONSIVE ========== */
 
+/* ========== MOBILE TYPOGRAPHY (480px and below) ========== */
+
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  h1 {
+    font-size: 24px;
+    line-height: 1.3;
+    margin-bottom: var(--space-md);
+  }
+
+  h2 {
+    font-size: 20px;
+    line-height: 1.3;
+    margin-bottom: var(--space-md);
+  }
+
+  h3 {
+    font-size: 18px;
+    line-height: 1.3;
+    margin-bottom: var(--space-sm);
+  }
+
+  h4 {
+    font-size: 16px;
+    line-height: 1.3;
+    margin-bottom: var(--space-sm);
+  }
+
+  p, span {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .body-large {
+    font-size: 14px;
+  }
+
+  .body-small {
+    font-size: 12px;
+  }
+
+  ul, ol {
+    margin-left: var(--space-md);
+    margin-bottom: var(--space-sm);
+  }
+
+  li {
+    margin-bottom: var(--space-xs);
+  }
+}
+
+/* ========== MOBILE BUTTONS (480px and below) ========== */
+
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .btn {
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 14px;
+    padding: 12px 20px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .btn-group {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .btn-group .btn {
+    width: 100%;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px;
+    padding: 12px;
+  }
+}
+
+/* ========== MOBILE CARDS (480px and below) ========== */
+
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .card {
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+  }
+
+  .card-content {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .card-text {
+    max-width: 100%;
+  }
+
+  .card-quiz {
+    padding: var(--space-lg);
+  }
+
+  .quiz-question {
+    font-size: 18px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .quiz-options {
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+  }
+
+  .answer-option {
+    padding: var(--space-md);
+    gap: var(--space-sm);
+    font-size: 14px;
+  }
+
+  .answer-option span {
+    font-size: 14px;
+  }
+
+  .answer-option input[type="radio"],
+  .answer-option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ========== MOBILE FORMS (480px and below) ========== */
+
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  label {
+    font-size: 14px;
+    margin-bottom: var(--space-sm);
+  }
+
+  .form-group {
+    margin-bottom: var(--space-lg);
+  }
+
+  .form-group:last-child {
+    margin-bottom: 0;
+  }
+
+  textarea {
+    min-height: 100px;
+  }
+}
+
+/* ========== SIDEBAR (768px and below) ========== */
+
 @media (max-width: 768px) {
   .sidebar-nav {
     width: 85%;
@@ -1318,5 +1474,202 @@ textarea {
 
   .sidebar-title {
     margin-bottom: var(--space-md);
+  }
+}
+
+/* ========== MOBILE IMAGES ========== */
+
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .image-large-only {
+    display: none;
+  }
+
+  .character-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .story-image {
+    max-width: 200px;
+    margin: 0 auto var(--space-lg);
+  }
+}
+
+/* ========== SCREEN TYPE ADAPTATIONS (480px and below) ========== */
+
+/* Intro/Story Screen */
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .story-content {
+    padding: var(--space-lg);
+  }
+
+  .story-content h1 {
+    font-size: 22px;
+    margin-bottom: var(--space-lg);
+  }
+
+  .story-content p {
+    font-size: 14px;
+    margin-bottom: var(--space-md);
+  }
+
+  .story-questions {
+    padding-left: var(--space-lg);
+  }
+
+  .story-questions li {
+    font-size: 14px;
+    margin-bottom: var(--space-sm);
+  }
+
+  .story-content-left {
+    margin-bottom: var(--space-lg);
+  }
+
+  .story-content-right {
+    text-align: center;
+  }
+}
+
+/* Character Card Grid */
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .character-card {
+    text-align: center;
+  }
+
+  .character-card img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .character-card-title {
+    font-size: 16px;
+    margin-top: var(--space-md);
+  }
+
+  .character-card-description {
+    font-size: 13px;
+    margin-top: var(--space-sm);
+  }
+}
+
+/* Progress Screen */
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .progress-item {
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+  }
+
+  .progress-item-label {
+    font-size: 14px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+  }
+
+  .progress-text {
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .progress-stats {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .progress-stat-item {
+    font-size: 13px;
+    padding: var(--space-sm);
+  }
+}
+
+/* Timeline/Achievement Screen */
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .timeline {
+    padding: 0 var(--space-md);
+  }
+
+  .timeline-item {
+    margin-bottom: var(--space-lg);
+    padding-left: var(--space-lg);
+  }
+
+  .timeline-item::before {
+    width: 12px;
+    height: 12px;
+    left: -6px;
+  }
+
+  .timeline-item::after {
+    left: -5px;
+    width: 2px;
+  }
+
+  .timeline-content {
+    padding: var(--space-md);
+  }
+
+  .timeline-title {
+    font-size: 16px;
+  }
+
+  .timeline-description {
+    font-size: 13px;
+  }
+
+  .achievement-badge {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+}
+
+/* Modal/Popup */
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .modal-content {
+    width: 95%;
+    max-width: 100%;
+    margin: var(--space-lg) auto;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header {
+    padding: var(--space-lg);
+  }
+
+  .modal-header h2 {
+    font-size: 18px;
+  }
+
+  .modal-body {
+    padding: var(--space-lg);
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    padding: var(--space-lg);
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .modal-footer .btn {
+    width: 100%;
   }
 }

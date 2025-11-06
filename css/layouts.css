@@ -133,6 +133,12 @@ main.container {
   }
 }
 
+@media (max-width: var(--breakpoint-mobile-lg)) {
+  .screen {
+    padding: var(--space-lg) var(--container-padding-mobile);
+  }
+}
+
 .screen.hidden {
   display: none;
 }
