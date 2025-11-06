@@ -100,12 +100,24 @@ var App = {
    */
   loadCourseInfo: function() {
     console.log("Loading course info...");
-    var courseData = Data.getCourseData();
-    if (courseData && courseData.course) {
-      var totalLessons = courseData.course.totalLessons || 12;
-      document.getElementById('totalLessonNumber').textContent = totalLessons;
-      console.log("Course info loaded: " + totalLessons + " lessons");
-    }
+    var self = this;
+    
+    // Load course info asynchronously
+    Data.getCourseInfo(function(error, courseInfo) {
+      if (error) {
+        console.error("Error loading course info: " + error.message);
+        return;
+      }
+      
+      if (courseInfo) {
+        var totalLessons = courseInfo.totalLessons || 12;
+        var totalLessonElement = document.getElementById('totalLessonNumber');
+        if (totalLessonElement) {
+          totalLessonElement.textContent = totalLessons;
+          console.log("Course info loaded: " + totalLessons + " lessons");
+        }
+      }
+    });
   },
 
   /**
