@@ -205,6 +205,15 @@ var Data = {
       console.error("Error clearing progress: " + e.message);
     }
   }
+,
+
+  /**
+   * Get course data (synchronous - returns cached data if available)
+   * @returns {object|null} Course data or null if not loaded yet
+   */
+  getCourseData: function() {
+    return this.courseData;
+  }
 };
 
 /**
