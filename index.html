@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/variables.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/layouts.css">
+  <link rel="stylesheet" href="css/loading.css">
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="fonts/css/all.min.css">
@@ -37,6 +38,12 @@
   </script>
 </head>
 <body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Загрузка курса...</div>
+  </div>
+
   <!-- Main App Container -->
   <div id="app">
 
@@ -133,6 +140,9 @@
 
   <!-- Timeline -->
   <script src="js/timeline.js"></script>
+
+  <!-- Loading Manager -->
+  <script src="js/loading-manager.js"></script>
 
   <!-- Debug Loader -->
   <script src="js/debug-loader.js"></script>

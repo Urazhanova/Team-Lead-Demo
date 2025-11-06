@@ -113,7 +113,10 @@ var Navigation = {
   },
 
   /**
-   * Complete navigation initialization after screens are ready
+      // Hide loading screen as content is ready
+      if (typeof LoadingManager !== "undefined") {
+        LoadingManager.onContentReady();
+      }   * Complete navigation initialization after screens are ready
    */
   initializeNavigation: function() {
     console.log("[Navigation] initializeNavigation() called");

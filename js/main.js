@@ -32,11 +32,8 @@ var App = {
       console.log("Initializing SCORM...");
       SCORM.init();
 
-      // Wait a moment to ensure all modules are loaded
-      var self = this;
-      setTimeout(function() {
-        self.initializeModules();
-      }, 100);
+      // Initialize modules immediately (removed unnecessary setTimeout delay)
+      this.initializeModules();
     } catch (error) {
       console.error("Error initializing application: " + error.message);
       this.showErrorMessage(error.message);
@@ -44,7 +41,7 @@ var App = {
   },
 
   /**
-   * Initialize modules (after a brief delay to ensure all scripts are loaded)
+   * Initialize modules
    */
   initializeModules: function() {
     try {
@@ -99,134 +96,41 @@ var App = {
   },
 
   /**
-   * Load and display course information
+   * Load course info from data and display header
    */
   loadCourseInfo: function() {
-    var self = this;
-    Data.getCourseInfo(function(error, courseInfo) {
-      if (error) {
-        console.warn("Could not load course info: " + error.message);
-        return;
-      }
-
-      if (courseInfo) {
-        console.log("Course: " + courseInfo.title);
-        console.log("Total lessons: " + courseInfo.totalLessons);
-
-        // Update total lessons in header
-        var totalElement = document.getElementById("totalLessonNumber");
-        if (totalElement) {
-          totalElement.textContent = courseInfo.totalLessons;
-        }
-      }
-    });
-  },
-
-  /**
-   * Setup exit handler
-   */
-  setupExitHandler: function() {
-    var self = this;
-    window.addEventListener("beforeunload", function(e) {
-      // Save progress
-      if (SCORM.initialized) {
-        SCORM.commit();
-      }
-    });
-
-    // Handle visibility change
-    document.addEventListener("visibilitychange", function() {
-      if (document.hidden) {
-        console.log("Page hidden - saving progress");
-        if (SCORM.initialized) {
-          SCORM.commit();
-        }
-      }
-    });
+    console.log("Loading course info...");
+    var courseData = Data.getCourseData();
+    if (courseData && courseData.course) {
+      var totalLessons = courseData.course.totalLessons || 12;
+      document.getElementById('totalLessonNumber').textContent = totalLessons;
+      console.log("Course info loaded: " + totalLessons + " lessons");
+    }
   },
 
   /**
    * Show error message to user
-   * @param {string} message - Error message
    */
   showErrorMessage: function(message) {
-    var errorDiv = document.createElement("div");
-    errorDiv.style.cssText = "background: #f44336; color: white; padding: 20px; margin: 20px; border-radius: 8px; font-size: 16px; z-index: 2000; position: fixed; top: 100px; left: 20px; right: 20px; max-width: 500px;";
-    errorDiv.innerHTML = "<strong>⚠️ Ошибка:</strong> " + message +
-      '<button onclick="this.parentElement.remove()" style="float: right; background: rgba(255,255,255,0.3); border: none; color: white; cursor: pointer; padding: 5px 10px; border-radius: 4px;">Закрыть</button>';
-    document.body.appendChild(errorDiv);
+    var container = document.getElementById('mainContent');
+    if (container) {
+      container.innerHTML = '<div style="padding: 40px; text-align: center; color: red;">' +
+                            '<h2>Ошибка загрузки</h2>' +
+                            '<p>' + message + '</p>' +
+                            '</div>';
+    }
   },
 
   /**
-   * Get current progress
-   * @returns {object} Progress data
+   * Setup exit handler for SCORM
    */
-  getProgress: function() {
-    return {
-      currentScreen: Navigation.currentScreenIndex,
-      totalScreens: Navigation.screens.length,
-      progress: ((Navigation.currentScreenIndex + 1) / Navigation.screens.length) * 100,
-      timestamp: Date.now(),
-    };
-  },
-
-  /**
-   * Finish course
-   */
-  finishCourse: function() {
-    console.log("Finishing course...");
-    Navigation.finishCourse();
-    this.showCompletionMessage();
-  },
-
-  /**
-   * Show completion message
-   */
-  showCompletionMessage: function() {
-    var message = document.createElement("div");
-    message.className = "modal-overlay";
-    message.innerHTML = '<div class="modal-content" style="text-align: center;">' +
-      '<h2 style="color: var(--success); margin-bottom: var(--space-lg);">🎉 Поздравляем!</h2>' +
-      '<p style="font-size: var(--body-medium-size); margin-bottom: var(--space-lg);">Вы успешно завершили урок!</p>' +
-      '<p style="color: var(--neutral-700);">Ваш прогресс сохранен в системе обучения.</p>' +
-      '</div>';
-
-    document.body.appendChild(message);
-
-    // Remove after 3 seconds
-    setTimeout(function() {
-      message.remove();
-    }, 3000);
-  },
-
-  /**
-   * Check if course is complete
-   * @returns {boolean}
-   */
-  isComplete: function() {
-    return Navigation.currentScreenIndex === Navigation.screens.length - 1;
-  },
-};
-
-/**
- * Start the application
- */
-App.init();
-
-/**
- * Global functions for easy access
- */
-
-window.goToScreen = function(screenIndex) {
-  if (Navigation && Navigation.showScreen) {
-    Navigation.showScreen(screenIndex);
+  setupExitHandler: function() {
+    window.addEventListener('beforeunload', function() {
+      console.log("Saving SCORM data before exit...");
+      SCORM.finish();
+    });
   }
 };
 
-window.getCurrentProgress = function() {
-  return App.getProgress();
-};
-
-window.finishCourse = function() {
-  App.finishCourse();
-};
+// Start application immediately
+App.init();
