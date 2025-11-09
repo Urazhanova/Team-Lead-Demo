@@ -78,11 +78,11 @@ var ScreenRenderer = {
 
     var html = '<div class="content-left">' +
       '<h2>' + (content.title || 'Welcome') + '</h2>' +
-      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: var(--space-lg);">' + content.subtitle + '</h3>' : '') +
-      '<p style="font-size: var(--body-large-size); line-height: 1.6;">' +
+      (content.subtitle ? '<h3 class="intro-subtitle">' + content.subtitle + '</h3>' : '') +
+      '<p class="intro-text">' +
         (content.text || '') +
       '</p>' +
-      (content.icon ? '<div style="font-size: 64px; margin-top: var(--space-xl);">' + content.icon + '</div>' : '') +
+      (content.icon ? '<div class="intro-icon">' + content.icon + '</div>' : '') +
       '</div>' +
       '<div class="content-right">' +
         (content.image ? '<img src="' + content.image + '" alt="Content" class="character-image" loading="lazy">' : '') +
@@ -100,12 +100,12 @@ var ScreenRenderer = {
     card.className = 'card card-content';
 
     var html = '<div class="content-left">' +
-      (content.greeting ? '<h1 style="margin-bottom: var(--space-md);">' + content.greeting + '</h1>' : '') +
+      (content.greeting ? '<h1 class="story-greeting">' + content.greeting + '</h1>' : '') +
       '<h2>' + (content.title || '') + '</h2>' +
-      (content.text ? '<p style="font-size: var(--body-large-size); line-height: 1.8; margin: var(--space-lg) 0;">' + content.text + '</p>' : '');
+      (content.text ? '<p class="story-text">' + content.text + '</p>' : '');
 
     if (content.questions && content.questions.length > 0) {
-      html += '<ul class="question-list" style="margin: var(--space-lg) 0; padding: 0;">';
+      html += '<ul class="story-questions">';
       for (var i = 0; i < content.questions.length; i++) {
         html += '<li>' + content.questions[i] + '</li>';
       }
@@ -113,7 +113,7 @@ var ScreenRenderer = {
     }
 
     if (content.cta) {
-      html += '<div class="cta-box" style="padding: var(--space-md); background: rgba(123, 0, 4, 0.05); border-radius: var(--radius-md); margin-top: var(--space-lg);">' +
+      html += '<div class="story-cta-box">' +
         '<p class="text-secondary font-semibold">' + content.cta + '</p>' +
         '</div>';
     }
@@ -135,22 +135,22 @@ var ScreenRenderer = {
     card.className = 'card card-text';
 
     var html = '<h2>' + (content.title || 'Characters') + '</h2>' +
-      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: var(--space-md);">' + content.subtitle + '</h3>' : '') +
-      (content.intro ? '<p style="margin-bottom: var(--space-lg);">' + content.intro + '</p>' : '') +
-      '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-lg); margin-top: var(--space-xl);">';
+      (content.subtitle ? '<h3 class="character-subtitle">' + content.subtitle + '</h3>' : '') +
+      (content.intro ? '<p class="character-intro">' + content.intro + '</p>' : '') +
+      '<div class="character-grid">';
 
     if (content.characters && content.characters.length > 0) {
       for (var idx = 0; idx < content.characters.length; idx++) {
         var char = content.characters[idx];
-        html += '<div style="background: var(--neutral-50); border-radius: var(--radius-md); padding: var(--space-md); border-left: 4px solid var(--brand-primary); display: flex; flex-direction: column; align-items: center; text-align: center;">' +
-          (char.image ? '<img src="' + char.image + '" alt="' + char.name + '" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: var(--space-md); border: 3px solid var(--brand-primary);">' : '') +
-          '<div style="font-weight: 600; font-size: 18px; margin-bottom: 4px;">' + char.name + '</div>' +
-          '<div style="font-size: 12px; color: var(--brand-primary); font-weight: 600; margin-bottom: var(--space-sm);">' + char.age + ' лет • ' + char.position + '</div>' +
-          '<p style="font-size: 14px; margin-bottom: var(--space-sm); color: var(--neutral-700);">' + char.description + '</p>' +
-          '<div style="font-size: 12px; color: var(--neutral-600); margin-bottom: var(--space-sm);">' +
+        html += '<div class="character-card">' +
+          (char.image ? '<img src="' + char.image + '" alt="' + char.name + '" class="character-card-image">' : '') +
+          '<div class="character-card-name">' + char.name + '</div>' +
+          '<div class="character-card-position">' + char.age + ' лет • ' + char.position + '</div>' +
+          '<p class="character-card-description">' + char.description + '</p>' +
+          '<div class="character-card-personality">' +
             '<strong>Характер:</strong> ' + char.personality +
           '</div>' +
-          '<button class="btn btn-outline" style="width: 100%; font-size: 12px; padding: 8px; margin-top: auto;" data-character-modal="' + idx + '">' +
+          '<button class="btn btn-outline character-card-btn" data-character-modal="' + idx + '">' +
             'Узнать больше' +
           '</button>' +
           '</div>';

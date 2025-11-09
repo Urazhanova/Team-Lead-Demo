@@ -21,6 +21,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* ========== HEADER ========== */
@@ -120,10 +122,12 @@ main.container {
 
 .screen {
   width: 100%;
+  max-width: 100%;
   display: block;
   min-height: calc(100vh - var(--header-height) - var(--progress-bar-height));
   padding: var(--space-3xl) var(--container-padding-desktop);
   animation: fadeIn var(--transition-base);
+  box-sizing: border-box;
 }
 
 @media (max-width: var(--breakpoint-tablet)) {
@@ -162,9 +166,10 @@ main.container {
 
 .container {
   width: 100%;
-  max-width: var(--container-max-width);
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 var(--container-padding-desktop);
+  box-sizing: border-box;
 }
 
 @media (max-width: var(--breakpoint-tablet-lg)) {

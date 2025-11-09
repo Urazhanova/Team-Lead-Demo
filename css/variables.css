@@ -175,6 +175,9 @@
   --breakpoint-tablet-lg: 1024px;
   --breakpoint-desktop: 1280px;
   --breakpoint-desktop-xl: 1920px;
+
+  /* ========== EXTRA SMALL SCREENS ========== */
+  --breakpoint-xs: 320px;
 }
 
 /* ========== FONT IMPORTS ========== */

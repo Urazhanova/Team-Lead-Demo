@@ -4,25 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="description" content="Team Lead Academy - интерактивный курс по лидерству для руководителей">
   <meta name="theme-color" content="#163F6F">
 
   <title>Team Lead Academy | Онлайн-курс по лидерству</title>
 
-  <!-- CSS Files -->
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/layouts.css">
-  <link rel="stylesheet" href="css/loading.css">
+  <!-- Tailwind CSS (must load BEFORE custom CSS to allow overrides) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- CSS Files (with cache busting) -->
+  <link rel="stylesheet" href="css/variables.css?v=3.0">
+  <link rel="stylesheet" href="css/components.css?v=3.0">
+  <link rel="stylesheet" href="css/layouts.css?v=3.0">
+  <link rel="stylesheet" href="css/loading.css?v=3.0">
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="fonts/css/all.min.css">
 
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -124,7 +127,7 @@
   <script src="js/data.js"></script>
 
   <!-- Screen Renderer (generates dynamic screens) -->
-  <script src="js/screen-renderer.js"></script>
+  <script src="js/screen-renderer.js?v=3.0"></script>
 
   <!-- Navigation (uses Screen Renderer) -->
   <script src="js/navigation.js"></script>
