@@ -116,13 +116,13 @@ a:focus {
   padding: 0 var(--container-padding-desktop);
 }
 
-@media (max-width: var(--breakpoint-tablet-lg)) {
+@media (max-width: 1024px) {
   .container {
     padding: 0 var(--container-padding-tablet);
   }
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .container {
     padding: 0 var(--container-padding-mobile);
   }
@@ -145,13 +145,13 @@ a:focus {
   box-shadow: var(--shadow-lg);
 }
 
-@media (max-width: var(--breakpoint-tablet-lg)) {
+@media (max-width: 1024px) {
   .card {
     padding: var(--card-padding-tablet);
   }
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .card {
     padding: var(--card-padding-mobile);
   }
@@ -164,7 +164,7 @@ a:focus {
   margin: 0 auto;
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .card-text {
     max-width: 100% !important;
     margin: 0 !important;
@@ -178,7 +178,7 @@ a:focus {
   align-items: center;
 }
 
-@media (max-width: var(--breakpoint-tablet-lg)) {
+@media (max-width: 1024px) {
   .card-content {
     grid-template-columns: 1fr;
     gap: var(--space-lg);
@@ -186,7 +186,7 @@ a:focus {
 }
 
 /* Mobile optimizations for intro screens (< 768px) */
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .card-content {
     grid-template-columns: 1fr !important;
     gap: var(--space-lg) !important;
@@ -234,7 +234,7 @@ a:focus {
 }
 
 /* Mobile responsive images in card-content */
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .card-content img {
     width: 100% !important;
     max-width: 300px !important;
@@ -252,7 +252,7 @@ a:focus {
   padding: 40px;
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .card-quiz {
     padding: var(--card-padding-mobile);
   }
@@ -634,7 +634,7 @@ textarea {
   position: relative;
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .modal-content {
     padding: var(--space-lg);
     max-width: 100%;
@@ -691,7 +691,7 @@ textarea {
   color: var(--neutral-700);
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .header {
     padding: 0 var(--container-padding-mobile);
     height: auto;
@@ -720,7 +720,7 @@ textarea {
   padding-top: var(--space-lg);
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .navigation {
     flex-wrap: wrap;
     gap: var(--space-sm);
@@ -772,7 +772,7 @@ textarea {
   justify-content: center;
 }
 
-@media (max-width: var(--breakpoint-tablet-lg)) {
+@media (max-width: 1024px) {
   .content-left,
   .content-right {
     flex: 100%;
@@ -780,7 +780,7 @@ textarea {
 }
 
 /* Mobile text optimization (< 768px) */
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .content-left {
     padding: 0 !important;
     width: 100% !important;
@@ -834,14 +834,14 @@ textarea {
   object-fit: contain;
 }
 
-@media (max-width: var(--breakpoint-tablet-lg)) {
+@media (max-width: 1024px) {
   .character-image {
     width: var(--character-width-tablet);
     height: var(--character-height-tablet);
   }
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .character-image {
     width: 100%;
     max-width: var(--character-width-mobile);
@@ -1422,7 +1422,7 @@ textarea {
 
 /* ========== MOBILE TYPOGRAPHY (480px and below) ========== */
 
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   h1 {
     font-size: 24px;
     line-height: 1.3;
@@ -1472,7 +1472,7 @@ textarea {
 
 /* ========== MOBILE BUTTONS (480px and below) ========== */
 
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .btn {
     min-width: 44px;
     min-height: 44px;
@@ -1507,7 +1507,7 @@ textarea {
 
 /* ========== MOBILE CARDS (480px and below) ========== */
 
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .card {
     border-radius: var(--radius-md);
     margin-bottom: var(--space-md);
@@ -1555,7 +1555,7 @@ textarea {
 
 /* ========== MOBILE FORMS (480px and below) ========== */
 
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   label {
     font-size: 14px;
     margin-bottom: var(--space-sm);
@@ -1608,7 +1608,7 @@ textarea {
   margin-top: var(--space-xl);
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .intro-text {
     font-size: 15px;
     line-height: 1.6;
@@ -1654,7 +1654,7 @@ textarea {
   margin-top: var(--space-lg);
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .story-text {
     font-size: 15px;
     line-height: 1.6;
@@ -1749,7 +1749,7 @@ textarea {
   margin-top: auto;
 }
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .character-grid {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--space-md);
@@ -1921,7 +1921,7 @@ textarea {
 
 /* ========== MOBILE IMAGES ========== */
 
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   img {
     max-width: 100%;
     height: auto;
@@ -1947,7 +1947,7 @@ textarea {
 /* ========== SCREEN TYPE ADAPTATIONS (480px and below) ========== */
 
 /* Intro/Story Screen - Mobile Optimization (< 768px) */
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   .story-content {
     padding: var(--space-md) var(--space-sm);
     display: flex;
@@ -2012,7 +2012,7 @@ textarea {
 }
 
 /* Intro/Story Screen - Small Mobile (< 480px) */
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .story-content {
     padding: var(--space-md);
   }
@@ -2036,7 +2036,7 @@ textarea {
 }
 
 /* Character Card Grid */
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .cards-grid {
     grid-template-columns: 1fr;
     gap: var(--space-md);
@@ -2063,7 +2063,7 @@ textarea {
 }
 
 /* Progress Screen */
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .progress-item {
     flex-direction: column;
     gap: var(--space-md);
@@ -2097,7 +2097,7 @@ textarea {
 }
 
 /* Timeline/Achievement Screen */
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .timeline {
     padding: 0 var(--space-md);
   }
@@ -2138,7 +2138,7 @@ textarea {
 }
 
 /* Modal/Popup */
-@media (max-width: var(--breakpoint-mobile-lg)) {
+@media (max-width: 480px) {
   .modal-content {
     width: 95%;
     max-width: 100%;
@@ -2173,7 +2173,7 @@ textarea {
 
 /* ========== COMPREHENSIVE MOBILE INTRO SCREEN FIX (< 768px) ========== */
 
-@media (max-width: var(--breakpoint-tablet)) {
+@media (max-width: 768px) {
   /* Ensure all intro screens use single column layout */
   .screen[data-type="intro"] .card-content,
   .screen[data-type="story"] .card-content,
