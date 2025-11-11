@@ -80,26 +80,41 @@ var Data = {
       return;
     }
 
-    fetch("data/lessons.json?v=" + new Date().getTime())
-      .then(function(response) {
-        if (!response.ok) {
-          throw new Error("Failed to load lessons: " + response.statusText);
-        }
-        return response.json();
-      })
-      .then(function(data) {
-        // Cache the data
-        self.courseData = data;
-        // Also expose lessons array directly
-        self.lessons = data.lessons || [];
-        console.log("Lessons loaded successfully: " + self.lessons.length + " lessons");
-        console.log("Loaded lesson IDs: " + self.lessons.map(function(l) { return l.id; }).join(", "));
-        callback(null, data);
-      })
-      .catch(function(error) {
-        console.error("Error loading lessons: " + error.message);
-        callback(error, null);
-      });
+    console.log("[Data] Starting fetch of lessons.json...");
+    try {
+      fetch("data/lessons.json?v=" + new Date().getTime())
+        .then(function(response) {
+          console.log("[Data] Response received, status: " + response.status);
+          if (!response.ok) {
+            throw new Error("Failed to load lessons: " + response.statusText);
+          }
+          console.log("[Data] Parsing JSON...");
+          var jsonPromise = response.json();
+          console.log("[Data] JSON promise created");
+          return jsonPromise;
+        })
+        .then(function(data) {
+          console.log("[Data] JSON parsed successfully, type: " + typeof data);
+          if (!data) {
+            throw new Error("Data is null or undefined");
+          }
+          // Cache the data
+          self.courseData = data;
+          // Also expose lessons array directly
+          self.lessons = data.lessons || [];
+          console.log("[Data] Lessons loaded successfully: " + self.lessons.length + " lessons");
+          console.log("[Data] Loaded lesson IDs: " + self.lessons.map(function(l) { return l.id; }).join(", "));
+          callback(null, data);
+        })
+        .catch(function(error) {
+          console.error("[Data] Error loading lessons: " + error.message);
+          console.error("[Data] Stack: " + error.stack);
+          callback(error, null);
+        });
+    } catch (error) {
+      console.error("[Data] Exception during fetch setup: " + error.message);
+      callback(error, null);
+    }
   },
 
   /**

@@ -382,12 +382,4 @@ var Navigation = {
   }
 };
 
-/**
- * Initialize navigation when DOM is ready
- */
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("[Navigation] DOMContentLoaded event");
-  Navigation.init();
-});
-
 console.log("[Navigation] Module loaded");
