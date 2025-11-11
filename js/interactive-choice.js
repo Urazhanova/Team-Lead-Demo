@@ -213,6 +213,11 @@ var InteractiveChoice = {
             modal.parentElement.removeChild(modal);
             console.log("[InteractiveChoice] Modal removed successfully");
           }
+
+          // Reset Navigation transition flag just in case
+          if (typeof Navigation !== 'undefined' && Navigation.resetTransitionFlag) {
+            Navigation.resetTransitionFlag();
+          }
         } catch (err) {
           console.log("[InteractiveChoice] Error removing modal:", err.message);
         }

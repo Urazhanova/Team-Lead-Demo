@@ -249,6 +249,15 @@ var Navigation = {
 
     this.isTransitioning = true;
 
+    // Safety: Reset transition flag after 2 seconds if something goes wrong
+    var self = this;
+    setTimeout(function() {
+      if (self.isTransitioning) {
+        console.warn("[Navigation] Force resetting isTransitioning flag after timeout");
+        self.isTransitioning = false;
+      }
+    }, 2000);
+
     // Add to history
     if (index !== this.currentScreenIndex) {
       this.screenHistory.push(this.currentScreenIndex);
@@ -324,6 +333,14 @@ var Navigation = {
 
       this.isTransitioning = false;
     }
+  },
+
+  /**
+   * Reset transition flag (safety reset)
+   */
+  resetTransitionFlag: function() {
+    console.log("[Navigation] Forcefully resetting transition flag");
+    this.isTransitioning = false;
   },
 
   /**
