@@ -481,12 +481,13 @@ var ScreenRenderer = {
    */
   renderDragDropScreen: function(content) {
     var card = document.createElement('div');
-    card.className = 'card card-text';
+    card.className = 'card card-content';
 
     // Store drag-drop data for validation
     card.__dragDropData = content;
 
-    var html = '<div class="dragdrop-container">' +
+    // Use a wrapper div to span both columns
+    var html = '<div style="grid-column: 1 / -1; width: 100%;" class="dragdrop-container">' +
       '<h2>' + (content.title || '') + '</h2>' +
       (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +
       '<p style="margin-bottom: 24px;">' + (content.instruction || '') + '</p>' +
@@ -504,7 +505,7 @@ var ScreenRenderer = {
     }
 
     html += '</div></div>' +
-      '<div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;" id="drop-slots">';
+      '<div style="grid-column: 1 / -1; width: 100%; display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;" id="drop-slots">';
 
     if (content.slots && content.slots.length > 0) {
       for (var j = 0; j < content.slots.length; j++) {
@@ -516,8 +517,9 @@ var ScreenRenderer = {
     }
 
     html += '</div>' +
+      '<div style="grid-column: 1 / -1; width: 100%;">' +
       '<button type="button" class="btn btn-primary" data-action="check-dragdrop" style="width: 100%; margin-top: 16px; padding: 16px;">Проверить</button>' +
-      '</div>';
+      '</div></div>';
 
     card.innerHTML = html;
     return card;
