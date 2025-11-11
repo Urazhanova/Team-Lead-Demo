@@ -138,11 +138,12 @@ var Modals = {
     var self = this;
 
     var closeHandler = function(e) {
+      console.log("[Modals] Close handler called with event:", e);
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
-      console.log("[Modals] Close handler triggered");
+      console.log("[Modals] Close handler triggered for block:", blockData.id);
       // Mark block as studied
       self.markBlockAsStudied(blockData.id);
       self.closeModal(modal);
@@ -152,14 +153,22 @@ var Modals = {
     var closeBtn = modal.querySelector(".modal-close");
     var confirmBtn = modal.querySelector(".btn-primary");
 
+    console.log("[Modals] Looking for buttons...");
+    console.log("[Modals] closeBtn found:", !!closeBtn);
+    console.log("[Modals] confirmBtn found:", !!confirmBtn);
+
     if (closeBtn) {
       closeBtn.addEventListener("click", closeHandler);
       console.log("[Modals] Bound close button (X)");
+    } else {
+      console.error("[Modals] Close button (X) not found!");
     }
 
     if (confirmBtn) {
       confirmBtn.addEventListener("click", closeHandler);
       console.log("[Modals] Bound confirm button (Понятно)");
+    } else {
+      console.error("[Modals] Confirm button (Понятно) not found!");
     }
 
     // Bind background click to close
