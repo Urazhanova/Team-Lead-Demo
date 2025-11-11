@@ -138,14 +138,14 @@ var Modals = {
     var self = this;
 
     var closeHandler = function(e) {
-      console.log("[Modals] Close handler called with event:", e);
-      if (e) {
+      console.log("[Modals] Close handler called for block:", blockData.id);
+      if (e && typeof e.preventDefault === "function") {
         e.preventDefault();
         e.stopPropagation();
       }
-      console.log("[Modals] Close handler triggered for block:", blockData.id);
       // Mark block as studied
       self.markBlockAsStudied(blockData.id);
+      // Close modal
       self.closeModal(modal);
     };
 
@@ -158,14 +158,20 @@ var Modals = {
     console.log("[Modals] confirmBtn found:", !!confirmBtn);
 
     if (closeBtn) {
-      closeBtn.addEventListener("click", closeHandler);
+      closeBtn.addEventListener("click", function(e) {
+        console.log("[Modals] Close button (X) clicked");
+        closeHandler(e);
+      });
       console.log("[Modals] Bound close button (X)");
     } else {
       console.error("[Modals] Close button (X) not found!");
     }
 
     if (confirmBtn) {
-      confirmBtn.addEventListener("click", closeHandler);
+      confirmBtn.addEventListener("click", function(e) {
+        console.log("[Modals] Confirm button (Понятно) clicked");
+        closeHandler(e);
+      });
       console.log("[Modals] Bound confirm button (Понятно)");
     } else {
       console.error("[Modals] Confirm button (Понятно) not found!");
@@ -173,7 +179,9 @@ var Modals = {
 
     // Bind background click to close
     modal.addEventListener("click", function(e) {
+      console.log("[Modals] Modal background clicked, target:", e.target.className);
       if (e.target === modal) {
+        console.log("[Modals] Closing modal via background click");
         closeHandler(e);
       }
     });
@@ -383,19 +391,25 @@ var Modals = {
    */
   closeModal: function(modal) {
     var self = this;
-    if (!modal || !modal.parentElement) return;
+    if (!modal) {
+      console.warn("[Modals] Modal is null or undefined");
+      return;
+    }
 
-    // Fade out animation
-    modal.style.animation = "fadeIn var(--transition-base) reverse";
+    console.log("[Modals] Starting closeModal process");
 
-    // Remove from tracking
+    // Remove from tracking immediately
     var index = this.activeModals.indexOf(modal);
     if (index > -1) {
       this.activeModals.splice(index, 1);
+      console.log("[Modals] Removed modal from activeModals array");
     }
 
-    // Remove from stack
+    // Get character ID before removing
     var characterId = modal.getAttribute("data-character-id");
+    var sbiBlockId = modal.getAttribute("data-sbi-block");
+
+    // Remove from stack
     if (characterId) {
       var stackIndex = this.modalStack.indexOf(characterId);
       if (stackIndex > -1) {
@@ -403,17 +417,36 @@ var Modals = {
       }
     }
 
+    // Add fade-out class and animate
+    modal.style.opacity = "0";
+    modal.style.transition = "opacity 0.15s ease-out";
+
+    // Also animate content
+    var modalContent = modal.querySelector(".modal-content");
+    if (modalContent) {
+      modalContent.style.transform = "translateY(-20px)";
+      modalContent.style.transition = "transform 0.15s ease-out";
+    }
+
+    console.log("[Modals] Starting fade-out animation");
+
     setTimeout(function() {
-      if (modal.parentElement) {
-        modal.remove();
-      }
+      try {
+        if (modal && modal.parentElement) {
+          modal.remove();
+          console.log("[Modals] Modal removed from DOM");
+        }
 
-      // Restore body scroll if no modals left
-      if (self.activeModals.length === 0) {
-        document.body.style.overflow = "";
-      }
+        // Restore body scroll if no modals left
+        if (self.activeModals.length === 0) {
+          document.body.style.overflow = "";
+          console.log("[Modals] Restored body scroll");
+        }
 
-      console.log("[Modals] Modal closed: " + characterId);
+        console.log("[Modals] Modal closed successfully. Character ID: " + characterId + ", SBI Block: " + sbiBlockId);
+      } catch (error) {
+        console.error("[Modals] Error during modal cleanup: " + error.message);
+      }
     }, 150);
   },
 
