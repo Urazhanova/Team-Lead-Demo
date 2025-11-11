@@ -837,10 +837,12 @@ var ScreenRenderer = {
     var card = document.createElement('div');
     card.className = 'card card-content';
 
-    var html = '<div class="accordion-container">' +
-      '<h2>' + (content.title || '') + '</h2>' +
-      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
-      '<div>';
+    // Two-column layout if image is present
+    var html = '<div style="display: flex; gap: 24px; align-items: flex-start;">' +
+      '<div style="flex: 1;">' +
+        '<h2>' + (content.title || '') + '</h2>' +
+        (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
+        '<div>';
 
     // Render accordion sections
     if (content.sections && content.sections.length > 0) {
@@ -858,6 +860,15 @@ var ScreenRenderer = {
     html += '</div>' +
       '<p style="text-align: center; color: var(--brand-secondary); margin-top: 24px; margin-bottom: 16px;">Изучено секций: <strong id="accordion-progress">0/' + (content.sections ? content.sections.length : 0) + '</strong></p>' +
       '</div>';
+
+    // Right column: Image (if provided)
+    if (content.image) {
+      html += '<div style="flex: 0 0 280px; text-align: center;">' +
+        '<img src="' + content.image + '" alt="Accordion" class="character-image" loading="lazy">' +
+      '</div>';
+    }
+
+    html += '</div>';
 
     card.innerHTML = html;
     card.__accordionData = {
