@@ -481,7 +481,7 @@ var ScreenRenderer = {
    */
   renderDragDropScreen: function(content) {
     var card = document.createElement('div');
-    card.className = 'card card-content';
+    card.className = 'card card-text';
 
     // Store drag-drop data for validation
     card.__dragDropData = content;
@@ -497,7 +497,7 @@ var ScreenRenderer = {
     if (content.cards && content.cards.length > 0) {
       for (var i = 0; i < content.cards.length; i++) {
         var card_item = content.cards[i];
-        html += '<div class="drag-card" draggable="true" data-card-id="' + card_item.id + '" style="flex: 1; min-width: 120px; padding: 16px; background: white; border: 2px solid var(--brand-secondary); border-radius: 6px; cursor: move;">' +
+        html += '<div class="drag-card" draggable="true" data-card-id="' + card_item.id + '" style="flex: 1; min-width: 100px; padding: 16px; background: white; border: 2px solid var(--brand-secondary); border-radius: 6px; cursor: move; font-size: 14px;">' +
           card_item.content +
         '</div>';
       }
@@ -509,14 +509,14 @@ var ScreenRenderer = {
     if (content.slots && content.slots.length > 0) {
       for (var j = 0; j < content.slots.length; j++) {
         var slot = content.slots[j];
-        html += '<div class="drop-slot" data-slot-id="' + slot.id + '" data-border-color="' + slot.borderColor + '" style="flex: 1; min-width: 120px; padding: 16px; border: 3px dashed ' + slot.borderColor + '; border-radius: 6px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; color: ' + slot.borderColor + '; font-weight: bold;">' +
+        html += '<div class="drop-slot" data-slot-id="' + slot.id + '" data-border-color="' + slot.borderColor + '" style="flex: 1; min-width: 100px; padding: 16px; border: 3px dashed ' + slot.borderColor + '; border-radius: 6px; text-align: center; min-height: 80px; display: flex; align-items: center; justify-content: center; color: ' + slot.borderColor + '; font-weight: bold; font-size: 13px;">' +
           slot.label +
         '</div>';
       }
     }
 
     html += '</div>' +
-      '<button type="button" class="btn btn-primary" data-action="check-dragdrop" style="width: 100%; margin-top: 16px;">Проверить</button>' +
+      '<button type="button" class="btn btn-primary" data-action="check-dragdrop" style="width: 100%; margin-top: 16px; padding: 16px;">Проверить</button>' +
       '</div>';
 
     card.innerHTML = html;
