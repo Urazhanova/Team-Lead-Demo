@@ -25,10 +25,14 @@ var InteractiveChoice = {
     // Find all choice buttons on the current screen
     var choiceButtons = document.querySelectorAll(".choice-btn");
 
+    console.log("[InteractiveChoice] Looking for choice buttons...");
     console.log("[InteractiveChoice] Found " + choiceButtons.length + " choice buttons");
 
     if (choiceButtons.length === 0) {
       console.log("[InteractiveChoice] Not a choice screen, skipping initialization");
+      // Also check if buttons exist with different selector
+      var allButtons = document.querySelectorAll("button");
+      console.log("[InteractiveChoice] Total buttons on page:", allButtons.length);
       return;
     }
 
