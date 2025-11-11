@@ -662,8 +662,8 @@ var ScreenRenderer = {
 
     html += '</div>' +
       '</div>' +
-      '<div class="content-right" style="display: flex; align-items: center; justify-content: center;">' +
-        (content.image ? '<img src="' + content.image + '" alt="Choice" style="max-width: 100%; height: auto;">' : '') +
+      '<div class="content-right">' +
+        (content.image ? '<img src="' + content.image + '" alt="Choice" class="character-image" loading="lazy">' : '') +
       '</div>';
 
     card.innerHTML = html;
