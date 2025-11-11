@@ -122,6 +122,10 @@ var DragDrop = {
       e.stopPropagation();
     }
 
+    if (!this.draggedElement) {
+      return;
+    }
+
     var cardId = this.draggedElement.getAttribute("data-card-id");
     var slotId = slot.getAttribute("data-slot-id");
 
@@ -130,15 +134,19 @@ var DragDrop = {
     // Check if slot is already occupied
     var existingCard = slot.querySelector(".drag-card");
     if (existingCard) {
-      // Remove existing card from slot (return to top)
+      // Remove existing card from slot and show original
       var existingCardId = existingCard.getAttribute("data-card-id");
       delete this.placedCards[existingCardId];
-      existingCard.style.opacity = "1";
-      existingCard.style.transform = "scale(1)";
+      var originalCard = document.querySelector(".drag-card[data-card-id='" + existingCardId + "']");
+      if (originalCard) {
+        originalCard.style.display = "block";
+      }
     }
 
     // Move card to slot
     var cardClone = this.draggedElement.cloneNode(true);
+    cardClone.style.opacity = "1";
+    cardClone.style.transform = "scale(1)";
     slot.innerHTML = "";
     slot.appendChild(cardClone);
 
@@ -146,23 +154,25 @@ var DragDrop = {
     this.placedCards[cardId] = slotId;
 
     // Reset visual feedback
-    slot.style.borderColor = slot.getAttribute("data-border-color");
+    var borderColor = slot.getAttribute("data-border-color") || "#999";
+    slot.style.borderColor = borderColor;
     slot.style.backgroundColor = "transparent";
     slot.style.transform = "scale(1)";
 
     // Re-bind drag events to cloned card
     var self = this;
     cardClone.addEventListener("dragstart", function(e) {
+      self.draggedElement = cardClone;
       self.handleDragStart(e, cardClone);
     });
 
-    // Hide original card
-    var originalCard = document.querySelector(".drag-card[data-card-id='" + cardId + "']");
-    if (originalCard && originalCard !== this.draggedElement) {
-      originalCard.style.display = "none";
-    }
+    cardClone.addEventListener("dragend", function(e) {
+      self.handleDragEnd(e, cardClone);
+    });
 
+    // Hide original card
     this.draggedElement.style.display = "none";
+    this.draggedElement = null;
   },
 
   /**
@@ -198,18 +208,22 @@ var DragDrop = {
     var correctOrder = screenCard.__dragDropData.correctOrder;
     console.log("[DragDrop] Correct order:", correctOrder);
 
-    // Check if all slots are filled
+    // Get slots in order
     var slots = document.querySelectorAll(".drop-slot");
     var allFilled = true;
     var userOrder = [];
 
-    slots.forEach(function(slot) {
-      var card = slot.querySelector(".drag-card");
-      if (!card) {
-        allFilled = false;
-      } else {
-        var cardId = card.getAttribute("data-card-id");
-        userOrder.push(cardId);
+    // Build user order based on slot IDs (S, B, I)
+    correctOrder.forEach(function(slotId) {
+      var slot = document.querySelector(".drop-slot[data-slot-id='" + slotId + "']");
+      if (slot) {
+        var card = slot.querySelector(".drag-card");
+        if (!card) {
+          allFilled = false;
+        } else {
+          var cardId = card.getAttribute("data-card-id");
+          userOrder.push(cardId);
+        }
       }
     });
 
@@ -217,6 +231,8 @@ var DragDrop = {
       alert("Пожалуйста, заполните все слоты!");
       return;
     }
+
+    console.log("[DragDrop] User order:", userOrder);
 
     // Compare order
     var isCorrect = JSON.stringify(userOrder) === JSON.stringify(correctOrder);
