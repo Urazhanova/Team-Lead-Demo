@@ -87,18 +87,21 @@ var InteractiveChoice = {
   showChoiceFeedback: function(choiceId) {
     console.log("[InteractiveChoice] Showing feedback for choice: " + choiceId);
 
-    // Find the choice data
+    // Find the choice data from the VISIBLE card only
     var choiceData = null;
     var allCards = document.querySelectorAll(".card.card-content");
     var choiceCard = null;
 
+    // Find the VISIBLE card (not hidden)
     for (var i = 0; i < allCards.length; i++) {
-      if (allCards[i].__interactiveChoiceData) {
+      if (!allCards[i].classList.contains("hidden") && allCards[i].__interactiveChoiceData) {
         choiceCard = allCards[i];
+        console.log("[InteractiveChoice] Found visible choice card with data");
         var choices = allCards[i].__interactiveChoiceData.choices;
         for (var j = 0; j < choices.length; j++) {
           if (choices[j].id === choiceId) {
             choiceData = choices[j];
+            console.log("[InteractiveChoice] Found choice data for id: " + choiceId);
             break;
           }
         }
@@ -108,6 +111,12 @@ var InteractiveChoice = {
 
     if (!choiceData) {
       console.error("[InteractiveChoice] Choice data not found for id: " + choiceId);
+      console.log("[InteractiveChoice] Visible cards with data:");
+      for (var i = 0; i < allCards.length; i++) {
+        if (!allCards[i].classList.contains("hidden")) {
+          console.log("  Card " + i + " has __interactiveChoiceData:", !!allCards[i].__interactiveChoiceData);
+        }
+      }
       return;
     }
 
