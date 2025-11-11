@@ -95,7 +95,7 @@ var Modals = {
 
     var modalInfo = blockData.modal;
     var contentHTML = '<div class="modal-content" style="max-width: 600px;">' +
-      '<button class="modal-close" aria-label="Закрыть модальное окно">×</button>' +
+      '<button type="button" class="modal-close" aria-label="Закрыть модальное окно">×</button>' +
       '<h2 style="color: ' + modalInfo.headerColor + '; margin-bottom: 16px;">' + modalInfo.title + '</h2>' +
       '<div style="background: ' + modalInfo.backgroundColor + '; padding: 16px; border-radius: 8px; margin-bottom: 16px;">' +
         '<p style="margin: 0; line-height: 1.6;">' + modalInfo.definition + '</p>' +
@@ -125,7 +125,7 @@ var Modals = {
       contentHTML += '</div>';
     }
 
-    contentHTML += '<button class="btn btn-primary" style="width: 100%; margin-top: 16px;">Понятно</button>' +
+    contentHTML += '<button type="button" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Понятно</button>' +
       '</div>';
 
     modal.innerHTML = contentHTML;
