@@ -41,14 +41,19 @@ var InteractiveChoice = {
     }
 
     console.log("[InteractiveChoice] Found visible screen with id:", visibleScreen.id);
+    console.log("[InteractiveChoice] Screen data-type:", visibleScreen.getAttribute("data-type"));
+    console.log("[InteractiveChoice] Screen data-screen:", visibleScreen.getAttribute("data-screen"));
 
     // Look for choice card only within the visible screen
     var card = visibleScreen.querySelector(".card.card-content");
 
     if (!card) {
       console.warn("[InteractiveChoice] No card found in visible screen");
+      console.log("[InteractiveChoice] Visible screen HTML length:", visibleScreen.innerHTML.length);
       return;
     }
+
+    console.log("[InteractiveChoice] Found card in visible screen");
 
     // Check if this card has choice data
     if (!card.__interactiveChoiceData) {
@@ -59,6 +64,10 @@ var InteractiveChoice = {
     this.currentChoiceData = card.__interactiveChoiceData;
     console.log("[InteractiveChoice] Extracted choice data from card in screen:", visibleScreen.id);
     console.log("[InteractiveChoice] Title:", this.currentChoiceData.title);
+    console.log("[InteractiveChoice] Number of choices:", this.currentChoiceData.choices ? this.currentChoiceData.choices.length : 0);
+    if (this.currentChoiceData.choices && this.currentChoiceData.choices.length > 0) {
+      console.log("[InteractiveChoice] Choice IDs:", this.currentChoiceData.choices.map(function(c) { return c.id; }).join(", "));
+    }
   },
 
   /**
@@ -67,21 +76,23 @@ var InteractiveChoice = {
   bindChoiceButtons: function() {
     var self = this;
 
-    // Find only choice buttons in VISIBLE cards
-    var visibleCards = document.querySelectorAll(".card.card-content:not(.hidden)");
-    var choiceButtons = [];
-
-    // Get buttons only from visible cards
-    for (var i = 0; i < visibleCards.length; i++) {
-      var buttons = visibleCards[i].querySelectorAll(".choice-btn");
-      for (var j = 0; j < buttons.length; j++) {
-        choiceButtons.push(buttons[j]);
-      }
+    // Get the currently visible screen element
+    var visibleScreen = document.querySelector(".screen:not(.hidden)");
+    if (!visibleScreen) {
+      console.warn("[InteractiveChoice] No visible screen found for bindChoiceButtons");
+      return;
     }
 
-    console.log("[InteractiveChoice] Looking for choice buttons in visible cards...");
-    console.log("[InteractiveChoice] Found " + visibleCards.length + " visible cards");
-    console.log("[InteractiveChoice] Found " + choiceButtons.length + " choice buttons in visible cards");
+    // Find only choice buttons within the visible screen
+    var buttons = visibleScreen.querySelectorAll(".choice-btn");
+    var choiceButtons = [];
+
+    console.log("[InteractiveChoice] Looking for choice buttons in visible screen...");
+    console.log("[InteractiveChoice] Found " + buttons.length + " choice buttons in visible screen");
+
+    for (var i = 0; i < buttons.length; i++) {
+      choiceButtons.push(buttons[i]);
+    }
 
     if (choiceButtons.length === 0) {
       console.log("[InteractiveChoice] Not a choice screen, skipping initialization");
