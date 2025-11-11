@@ -838,11 +838,11 @@ var ScreenRenderer = {
     card.className = 'card card-content';
 
     // Two-column layout if image is present
-    var html = '<div style="display: flex; gap: 32px; align-items: flex-start;">' +
-      '<div style="flex: 1; min-width: 0;">' +
+    var html = '<div style="display: flex; gap: 24px; align-items: flex-start;">' +
+      '<div style="flex: 1;">' +
         '<h2 style="margin-bottom: 8px;">' + (content.title || '') + '</h2>' +
-        (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin: 0 0 28px 0; font-size: 14px; font-weight: 500;">' + content.subtitle + '</h3>' : '') +
-        '<div style="display: flex; flex-direction: column; gap: 0;">';
+        (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin: 0 0 20px 0; font-size: 14px; font-weight: 500;">' + content.subtitle + '</h3>' : '') +
+        '<div>';
 
     // Render accordion sections
     if (content.sections && content.sections.length > 0) {
@@ -858,12 +858,12 @@ var ScreenRenderer = {
     }
 
     html += '</div>' +
-      '<p style="text-align: center; color: var(--brand-secondary); margin: 32px 0 0 0; font-size: 13px; font-weight: 600;">Изучено секций: <strong id="accordion-progress">0/' + (content.sections ? content.sections.length : 0) + '</strong></p>' +
+      '<p style="text-align: center; color: var(--brand-secondary); margin-top: 24px; margin-bottom: 0;">Изучено секций: <strong id="accordion-progress">0/' + (content.sections ? content.sections.length : 0) + '</strong></p>' +
       '</div>';
 
     // Right column: Image (if provided)
     if (content.image) {
-      html += '<div style="flex: 0 0 300px; text-align: center;">' +
+      html += '<div style="flex: 0 0 320px; display: flex; align-items: center; justify-content: center;">' +
         '<img src="' + content.image + '" alt="Accordion" class="character-image" loading="lazy">' +
       '</div>';
     }
