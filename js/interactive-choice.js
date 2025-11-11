@@ -152,15 +152,10 @@ var InteractiveChoice = {
         // Mark that we're showing feedback to prevent duplicates
         self.feedbackShowing = true;
 
-        // Navigate to next screen (feedback screen) after brief delay to show selection
+        // Show feedback modal for this choice
         setTimeout(function() {
-          if (typeof Navigation !== "undefined" && Navigation.nextScreen) {
-            console.log("[InteractiveChoice] Navigating to next screen for feedback");
-            Navigation.nextScreen();
-          } else {
-            console.warn("[InteractiveChoice] Navigation module not available");
-          }
-        }, 500);
+          self.showChoiceFeedback(choiceId);
+        }, 300);
 
         console.log("[InteractiveChoice] Button styled as selected");
       });
@@ -207,7 +202,7 @@ var InteractiveChoice = {
     var preview = choiceData.preview || {};
     var emoji = preview.emoji || (isCorrect ? '✅' : '❌');
     var title = preview.label || (isCorrect ? 'Отлично!' : 'Не совсем верно');
-    var consequences = choiceData.consequences || '';
+    var consequences = choiceData.text || choiceData.consequences || (isCorrect ? 'Правильный выбор!' : 'Подумайте еще...');
     var color = preview.color || (isCorrect ? '#4CAF50' : '#F44336');
 
     // Create modal using DOM elements (more reliable than innerHTML)
@@ -330,6 +325,12 @@ var InteractiveChoice = {
           // Reset Navigation transition flag just in case
           if (typeof Navigation !== 'undefined' && Navigation.resetTransitionFlag) {
             Navigation.resetTransitionFlag();
+          }
+
+          // Navigate to next screen (feedback screen)
+          if (typeof Navigation !== 'undefined' && Navigation.nextScreen) {
+            console.log("[InteractiveChoice] Navigating to next screen after feedback");
+            Navigation.nextScreen();
           }
         } catch (err) {
           console.log("[InteractiveChoice] Error removing modal:", err.message);
