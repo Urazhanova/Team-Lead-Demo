@@ -438,6 +438,9 @@ var ScreenRenderer = {
     var card = document.createElement('div');
     card.className = 'card card-content';
 
+    // Store content data for modal handler
+    card.__lessonData = content;
+
     var html = '<div class="content-left">' +
       '<h2>' + (content.title || '') + '</h2>' +
       (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +

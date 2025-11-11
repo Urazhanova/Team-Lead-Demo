@@ -13,6 +13,7 @@ var Modals = {
    */
   init: function() {
     this.bindCharacterButtons();
+    this.bindSBIBlockButtons();
     this.setupGlobalKeyHandling();
     console.log("[Modals] Module initialized");
   },
@@ -44,6 +45,108 @@ var Modals = {
         e.stopPropagation();
         var characterId = button.getAttribute("data-character");
         self.showCharacterModal(characterId);
+      }
+    });
+  },
+
+  /**
+   * Bind SBI interactive block buttons
+   */
+  bindSBIBlockButtons: function() {
+    var self = this;
+    document.addEventListener("click", function(e) {
+      var button = e.target.closest("[data-block-id]");
+
+      if (button) {
+        e.stopPropagation();
+        var blockId = button.getAttribute("data-block-id");
+
+        // Get the block data from the parent screen content
+        var screenContent = button.closest(".card");
+        if (screenContent && screenContent.__lessonData) {
+          var blocks = screenContent.__lessonData.blocks;
+          if (blocks) {
+            for (var i = 0; i < blocks.length; i++) {
+              if (blocks[i].id === blockId) {
+                self.showSBIModal(blocks[i]);
+                break;
+              }
+            }
+          }
+        }
+      }
+    });
+  },
+
+  /**
+   * Show SBI block information modal
+   * @param {object} blockData - Block data with title, definition, examples, mistakes
+   */
+  showSBIModal: function(blockData) {
+    if (!blockData || !blockData.modal) {
+      console.error("[Modals] Invalid block data");
+      return;
+    }
+
+    var modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.style.animation = "fadeIn var(--transition-base)";
+
+    var modalInfo = blockData.modal;
+    var contentHTML = '<div class="modal-content" style="max-width: 600px;">' +
+      '<button class="modal-close" aria-label="Закрыть модальное окно">×</button>' +
+      '<h2 style="color: ' + modalInfo.headerColor + '; margin-bottom: 16px;">' + modalInfo.title + '</h2>' +
+      '<div style="background: ' + modalInfo.backgroundColor + '; padding: 16px; border-radius: 8px; margin-bottom: 16px;">' +
+        '<p style="margin: 0; line-height: 1.6;">' + modalInfo.definition + '</p>' +
+      '</div>';
+
+    // Add examples
+    if (modalInfo.examples && modalInfo.examples.length > 0) {
+      contentHTML += '<div style="margin-bottom: 16px;">' +
+        '<h4 style="color: ' + modalInfo.headerColor + '; margin-bottom: 12px;">Примеры:</h4>';
+      for (var i = 0; i < modalInfo.examples.length; i++) {
+        contentHTML += '<div style="margin-bottom: 8px; padding: 12px; background: rgba(123, 104, 238, 0.05); border-left: 3px solid ' + modalInfo.headerColor + '; border-radius: 4px;">' +
+          modalInfo.examples[i] +
+        '</div>';
+      }
+      contentHTML += '</div>';
+    }
+
+    // Add mistakes
+    if (modalInfo.mistakes && modalInfo.mistakes.length > 0) {
+      contentHTML += '<div style="margin-bottom: 16px;">' +
+        '<h4 style="color: #F44336; margin-bottom: 12px;">Типичные ошибки:</h4>';
+      for (var j = 0; j < modalInfo.mistakes.length; j++) {
+        contentHTML += '<div style="margin-bottom: 8px; padding: 12px; background: rgba(244, 67, 54, 0.05); border-left: 3px solid #F44336; border-radius: 4px;">' +
+          modalInfo.mistakes[j] +
+        '</div>';
+      }
+      contentHTML += '</div>';
+    }
+
+    contentHTML += '<button class="btn btn-primary" style="width: 100%; margin-top: 16px;">Понятно</button>' +
+      '</div>';
+
+    modal.innerHTML = contentHTML;
+    document.body.appendChild(modal);
+
+    // Track active modal
+    this.activeModals.push(modal);
+
+    // Close button handler
+    var closeBtn = modal.querySelector(".modal-close");
+    var confirmBtn = modal.querySelector(".btn-primary");
+    var self = this;
+
+    var closeHandler = function() {
+      self.closeModal(modal);
+    };
+
+    closeBtn.addEventListener("click", closeHandler);
+    confirmBtn.addEventListener("click", closeHandler);
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) {
+        closeHandler();
       }
     });
   },
