@@ -460,21 +460,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }, 800);
 });
 
-// Re-initialize when new screens are loaded
-if (typeof Navigation !== 'undefined') {
-  var originalNavigationShowScreen = Navigation.showScreen;
-  Navigation.showScreen = function(index, animate) {
-    console.log("[DragDrop] Screen change detected to index " + index);
-    originalNavigationShowScreen.call(this, index, animate);
-
-    // Wait for transition to complete then initialize
-    // Use longer timeout to ensure animation completes
-    setTimeout(function() {
-      console.log("[DragDrop] Transition should be complete, initializing drag-drop");
-      DragDrop.init();
-    }, 800);
-  };
-}
+// Note: Re-initialization on screen changes is handled by Navigation module's screen change event
 
 // Also set up a mutation observer to catch DOM changes
 if (typeof MutationObserver !== 'undefined') {

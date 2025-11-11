@@ -71,20 +71,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }, 800);
 });
 
-// Re-initialize when new screens are loaded
-if (typeof Navigation !== 'undefined') {
-  var originalNavigationShowScreen = Navigation.showScreen;
-  Navigation.showScreen = function(index, animate) {
-    console.log("[InteractiveChoice] Screen change detected to index " + index);
-    originalNavigationShowScreen.call(this, index, animate);
-
-    // Re-initialize for new screen after content is rendered
-    setTimeout(function() {
-      console.log("[InteractiveChoice] Re-initializing after screen change");
-      InteractiveChoice.init();
-    }, 800);
-  };
-}
+// Note: Re-initialization on screen changes is handled by Navigation module's screen change event
 
 // Set up MutationObserver to detect choice buttons
 if (typeof MutationObserver !== 'undefined') {

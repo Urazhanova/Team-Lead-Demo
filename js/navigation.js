@@ -283,6 +283,19 @@ var Navigation = {
 
         // Update UI
         self.updateUI();
+
+        // Re-initialize interactive modules on screen change
+        setTimeout(function() {
+          if (typeof DragDrop !== 'undefined') {
+            console.log("[Navigation] Re-initializing DragDrop module");
+            DragDrop.init();
+          }
+          if (typeof InteractiveChoice !== 'undefined') {
+            console.log("[Navigation] Re-initializing InteractiveChoice module");
+            InteractiveChoice.init();
+          }
+        }, 300);
+
         self.isTransitioning = false;
       }, 150);
     } else {
@@ -295,6 +308,20 @@ var Navigation = {
       currentScreen.classList.remove("hidden");
 
       this.updateUI();
+
+      // Re-initialize interactive modules on screen change
+      var self = this;
+      setTimeout(function() {
+        if (typeof DragDrop !== 'undefined') {
+          console.log("[Navigation] Re-initializing DragDrop module");
+          DragDrop.init();
+        }
+        if (typeof InteractiveChoice !== 'undefined') {
+          console.log("[Navigation] Re-initializing InteractiveChoice module");
+          InteractiveChoice.init();
+        }
+      }, 300);
+
       this.isTransitioning = false;
     }
   },
