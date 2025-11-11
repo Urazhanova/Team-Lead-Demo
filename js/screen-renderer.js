@@ -483,6 +483,9 @@ var ScreenRenderer = {
     var card = document.createElement('div');
     card.className = 'card card-content';
 
+    // Store drag-drop data for validation
+    card.__dragDropData = content;
+
     var html = '<div class="dragdrop-container">' +
       '<h2>' + (content.title || '') + '</h2>' +
       (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +
@@ -506,14 +509,14 @@ var ScreenRenderer = {
     if (content.slots && content.slots.length > 0) {
       for (var j = 0; j < content.slots.length; j++) {
         var slot = content.slots[j];
-        html += '<div class="drop-slot" data-slot-id="' + slot.id + '" style="flex: 1; min-width: 120px; padding: 16px; border: 3px dashed ' + slot.borderColor + '; border-radius: 6px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; color: ' + slot.borderColor + '; font-weight: bold;">' +
+        html += '<div class="drop-slot" data-slot-id="' + slot.id + '" data-border-color="' + slot.borderColor + '" style="flex: 1; min-width: 120px; padding: 16px; border: 3px dashed ' + slot.borderColor + '; border-radius: 6px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; color: ' + slot.borderColor + '; font-weight: bold;">' +
           slot.label +
         '</div>';
       }
     }
 
     html += '</div>' +
-      '<button class="btn btn-primary" data-action="check-dragdrop">Проверить</button>' +
+      '<button type="button" class="btn btn-primary" data-action="check-dragdrop" style="width: 100%; margin-top: 16px;">Проверить</button>' +
       '</div>';
 
     card.innerHTML = html;
