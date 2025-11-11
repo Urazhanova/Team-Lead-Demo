@@ -882,32 +882,12 @@ var ScreenRenderer = {
     var card = document.createElement('div');
     card.className = 'card card-content';
 
-    var html = '<div class="dialogue-container">' +
-      (content.title ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.title + '</h3>' : '');
-
-    // Background image
-    if (content.image) {
-      html += '<div style="position: relative; background: url(' + content.image + ') center/cover; border-radius: 12px; height: 300px; margin-bottom: 24px; overflow: hidden;">';
-
-      // Character portraits overlay
-      if (content.characters) {
-        html += '<div style="position: absolute; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: flex-end; padding: 20px;">';
-
-        for (var charKey in content.characters) {
-          var character = content.characters[charKey];
-          if (character.portrait) {
-            html += '<div style="width: 100px; height: 180px; background: url(' + character.portrait + ') center/cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>';
-          }
-        }
-
-        html += '</div>';
-      }
-
-      html += '</div>';
-    }
+    // Use consistent two-column layout (content-left and content-right)
+    var html = '<div class="content-left">' +
+      (content.title ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.title + '</h3>' : '');
 
     // Dialogue content
-    html += '<div style="background: var(--neutral-50); padding: 20px; border-radius: 12px; margin-bottom: 24px;">';
+    html += '<div style="background: var(--neutral-50); padding: 20px; border-radius: 12px;">';
 
     if (content.dialogues && content.dialogues.length > 0) {
       for (var d = 0; d < content.dialogues.length; d++) {
@@ -927,6 +907,13 @@ var ScreenRenderer = {
 
     html += '</div>' +
       '</div>';
+
+    // Right column: Illustration
+    if (content.illustration) {
+      html += '<div class="content-right">' +
+        '<img src="' + content.illustration + '" alt="Dialogue" class="character-image" loading="lazy">' +
+      '</div>';
+    }
 
     card.innerHTML = html;
     card.__dialogueData = {

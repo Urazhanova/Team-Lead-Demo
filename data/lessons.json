@@ -792,19 +792,7 @@
           "type": "dialogue",
           "content": {
             "title": "Встреча с Марией - этап 1 из 3",
-            "image": "assets/images/scenes/meeting_room.svg",
-            "characters": {
-              "alex": {
-                "portrait": "assets/images/characters/alex/neutral.png",
-                "side": "left",
-                "name": "Алекс"
-              },
-              "maria": {
-                "portrait": "assets/images/characters/Mariya/icon.svg",
-                "side": "right",
-                "name": "Мария"
-              }
-            },
+            "illustration": "assets/images/scenes/meeting_room.svg",
             "dialogues": [
               {
                 "speaker": "alex",
