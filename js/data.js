@@ -80,7 +80,7 @@ var Data = {
       return;
     }
 
-    fetch("data/lessons.json")
+    fetch("data/lessons.json?v=" + new Date().getTime())
       .then(function(response) {
         if (!response.ok) {
           throw new Error("Failed to load lessons: " + response.statusText);
@@ -93,6 +93,7 @@ var Data = {
         // Also expose lessons array directly
         self.lessons = data.lessons || [];
         console.log("Lessons loaded successfully: " + self.lessons.length + " lessons");
+        console.log("Loaded lesson IDs: " + self.lessons.map(function(l) { return l.id; }).join(", "));
         callback(null, data);
       })
       .catch(function(error) {
