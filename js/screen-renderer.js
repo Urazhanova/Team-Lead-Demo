@@ -276,7 +276,47 @@ var ScreenRenderer = {
     var html = '<h2>' + (content.title || '') + '</h2>' +
       (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: var(--space-lg);">' + content.subtitle + '</h3>' : '');
 
-    // Support both 'sections' and 'rules' formats
+    // Add definition if present
+    if (content.definition) {
+      html += '<div style="background: var(--neutral-50); padding: var(--space-md); border-radius: var(--radius-md); border-left: 4px solid var(--brand-accent); margin-bottom: var(--space-lg);">' +
+        '<p style="font-size: 15px; color: var(--neutral-800); line-height: 1.6; margin: 0;">' + content.definition + '</p>' +
+      '</div>';
+    }
+
+    // Add notIsThis section if present
+    if (content.notIsThis && content.notIsThis.length > 0) {
+      html += '<div style="margin-bottom: var(--space-lg);">' +
+        '<h3 style="color: var(--brand-primary); margin-bottom: var(--space-md); font-size: 16px;">Это НЕ обратная связь:</h3>';
+      for (var ni = 0; ni < content.notIsThis.length; ni++) {
+        html += '<p style="font-size: 14px; color: var(--neutral-700); margin-bottom: 8px;">' + content.notIsThis[ni] + '</p>';
+      }
+      html += '</div>';
+    }
+
+    // Add goodExample if present
+    if (content.goodExample) {
+      html += '<div style="background: #E8F5E9; padding: var(--space-md); border-radius: var(--radius-md); border-left: 4px solid #4CAF50; margin-bottom: var(--space-lg);">' +
+        '<h3 style="color: #2E7D32; margin-top: 0; margin-bottom: var(--space-sm); font-size: 16px;">Пример правильной обратной связи:</h3>' +
+        '<p style="font-size: 14px; color: #1B5E20; margin: 0; line-height: 1.6;">' + content.goodExample + '</p>' +
+      '</div>';
+    }
+
+    // Add types section if present
+    if (content.types && content.types.length > 0) {
+      html += '<div style="margin-bottom: var(--space-lg);">' +
+        '<h3 style="color: var(--brand-primary); margin-bottom: var(--space-md); font-size: 16px;">Типы обратной связи:</h3>' +
+        '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg);">';
+      for (var ti = 0; ti < content.types.length; ti++) {
+        var typeItem = content.types[ti];
+        html += '<div style="background: var(--neutral-50); padding: var(--space-md); border-radius: var(--radius-md); border-top: 4px solid var(--brand-accent);">' +
+          '<h4 style="color: var(--brand-primary); margin-top: 0; margin-bottom: var(--space-sm); font-size: 15px;">' + typeItem.type + '</h4>' +
+          '<p style="font-size: 14px; color: var(--neutral-700); margin: 0;">' + typeItem.description + '</p>' +
+        '</div>';
+      }
+      html += '</div></div>';
+    }
+
+    // Support both 'sections' and 'rules' formats (fallback)
     var items = content.sections || content.rules || [];
 
     if (items && items.length > 0) {
