@@ -770,12 +770,13 @@ var ScreenRenderer = {
 
     // Two-column layout
     var html = '<div style="display: flex; gap: 24px; align-items: flex-start;">' +
-      '<div class="carousel-container" style="flex: 1;">' +
+      '<div class="carousel-container" style="flex: 1; display: flex; flex-direction: column;">' +
         '<h2>' + (content.title || '') + '</h2>' +
         (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
-        '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-width: 0;">' +
-          '<button class="carousel-prev" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--brand-secondary); color: white; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">‹</button>' +
-          '<div style="display: flex; gap: 16px; overflow-x: auto; overflow-y: hidden; padding: 16px 0; flex: 1; min-width: 0; scroll-behavior: smooth;" class="carousel-track">';
+        '<div style="flex: 1; display: flex; flex-direction: column; overflow-y: auto; max-height: 600px; padding-right: 8px; margin-right: -8px;">' +
+          '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; min-width: 0;">' +
+            '<button class="carousel-prev" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--brand-secondary); color: white; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">‹</button>' +
+            '<div style="display: flex; gap: 16px; overflow-x: auto; overflow-y: hidden; padding: 16px 0; flex: 1; min-width: 0; scroll-behavior: smooth;" class="carousel-track">';
 
     // Render character cards
     if (content.characters && content.characters.length > 0) {
@@ -808,6 +809,7 @@ var ScreenRenderer = {
 
     html += '</div>' +
           '<button class="carousel-next" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--brand-secondary); color: white; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">›</button>' +
+        '</div>' +
         '</div>' +
         '<p style="text-align: center; color: var(--brand-secondary); margin-bottom: 16px;">' + (content.progressText || 'Изучено') + ': <strong id="carousel-progress">0/' + (content.characters ? content.characters.length : 0) + '</strong></p>' +
       '</div>';
