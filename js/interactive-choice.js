@@ -131,31 +131,66 @@ var InteractiveChoice = {
     modal.innerHTML = modalContent;
     document.body.appendChild(modal);
 
-    // Bind close handlers
-    var closeBtn = modal.querySelector(".modal-close");
-    var continueBtn = modal.querySelector("#choice-feedback-close");
+    console.log("[InteractiveChoice] Modal appended to DOM");
 
-    var closeHandler = function(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      modal.style.animation = "fadeIn var(--transition-base) reverse";
-      setTimeout(function() {
-        if (modal.parentElement) {
-          modal.remove();
+    // Bind close handlers - use setTimeout to ensure elements are rendered
+    setTimeout(function() {
+      var closeBtn = modal.querySelector(".modal-close");
+      var continueBtn = modal.querySelector("#choice-feedback-close");
+
+      console.log("[InteractiveChoice] closeBtn found: " + !!closeBtn);
+      console.log("[InteractiveChoice] continueBtn found: " + !!continueBtn);
+
+      var closeHandler = function(e) {
+        console.log("[InteractiveChoice] Close handler called");
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
         }
-      }, 150);
-    };
 
-    closeBtn.addEventListener("click", closeHandler);
-    continueBtn.addEventListener("click", closeHandler);
+        // Award XP if available
+        if (choiceData.rewards && choiceData.rewards.xp) {
+          var xpAmount = choiceData.rewards.xp;
+          console.log("[InteractiveChoice] Awarding " + xpAmount + " XP");
 
-    modal.addEventListener("click", function(e) {
-      if (e.target === modal) {
-        closeHandler();
+          // Try to update UI (look for XP display elements)
+          var xpElements = document.querySelectorAll("[data-xp], .xp-counter, #xp-total");
+          console.log("[InteractiveChoice] Found " + xpElements.length + " XP display elements");
+
+          // If no specific XP display, try to find and update global progress
+          if (typeof SCORM !== 'undefined' && SCORM.saveScore) {
+            console.log("[InteractiveChoice] Saving score to SCORM");
+            // SCORM.saveScore(xpAmount);
+          }
+        }
+
+        modal.style.animation = "fadeIn var(--transition-base) reverse";
+        setTimeout(function() {
+          if (modal.parentElement) {
+            modal.remove();
+            console.log("[InteractiveChoice] Modal removed from DOM");
+          }
+        }, 150);
+      };
+
+      if (closeBtn) {
+        closeBtn.addEventListener("click", closeHandler);
+        console.log("[InteractiveChoice] Close button event listener attached");
       }
-    });
+
+      if (continueBtn) {
+        continueBtn.addEventListener("click", closeHandler);
+        console.log("[InteractiveChoice] Continue button event listener attached");
+      }
+
+      modal.addEventListener("click", function(e) {
+        if (e.target === modal) {
+          closeHandler();
+        }
+      });
+
+      console.log("[InteractiveChoice] All event listeners attached");
+    }, 10);
 
     console.log("[InteractiveChoice] Feedback modal shown for choice: " + choiceId);
   }
