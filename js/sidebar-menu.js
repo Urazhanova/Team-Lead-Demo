@@ -86,47 +86,56 @@ var SidebarMenu = {
       return;
     }
 
-    if (!Data.lessons || Data.lessons.length === 0) {
-      console.warn("[SidebarMenu] No lessons found in Data.lessons");
-      return;
-    }
-
     var self = this;
-    var html = '';
 
-    for (var i = 0; i < Data.lessons.length; i++) {
-      var lesson = Data.lessons[i];
-      var lessonId = lesson.id;
-      var lessonTitle = lesson.title || ('Урок ' + lessonId);
-      var emoji = '';
-
-      // Add emoji based on lesson ID
-      if (lessonId === 0) {
-        emoji = '📚 ';
-      } else {
-        emoji = lessonId + '️⃣ ';
+    // Load lessons asynchronously from Data module
+    Data.getLessons(function(error, lessons) {
+      if (error) {
+        console.error("[SidebarMenu] Error loading lessons: " + error.message);
+        return;
       }
 
-      html += '<li><a href="#" class="lesson-link" data-lesson-id="' + lessonId + '">' +
-              emoji + lessonTitle +
-              '</a></li>';
-    }
+      if (!lessons || lessons.length === 0) {
+        console.warn("[SidebarMenu] No lessons found in course data");
+        return;
+      }
 
-    if (this.lessonsList) {
-      this.lessonsList.innerHTML = html;
+      var html = '';
 
-      // Add click handlers to lesson links
-      var lessonLinks = this.lessonsList.querySelectorAll('.lesson-link');
-      lessonLinks.forEach(function(link) {
-        link.addEventListener('click', function(e) {
-          e.preventDefault();
-          var lessonId = parseInt(this.getAttribute('data-lesson-id'));
-          self.selectLesson(lessonId);
+      for (var i = 0; i < lessons.length; i++) {
+        var lesson = lessons[i];
+        var lessonId = lesson.id;
+        var lessonTitle = lesson.title || ('Урок ' + lessonId);
+        var emoji = '';
+
+        // Add emoji based on lesson ID
+        if (lessonId === 0) {
+          emoji = '📚 ';
+        } else {
+          emoji = lessonId + '️⃣ ';
+        }
+
+        html += '<li><a href="#" class="lesson-link" data-lesson-id="' + lessonId + '">' +
+                emoji + lessonTitle +
+                '</a></li>';
+      }
+
+      if (self.lessonsList) {
+        self.lessonsList.innerHTML = html;
+
+        // Add click handlers to lesson links
+        var lessonLinks = self.lessonsList.querySelectorAll('.lesson-link');
+        lessonLinks.forEach(function(link) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            var lessonId = parseInt(this.getAttribute('data-lesson-id'));
+            self.selectLesson(lessonId);
+          });
         });
-      });
-    }
+      }
 
-    console.log("[SidebarMenu] Lessons loaded: " + Data.lessons.length);
+      console.log("[SidebarMenu] Lessons loaded: " + lessons.length);
+    });
   },
 
   /**
