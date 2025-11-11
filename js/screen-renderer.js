@@ -572,6 +572,14 @@ var ScreenRenderer = {
       '</div>';
 
     card.innerHTML = html;
+
+    // Store choice data for interactive feedback
+    card.__interactiveChoiceData = {
+      title: content.title,
+      situation: content.situation,
+      choices: content.choices || []
+    };
+
     return card;
   },
 
