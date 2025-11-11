@@ -149,10 +149,21 @@ var Modals = {
 
     // Use event delegation on modal to handle all close actions
     modal.addEventListener("click", function(e) {
-      // Close on X button or "Понятно" button
-      if (e.target.classList.contains("modal-close") ||
-          e.target.classList.contains("btn-primary") ||
-          e.target === modal) {
+      var target = e.target;
+
+      // Check if clicked element or its parent is a close button
+      var isCloseBtn = target.classList.contains("modal-close") ||
+                       target.closest(".modal-close");
+
+      // Check if clicked element is a primary button (Понятно)
+      var isPrimaryBtn = target.classList.contains("btn-primary") ||
+                         target.closest(".btn-primary");
+
+      // Close on background click
+      var isBackground = target === modal;
+
+      if (isCloseBtn || isPrimaryBtn || isBackground) {
+        console.log("[Modals] Modal close triggered - target:", target.className);
         closeHandler(e);
       }
     });
