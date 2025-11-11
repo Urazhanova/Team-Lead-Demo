@@ -1418,6 +1418,41 @@ textarea {
   pointer-events: auto;
 }
 
+/* ========== CAROUSEL STYLES ========== */
+
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  gap: 16px;
+  padding: 16px 0;
+}
+
+.carousel-track::-webkit-scrollbar {
+  height: 6px;
+}
+
+.carousel-track::-webkit-scrollbar-track {
+  background: var(--neutral-100);
+  border-radius: 3px;
+}
+
+.carousel-track::-webkit-scrollbar-thumb {
+  background: var(--neutral-400);
+  border-radius: 3px;
+}
+
+.carousel-track::-webkit-scrollbar-thumb:hover {
+  background: var(--neutral-500);
+}
+
+.carousel-card {
+  flex-shrink: 0;
+  min-width: 200px;
+}
+
 /* ========== RESPONSIVE ========== */
 
 /* ========== MOBILE TYPOGRAPHY (480px and below) ========== */
@@ -2295,11 +2330,16 @@ textarea {
 
   .carousel-track {
     padding: 12px 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .carousel-card {
     min-width: 150px !important;
     height: 240px !important;
+    flex-shrink: 0 !important;
   }
 
   .carousel-prev,

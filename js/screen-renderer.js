@@ -775,7 +775,7 @@ var ScreenRenderer = {
         (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
         '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">' +
           '<button class="carousel-prev" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--brand-secondary); color: white; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">‹</button>' +
-          '<div style="display: flex; gap: 16px; overflow-x: auto; padding: 16px 0; flex: 1; scroll-behavior: smooth;" class="carousel-track">';
+          '<div style="display: flex; gap: 16px; overflow-x: auto; overflow-y: hidden; padding: 16px 0; flex: 1; scroll-behavior: smooth; white-space: nowrap;" class="carousel-track">';
 
     // Render character cards
     if (content.characters && content.characters.length > 0) {
