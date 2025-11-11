@@ -704,43 +704,53 @@ var ScreenRenderer = {
     var card = document.createElement('div');
     card.className = 'card card-content';
 
-    var html = '<div class="celebration-container" style="text-align: center;">' +
-      '<div style="font-size: 72px; margin-bottom: 16px;">' + (content.emoji || '🎉') + '</div>' +
-      '<h2 style="color: var(--brand-primary); margin-bottom: 8px;">' + (content.title || '') + '</h2>';
-
-    if (content.xpGained) {
-      html += '<div style="background: rgba(123, 104, 238, 0.1); padding: 16px; border-radius: 8px; margin-bottom: 24px;">' +
-        '<h3 style="color: var(--brand-secondary); margin-bottom: 8px;">+' + content.xpGained + ' XP</h3>' +
-        '<p>Прогресс: ' + content.totalXp + '/' + content.nextLevelXp + '</p>' +
+    // Left content column
+    var html = '<div class="content-left">' +
+      '<div style="margin-bottom: var(--space-lg);">' +
+        '<p style="font-size: 14px; color: var(--brand-secondary); margin-bottom: 4px;">💫 Новое Алекс (Стартовые)</p>' +
+        '<p style="font-size: 14px; color: var(--brand-secondary); margin-bottom: 12px;">Вот с какими навыками Алекс начинает свой путь лидера:</p>' +
       '</div>';
-    }
 
     if (content.skills && content.skills.length > 0) {
-      html += '<div style="margin-bottom: 24px;">' +
-        '<h4 style="margin-bottom: 12px;">Навыки улучшены:</h4>';
+      html += '<div style="margin-bottom: var(--space-lg);">';
       for (var i = 0; i < content.skills.length; i++) {
         var skill = content.skills[i];
-        html += '<div style="margin-bottom: 8px;">' +
-          skill.name + ': ' + skill.from + ' → ' + skill.to +
+        var skillPercentage = Math.round((skill.to / 10) * 100);
+        html += '<div style="margin-bottom: var(--space-md);">' +
+          '<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">' +
+            '<span style="font-size: 14px; color: var(--neutral-700);">' + skill.name + '</span>' +
+            '<span style="font-size: 12px; color: var(--brand-secondary); font-weight: 600;">' + skill.to + '/10</span>' +
+          '</div>' +
+          '<div style="background: var(--neutral-200); border-radius: 8px; height: 8px; overflow: hidden;">' +
+            '<div style="background: linear-gradient(90deg, #7B68EE, #FF9800); width: ' + skillPercentage + '%; height: 100%; transition: width 0.6s ease-out;"></div>' +
+          '</div>' +
         '</div>';
       }
       html += '</div>';
     }
 
     if (content.achievements && content.achievements.length > 0) {
-      html += '<div style="margin-bottom: 24px;">' +
-        '<h4 style="margin-bottom: 12px;">Достижения:</h4>';
+      html += '<div style="margin-bottom: var(--space-lg);">' +
+        '<h4 style="margin: 0 0 var(--space-md) 0; font-size: 14px; color: var(--brand-primary);">Достижения:</h4>';
       for (var j = 0; j < content.achievements.length; j++) {
         var achievement = content.achievements[j];
-        html += '<div style="padding: 12px; background: rgba(76, 175, 80, 0.1); border-radius: 6px; margin-bottom: 8px;">' +
-          achievement.icon + ' <strong>' + achievement.name + '</strong><br>' +
-          '<small>' + achievement.description + '</small>' +
+        html += '<div style="padding: 12px; background: rgba(76, 175, 80, 0.1); border-radius: 6px; margin-bottom: 8px; border-left: 4px solid #4CAF50;">' +
+          '<div style="display: flex; align-items: flex-start; gap: 8px;">' +
+            '<span style="font-size: 18px;">​' + achievement.icon + '</span>' +
+            '<div>' +
+              '<strong style="color: var(--brand-primary); display: block; margin-bottom: 2px;">' + achievement.name + '</strong>' +
+              '<small style="color: var(--neutral-700);">' + achievement.description + '</small>' +
+            '</div>' +
+          '</div>' +
         '</div>';
       }
       html += '</div>';
     }
 
-    html += '</div>';
+    html += '</div>' +
+      '<div class="content-right" style="display: flex; align-items: flex-start; justify-content: center;">' +
+        (content.image ? '<img src="' + content.image + '" alt="Celebration" style="max-width: 100%; height: auto; object-fit: contain;">' : '') +
+      '</div>';
 
     card.innerHTML = html;
     return card;

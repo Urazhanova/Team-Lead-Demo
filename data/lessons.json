@@ -1083,6 +1083,7 @@
             "xpGained": 100,
             "totalXp": 150,
             "nextLevelXp": 1000,
+            "image": "assets/images/characters/alex/friendly.png",
             "skills": [
               {
                 "name": "Управление людьми",
