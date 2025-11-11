@@ -6,6 +6,7 @@
 var InteractiveChoice = {
   selectedChoice: null,
   currentScreen: null,
+  feedbackShowing: false,  // Flag to prevent multiple feedbacks
 
   /**
    * Initialize choice handlers
@@ -38,6 +39,12 @@ var InteractiveChoice = {
         e.preventDefault();
         e.stopPropagation();
 
+        // Prevent multiple feedback modals
+        if (self.feedbackShowing) {
+          console.log("[InteractiveChoice] Feedback already showing, ignoring click");
+          return;
+        }
+
         console.log("[InteractiveChoice] Choice selected: " + choiceId);
 
         // Remove previous selection styling
@@ -52,6 +59,9 @@ var InteractiveChoice = {
 
         // Store selection
         self.selectedChoice = choiceId;
+
+        // Mark that we're showing feedback to prevent duplicates
+        self.feedbackShowing = true;
 
         // Get choice data and show feedback modal
         self.showChoiceFeedback(choiceId);
@@ -213,6 +223,10 @@ var InteractiveChoice = {
             modal.parentElement.removeChild(modal);
             console.log("[InteractiveChoice] Modal removed successfully");
           }
+
+          // Reset feedback flag so next choice can trigger feedback
+          self.feedbackShowing = false;
+          console.log("[InteractiveChoice] Feedback flag reset");
 
           // Reset Navigation transition flag just in case
           if (typeof Navigation !== 'undefined' && Navigation.resetTransitionFlag) {
