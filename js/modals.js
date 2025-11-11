@@ -139,6 +139,7 @@ var Modals = {
 
     var closeHandler = function(e) {
       if (e) {
+        e.preventDefault();
         e.stopPropagation();
       }
       console.log("[Modals] Close handler triggered");
@@ -147,23 +148,23 @@ var Modals = {
       self.closeModal(modal);
     };
 
-    // Use event delegation on modal to handle all close actions
+    // Find and bind buttons directly
+    var closeBtn = modal.querySelector(".modal-close");
+    var confirmBtn = modal.querySelector(".btn-primary");
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeHandler);
+      console.log("[Modals] Bound close button (X)");
+    }
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", closeHandler);
+      console.log("[Modals] Bound confirm button (Понятно)");
+    }
+
+    // Bind background click to close
     modal.addEventListener("click", function(e) {
-      var target = e.target;
-
-      // Check if clicked element or its parent is a close button
-      var isCloseBtn = target.classList.contains("modal-close") ||
-                       target.closest(".modal-close");
-
-      // Check if clicked element is a primary button (Понятно)
-      var isPrimaryBtn = target.classList.contains("btn-primary") ||
-                         target.closest(".btn-primary");
-
-      // Close on background click
-      var isBackground = target === modal;
-
-      if (isCloseBtn || isPrimaryBtn || isBackground) {
-        console.log("[Modals] Modal close triggered - target:", target.className);
+      if (e.target === modal) {
         closeHandler(e);
       }
     });
