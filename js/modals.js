@@ -125,7 +125,7 @@ var Modals = {
       contentHTML += '</div>';
     }
 
-    contentHTML += '<button type="button" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Понятно</button>' +
+    contentHTML += '<button type="button" class="btn btn-primary" style="width: 100%; margin-top: 16px;" id="sbi-confirm-btn">Понятно</button>' +
       '</div>';
 
     modal.innerHTML = contentHTML;
@@ -149,9 +149,9 @@ var Modals = {
       self.closeModal(modal);
     };
 
-    // Find and bind buttons directly
+    // Find and bind buttons directly with unique ID for confirm button
     var closeBtn = modal.querySelector(".modal-close");
-    var confirmBtn = modal.querySelector(".btn-primary");
+    var confirmBtn = modal.querySelector("#sbi-confirm-btn");
 
     console.log("[Modals] Looking for buttons...");
     console.log("[Modals] closeBtn found:", !!closeBtn);
