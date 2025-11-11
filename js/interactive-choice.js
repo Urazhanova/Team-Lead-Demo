@@ -105,9 +105,11 @@ var InteractiveChoice = {
     var modal = document.createElement("div");
     modal.className = "modal-overlay";
     modal.style.animation = "fadeIn var(--transition-base)";
+    modal.style.zIndex = "10000";
+    modal.style.cursor = "auto";
 
     var modalContent = '<div class="modal-content" style="max-width: 500px; text-align: center;">' +
-      '<button type="button" class="modal-close" aria-label="Закрыть">×</button>' +
+      '<button type="button" class="modal-close" aria-label="Закрыть" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; background: none; font-size: 24px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; z-index: 10001;">×</button>' +
       '<div style="font-size: 60px; margin-bottom: 16px;">' + emoji + '</div>' +
       '<h2 style="color: ' + color + '; margin-bottom: 16px;">' + title + '</h2>' +
       '<div style="background: rgba(123, 104, 238, 0.05); padding: 16px; border-radius: 8px; margin-bottom: 24px; text-align: left;">' +
@@ -125,7 +127,7 @@ var InteractiveChoice = {
       modalContent += '</div>';
     }
 
-    modalContent += '<button type="button" class="btn btn-primary" id="choice-feedback-close" style="width: 100%;">Продолжить</button>' +
+    modalContent += '<button type="button" class="btn btn-primary" id="choice-feedback-close" style="width: 100%; padding: 12px 20px; border: none; border-radius: 6px; background: #163F6F; color: white; font-weight: 600; cursor: pointer; font-size: 16px; transition: background 0.3s;">Продолжить</button>' +
       '</div>';
 
     modal.innerHTML = modalContent;
@@ -142,10 +144,18 @@ var InteractiveChoice = {
       console.log("[InteractiveChoice] continueBtn found: " + !!continueBtn);
 
       var closeHandler = function(e) {
-        console.log("[InteractiveChoice] Close handler called");
-        if (e) {
-          e.preventDefault();
-          e.stopPropagation();
+        console.log("[InteractiveChoice] Close handler called, event:", !!e);
+
+        // Don't use preventDefault/stopPropagation - it can cause issues
+        try {
+          if (e && typeof e.preventDefault === 'function') {
+            e.preventDefault();
+          }
+          if (e && typeof e.stopPropagation === 'function') {
+            e.stopPropagation();
+          }
+        } catch (err) {
+          console.log("[InteractiveChoice] Error preventing default:", err.message);
         }
 
         // Award XP if available
@@ -164,13 +174,21 @@ var InteractiveChoice = {
           }
         }
 
-        modal.style.animation = "fadeIn var(--transition-base) reverse";
+        console.log("[InteractiveChoice] Starting modal fade-out animation");
+        modal.style.opacity = "0";
+        modal.style.pointerEvents = "none";
+
         setTimeout(function() {
-          if (modal.parentElement) {
-            modal.remove();
-            console.log("[InteractiveChoice] Modal removed from DOM");
+          console.log("[InteractiveChoice] Removing modal from DOM");
+          try {
+            if (modal && modal.parentElement) {
+              modal.parentElement.removeChild(modal);
+              console.log("[InteractiveChoice] Modal removed successfully");
+            }
+          } catch (err) {
+            console.log("[InteractiveChoice] Error removing modal:", err.message);
           }
-        }, 150);
+        }, 200);
       };
 
       if (closeBtn) {
