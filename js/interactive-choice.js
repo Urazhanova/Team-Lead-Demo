@@ -7,6 +7,7 @@ var InteractiveChoice = {
   selectedChoice: null,
   currentScreen: null,
   feedbackShowing: false,  // Flag to prevent multiple feedbacks
+  currentChoiceData: null,  // Store current screen's choice data
 
   /**
    * Initialize choice handlers
@@ -16,8 +17,33 @@ var InteractiveChoice = {
     this.feedbackShowing = false;
     console.log("[InteractiveChoice] Reset feedbackShowing flag");
 
+    // Get current choice data from visible card
+    this.extractCurrentChoiceData();
+
     this.bindChoiceButtons();
     console.log("[InteractiveChoice] Module initialized");
+  },
+
+  /**
+   * Extract choice data from visible card
+   */
+  extractCurrentChoiceData: function() {
+    var allCards = document.querySelectorAll(".card.card-content");
+    this.currentChoiceData = null;
+
+    // Find the VISIBLE choice card
+    for (var i = 0; i < allCards.length; i++) {
+      if (!allCards[i].classList.contains("hidden") && allCards[i].__interactiveChoiceData) {
+        this.currentChoiceData = allCards[i].__interactiveChoiceData;
+        console.log("[InteractiveChoice] Extracted choice data from visible card");
+        console.log("[InteractiveChoice] Title:", this.currentChoiceData.title);
+        break;
+      }
+    }
+
+    if (!this.currentChoiceData) {
+      console.warn("[InteractiveChoice] No choice data found on this screen");
+    }
   },
 
   /**
@@ -87,36 +113,29 @@ var InteractiveChoice = {
   showChoiceFeedback: function(choiceId) {
     console.log("[InteractiveChoice] Showing feedback for choice: " + choiceId);
 
-    // Find the choice data from the VISIBLE card only
-    var choiceData = null;
-    var allCards = document.querySelectorAll(".card.card-content");
-    var choiceCard = null;
+    // Use the current choice data that was extracted during init
+    if (!this.currentChoiceData) {
+      console.error("[InteractiveChoice] No current choice data available");
+      return;
+    }
 
-    // Find the VISIBLE card (not hidden)
-    for (var i = 0; i < allCards.length; i++) {
-      if (!allCards[i].classList.contains("hidden") && allCards[i].__interactiveChoiceData) {
-        choiceCard = allCards[i];
-        console.log("[InteractiveChoice] Found visible choice card with data");
-        var choices = allCards[i].__interactiveChoiceData.choices;
-        for (var j = 0; j < choices.length; j++) {
-          if (choices[j].id === choiceId) {
-            choiceData = choices[j];
-            console.log("[InteractiveChoice] Found choice data for id: " + choiceId);
-            break;
-          }
-        }
-        if (choiceData) break;
+    console.log("[InteractiveChoice] Using currentChoiceData with title:", this.currentChoiceData.title);
+
+    // Find the specific choice from current data
+    var choiceData = null;
+    var choices = this.currentChoiceData.choices || [];
+
+    for (var j = 0; j < choices.length; j++) {
+      if (choices[j].id === choiceId) {
+        choiceData = choices[j];
+        console.log("[InteractiveChoice] Found choice data for id: " + choiceId);
+        break;
       }
     }
 
     if (!choiceData) {
       console.error("[InteractiveChoice] Choice data not found for id: " + choiceId);
-      console.log("[InteractiveChoice] Visible cards with data:");
-      for (var i = 0; i < allCards.length; i++) {
-        if (!allCards[i].classList.contains("hidden")) {
-          console.log("  Card " + i + " has __interactiveChoiceData:", !!allCards[i].__interactiveChoiceData);
-        }
-      }
+      console.log("[InteractiveChoice] Available choices:", choices.map(function(c) { return c.id; }).join(", "));
       return;
     }
 
