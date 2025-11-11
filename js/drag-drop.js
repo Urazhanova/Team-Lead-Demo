@@ -7,6 +7,7 @@ var DragDrop = {
   draggedElement: null,
   placedCards: {}, // Track which card is in which slot
   currentScreen: null,
+  dragCardsInitialized: false, // Track if already initialized for current screen
 
   /**
    * Initialize drag-drop handlers
@@ -17,8 +18,13 @@ var DragDrop = {
 
     if (dragCards.length === 0) {
       console.log("[DragDrop] Not a drag-drop screen, skipping initialization");
+      this.dragCardsInitialized = false;
       return;
     }
+
+    this.dragCardsInitialized = true;
+    this.placedCards = {}; // Reset placed cards for new screen
+    this.draggedElement = null;
 
     this.bindDragDropEvents();
     this.bindCheckButton();
@@ -458,15 +464,45 @@ document.addEventListener("DOMContentLoaded", function() {
 if (typeof Navigation !== 'undefined') {
   var originalNavigationShowScreen = Navigation.showScreen;
   Navigation.showScreen = function(index, animate) {
-    console.log("[DragDrop] Screen change detected, scheduling re-initialization");
+    console.log("[DragDrop] Screen change detected to index " + index);
     originalNavigationShowScreen.call(this, index, animate);
 
-    // Re-initialize drag-drop for new screen after content is rendered
+    // Wait for transition to complete then initialize
+    // Use longer timeout to ensure animation completes
     setTimeout(function() {
-      console.log("[DragDrop] Re-initializing after screen change");
+      console.log("[DragDrop] Transition should be complete, initializing drag-drop");
       DragDrop.init();
-    }, 500);
+    }, 800);
   };
+}
+
+// Also set up a mutation observer to catch DOM changes
+if (typeof MutationObserver !== 'undefined') {
+  var observer = new MutationObserver(function(mutations) {
+    // Check if drag-drop cards were added to DOM
+    var dragCards = document.querySelectorAll(".drag-card");
+    if (dragCards.length > 0) {
+      console.log("[DragDrop] Detected drag-drop cards in DOM via mutation");
+      // Only initialize if not already initialized for this screen
+      if (!DragDrop.dragCardsInitialized) {
+        DragDrop.dragCardsInitialized = true;
+        setTimeout(function() {
+          DragDrop.init();
+        }, 100);
+      }
+    }
+  });
+
+  // Start observing the main content area
+  var mainContent = document.getElementById('mainContent');
+  if (mainContent) {
+    observer.observe(mainContent, {
+      childList: true,
+      subtree: true,
+      characterData: false
+    });
+    console.log("[DragDrop] MutationObserver attached to mainContent");
+  }
 }
 
 console.log("[DragDrop] Module loaded and attached to Navigation");
