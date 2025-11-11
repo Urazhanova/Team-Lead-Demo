@@ -59,17 +59,24 @@ var InteractiveChoice = {
   bindChoiceButtons: function() {
     var self = this;
 
-    // Find all choice buttons on the current screen
-    var choiceButtons = document.querySelectorAll(".choice-btn");
+    // Find only choice buttons in VISIBLE cards
+    var visibleCards = document.querySelectorAll(".card.card-content:not(.hidden)");
+    var choiceButtons = [];
 
-    console.log("[InteractiveChoice] Looking for choice buttons...");
-    console.log("[InteractiveChoice] Found " + choiceButtons.length + " choice buttons");
+    // Get buttons only from visible cards
+    for (var i = 0; i < visibleCards.length; i++) {
+      var buttons = visibleCards[i].querySelectorAll(".choice-btn");
+      for (var j = 0; j < buttons.length; j++) {
+        choiceButtons.push(buttons[j]);
+      }
+    }
+
+    console.log("[InteractiveChoice] Looking for choice buttons in visible cards...");
+    console.log("[InteractiveChoice] Found " + visibleCards.length + " visible cards");
+    console.log("[InteractiveChoice] Found " + choiceButtons.length + " choice buttons in visible cards");
 
     if (choiceButtons.length === 0) {
       console.log("[InteractiveChoice] Not a choice screen, skipping initialization");
-      // Also check if buttons exist with different selector
-      var allButtons = document.querySelectorAll("button");
-      console.log("[InteractiveChoice] Total buttons on page:", allButtons.length);
       return;
     }
 
