@@ -187,6 +187,13 @@ var Navigation = {
             Quiz.checkAnswer(quizContainer);
           }
         }
+      } else if (action === "check-dragdrop") {
+        // Drag-drop specific
+        e.stopPropagation();
+        if (typeof DragDrop !== "undefined" && DragDrop.checkAnswer) {
+          console.log("[Navigation] Drag-drop check button clicked");
+          DragDrop.checkAnswer();
+        }
       } else if (action === "cta-button") {
         // CTA button - move to next lesson
         console.log("[Navigation] CTA button clicked - loading next lesson");
