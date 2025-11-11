@@ -29,19 +29,31 @@ var DragDrop = {
 
     console.log("[DragDrop] Found " + dragCards.length + " drag cards and " + dropSlots.length + " drop slots");
 
+    if (dragCards.length === 0) {
+      console.warn("[DragDrop] No drag cards found - not a drag-drop screen");
+      return;
+    }
+
     // Bind drag events to cards
-    dragCards.forEach(function(card) {
+    dragCards.forEach(function(card, idx) {
+      var cardId = card.getAttribute("data-card-id");
       card.addEventListener("dragstart", function(e) {
+        console.log("[DragDrop] dragstart on card " + cardId);
         self.handleDragStart(e, card);
       });
 
       card.addEventListener("dragend", function(e) {
+        console.log("[DragDrop] dragend on card " + cardId);
         self.handleDragEnd(e, card);
       });
+
+      console.log("[DragDrop] Bound drag events to card " + cardId);
     });
 
     // Bind drop events to slots
-    dropSlots.forEach(function(slot) {
+    dropSlots.forEach(function(slot, idx) {
+      var slotId = slot.getAttribute("data-slot-id");
+
       slot.addEventListener("dragover", function(e) {
         self.handleDragOver(e, slot);
       });
@@ -51,8 +63,11 @@ var DragDrop = {
       });
 
       slot.addEventListener("drop", function(e) {
+        console.log("[DragDrop] drop on slot " + slotId);
         self.handleDrop(e, slot);
       });
+
+      console.log("[DragDrop] Bound drop events to slot " + slotId);
     });
   },
 
@@ -87,9 +102,8 @@ var DragDrop = {
    * Handle drag over
    */
   handleDragOver: function(e, slot) {
-    if (e.preventDefault) {
-      e.preventDefault();
-    }
+    e.preventDefault();
+    e.stopPropagation();
 
     e.dataTransfer.dropEffect = "move";
 
@@ -118,9 +132,8 @@ var DragDrop = {
    * Handle drop
    */
   handleDrop: function(e, slot) {
-    if (e.stopPropagation) {
-      e.stopPropagation();
-    }
+    e.preventDefault();
+    e.stopPropagation();
 
     if (!this.draggedElement) {
       return;
@@ -274,7 +287,7 @@ var DragDrop = {
     if (checkBtn) {
       checkBtn.style.backgroundColor = "#F44336";
       checkBtn.style.color = "white";
-      checkBtn.innerHTML = "✗ Не совсем... Подумай еще раз. S - Ситуация, B - Поведение, I - Влияние";
+      checkBtn.innerHTML = "✗ Неверно. S - Ситуация (вчера на daily), B - Поведение (опоздал), I - Влияние (потеряли время)";
     }
 
     console.log("[DragDrop] Answer is incorrect");
