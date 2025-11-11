@@ -284,11 +284,26 @@ var ScreenRenderer = {
 
       for (var i = 0; i < items.length; i++) {
         var item = items[i];
-        html += '<div style="background: var(--neutral-50); padding: var(--space-md); border-radius: var(--radius-md); border-top: 4px solid var(--brand-accent);">' +
+        var bgColor = item.backgroundColor || 'var(--neutral-50)';
+        html += '<div style="background: ' + bgColor + '; padding: var(--space-md); border-radius: var(--radius-md); border-top: 4px solid var(--brand-accent);">' +
           (item.icon ? '<div style="font-size: 32px; margin-bottom: var(--space-sm);">' + item.icon + '</div>' : '') +
-          '<h3 style="color: var(--brand-primary); margin-bottom: var(--space-sm); font-size: 16px;">' + item.title + '</h3>' +
-          '<p style="font-size: 14px; color: var(--neutral-700);">' + (item.text || item.description || '') + '</p>' +
-          '</div>';
+          '<h3 style="color: var(--brand-primary); margin-bottom: var(--space-sm); font-size: 16px;">' + item.title + '</h3>';
+
+        // Add description/text if present
+        if (item.text || item.description) {
+          html += '<p style="font-size: 14px; color: var(--neutral-700); margin-bottom: var(--space-sm);">' + (item.text || item.description || '') + '</p>';
+        }
+
+        // Add list items if present
+        if (item.items && item.items.length > 0) {
+          html += '<ul style="margin: 0; padding-left: 20px; font-size: 14px; color: var(--neutral-700);">';
+          for (var j = 0; j < item.items.length; j++) {
+            html += '<li style="margin-bottom: 8px;">' + item.items[j] + '</li>';
+          }
+          html += '</ul>';
+        }
+
+        html += '</div>';
       }
 
       html += '</div>';
