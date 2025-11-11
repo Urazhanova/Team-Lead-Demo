@@ -13,9 +13,11 @@ var InteractiveChoice = {
    * Initialize choice handlers
    */
   init: function() {
-    // Reset feedback flag when initializing new screen
+    // Reset ALL data for new screen
     this.feedbackShowing = false;
-    console.log("[InteractiveChoice] Reset feedbackShowing flag");
+    this.currentChoiceData = null;
+    this.selectedChoice = null;
+    console.log("[InteractiveChoice] Reset all flags for new screen");
 
     // Get current choice data from visible card
     this.extractCurrentChoiceData();
