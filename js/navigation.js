@@ -287,11 +287,15 @@ var Navigation = {
       var track = container.querySelector(".carousel-track");
       if (!track) return;
 
-      var scrollAmount = 200;
+      console.log("[Navigation] Carousel scroll - scrollLeft:", track.scrollLeft, "scrollWidth:", track.scrollWidth, "clientWidth:", track.clientWidth);
+
+      var scrollAmount = 220;
       if (scrollBtn.classList.contains("carousel-prev")) {
         track.scrollLeft -= scrollAmount;
+        console.log("[Navigation] Scrolling left, new scrollLeft:", track.scrollLeft);
       } else {
         track.scrollLeft += scrollAmount;
+        console.log("[Navigation] Scrolling right, new scrollLeft:", track.scrollLeft);
       }
     });
   },
