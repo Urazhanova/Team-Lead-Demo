@@ -91,6 +91,7 @@ var Modals = {
     var modal = document.createElement("div");
     modal.className = "modal-overlay";
     modal.style.animation = "fadeIn var(--transition-base)";
+    modal.setAttribute("data-sbi-block", blockData.id);
 
     var modalInfo = blockData.modal;
     var contentHTML = '<div class="modal-content" style="max-width: 600px;">' +
@@ -139,6 +140,8 @@ var Modals = {
     var self = this;
 
     var closeHandler = function() {
+      // Mark block as studied
+      self.markBlockAsStudied(blockData.id);
       self.closeModal(modal);
     };
 
@@ -149,6 +152,51 @@ var Modals = {
         closeHandler();
       }
     });
+  },
+
+  /**
+   * Mark SBI block as studied and update counter
+   * @param {string} blockId - Block ID (S, B, or I)
+   */
+  markBlockAsStudied: function(blockId) {
+    console.log("[Modals] Marking block as studied: " + blockId);
+
+    // Find the block button and mark it as studied
+    var blockButton = document.querySelector("[data-block-id='" + blockId + "']");
+    if (blockButton) {
+      blockButton.classList.add("studied");
+      blockButton.style.opacity = "0.7";
+      blockButton.innerHTML = blockButton.innerHTML + " ✓";
+    }
+
+    // Update progress counter
+    var progressCounter = document.getElementById("progress-counter");
+    if (progressCounter) {
+      var counterText = progressCounter.textContent;
+      var parts = counterText.split("/");
+      if (parts.length === 2) {
+        var current = parseInt(parts[0]);
+        var total = parseInt(parts[1]);
+
+        // Check if this block is already counted
+        if (!blockButton.classList.contains("was-studied")) {
+          current++;
+          blockButton.classList.add("was-studied");
+        }
+
+        progressCounter.textContent = current + "/" + total;
+        console.log("[Modals] Progress updated: " + current + "/" + total);
+
+        // Enable next button when all blocks are studied
+        if (current === total) {
+          var nextBtn = document.querySelector("[data-action='next']");
+          if (nextBtn) {
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = "1";
+          }
+        }
+      }
+    }
   },
 
   /**

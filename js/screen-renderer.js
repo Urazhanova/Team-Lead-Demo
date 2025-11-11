@@ -422,7 +422,12 @@ var ScreenRenderer = {
     }
 
     if (navConfig.next !== false) {
-      html += '<button class="btn btn-primary" data-action="next" aria-label="Следующий экран">' +
+      // Check if this is an interactive modal screen that requires all blocks to be studied
+      var nextBtnDisabled = '';
+      if (navConfig.requireAllBlocks) {
+        nextBtnDisabled = ' disabled style="opacity: 0.5; cursor: not-allowed;"';
+      }
+      html += '<button class="btn btn-primary" data-action="next" aria-label="Следующий экран"' + nextBtnDisabled + '>' +
         'Далее →' +
         '</button>';
     }
