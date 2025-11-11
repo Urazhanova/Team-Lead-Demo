@@ -792,7 +792,7 @@
           "type": "dialogue",
           "content": {
             "title": "Встреча с Марией - этап 1 из 3",
-            "illustration": "assets/images/scenes/meeting_room.svg",
+            "illustration": "assets/images/scenes/1-1serious.svg",
             "dialogues": [
               {
                 "speaker": "alex",
