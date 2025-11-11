@@ -266,20 +266,62 @@ var DragDrop = {
    * Show success message
    */
   showSuccessMessage: function() {
+    var self = this;
     var checkBtn = document.querySelector("[data-action='check-dragdrop']");
     if (checkBtn) {
-      checkBtn.style.backgroundColor = "#4CAF50";
-      checkBtn.style.color = "white";
-      checkBtn.innerHTML = "✓ Отлично! Ты понял модель SBI! +20 XP";
       checkBtn.disabled = true;
-
-      // Enable next button
-      var nextBtn = document.querySelector("[data-action='next']");
-      if (nextBtn) {
-        nextBtn.disabled = false;
-        nextBtn.style.opacity = "1";
-      }
     }
+
+    // Create modal for success message
+    var modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.style.animation = "fadeIn var(--transition-base)";
+
+    var modalContent = '<div class="modal-content" style="max-width: 500px; text-align: center;">' +
+      '<button type="button" class="modal-close" aria-label="Закрыть">×</button>' +
+      '<div style="font-size: 60px; margin-bottom: 16px;">✓</div>' +
+      '<h2 style="color: #4CAF50; margin-bottom: 16px;">Отлично!</h2>' +
+      '<p style="font-size: 16px; margin-bottom: 24px;">Ты правильно понял модель SBI!</p>' +
+      '<div style="background: #E8F5E9; padding: 16px; border-radius: 8px; margin-bottom: 24px;">' +
+        '<p style="margin: 0; font-weight: bold;">+20 XP</p>' +
+      '</div>' +
+      '<button type="button" class="btn btn-primary" id="dragdrop-success-close" style="width: 100%;">Продолжить</button>' +
+      '</div>';
+
+    modal.innerHTML = modalContent;
+    document.body.appendChild(modal);
+
+    // Bind close handlers
+    var closeBtn = modal.querySelector(".modal-close");
+    var continueBtn = modal.querySelector("#dragdrop-success-close");
+
+    var closeHandler = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      modal.style.animation = "fadeIn var(--transition-base) reverse";
+      setTimeout(function() {
+        if (modal.parentElement) {
+          modal.remove();
+        }
+        // Enable next button after modal closes
+        var nextBtn = document.querySelector("[data-action='next']");
+        if (nextBtn) {
+          nextBtn.disabled = false;
+          nextBtn.style.opacity = "1";
+        }
+      }, 150);
+    };
+
+    closeBtn.addEventListener("click", closeHandler);
+    continueBtn.addEventListener("click", closeHandler);
+
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) {
+        closeHandler();
+      }
+    });
 
     console.log("[DragDrop] Answer is correct!");
   },
@@ -288,12 +330,59 @@ var DragDrop = {
    * Show error message
    */
   showErrorMessage: function() {
-    var checkBtn = document.querySelector("[data-action='check-dragdrop']");
-    if (checkBtn) {
-      checkBtn.style.backgroundColor = "#F44336";
-      checkBtn.style.color = "white";
-      checkBtn.innerHTML = "✗ Неверно. S - Ситуация (вчера на daily), B - Поведение (опоздал), I - Влияние (потеряли время)";
-    }
+    // Create modal for error message
+    var modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.style.animation = "fadeIn var(--transition-base)";
+
+    var modalContent = '<div class="modal-content" style="max-width: 500px; text-align: center;">' +
+      '<button type="button" class="modal-close" aria-label="Закрыть">×</button>' +
+      '<div style="font-size: 60px; margin-bottom: 16px; color: #F44336;">✗</div>' +
+      '<h2 style="color: #F44336; margin-bottom: 16px;">Не совсем верно</h2>' +
+      '<div style="background: #FFEBEE; padding: 16px; border-radius: 8px; margin-bottom: 24px; text-align: left;">' +
+        '<p style="margin: 0 0 12px 0; font-weight: bold;">Подсказка:</p>' +
+        '<p style="margin: 0 0 8px 0;"><strong>S - Ситуация:</strong> Когда и где это произошло? ("Вчера на daily meeting в 10:00")</p>' +
+        '<p style="margin: 0 0 8px 0;"><strong>B - Поведение:</strong> Конкретные действия ("ты опоздал на 15 минут и не предупредил")</p>' +
+        '<p style="margin: 0;"><strong>I - Влияние:</strong> Последствия ("команда ждала, и мы потеряли время на встрече")</p>' +
+      '</div>' +
+      '<button type="button" class="btn btn-primary" id="dragdrop-error-close" style="width: 100%; background-color: #F44336;">Попробовать еще раз</button>' +
+      '</div>';
+
+    modal.innerHTML = modalContent;
+    document.body.appendChild(modal);
+
+    // Bind close handlers
+    var closeBtn = modal.querySelector(".modal-close");
+    var retryBtn = modal.querySelector("#dragdrop-error-close");
+
+    var closeHandler = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      modal.style.animation = "fadeIn var(--transition-base) reverse";
+      setTimeout(function() {
+        if (modal.parentElement) {
+          modal.remove();
+        }
+        // Reset button color
+        var checkBtn = document.querySelector("[data-action='check-dragdrop']");
+        if (checkBtn) {
+          checkBtn.style.backgroundColor = "";
+          checkBtn.style.color = "";
+          checkBtn.innerHTML = "Проверить";
+        }
+      }, 150);
+    };
+
+    closeBtn.addEventListener("click", closeHandler);
+    retryBtn.addEventListener("click", closeHandler);
+
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) {
+        closeHandler();
+      }
+    });
 
     console.log("[DragDrop] Answer is incorrect");
   }
