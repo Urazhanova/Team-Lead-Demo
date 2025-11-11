@@ -12,6 +12,10 @@ var InteractiveChoice = {
    * Initialize choice handlers
    */
   init: function() {
+    // Reset feedback flag when initializing new screen
+    this.feedbackShowing = false;
+    console.log("[InteractiveChoice] Reset feedbackShowing flag");
+
     this.bindChoiceButtons();
     console.log("[InteractiveChoice] Module initialized");
   },
