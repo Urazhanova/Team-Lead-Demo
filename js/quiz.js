@@ -275,13 +275,6 @@ var Quiz = {
       explanation =
         (selectedAnswerOption ? selectedAnswerOption.getAttribute("data-explanation") : null) ||
         "Пожалуйста, внимательнее прочитайте варианты ответов и материал.";
-
-      // Add hint about correct answer
-      if (correctOption) {
-        var correctTextElement = correctOption.querySelector("span");
-        var correctText = correctTextElement ? correctTextElement.textContent : "";
-        explanation += "\n\nПравильный ответ: " + correctText;
-      }
     }
 
     // Combine message and explanation
