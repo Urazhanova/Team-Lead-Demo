@@ -838,32 +838,32 @@ var ScreenRenderer = {
     card.className = 'card card-content';
 
     // Two-column layout if image is present
-    var html = '<div style="display: flex; gap: 24px; align-items: flex-start;">' +
-      '<div style="flex: 1;">' +
-        '<h2>' + (content.title || '') + '</h2>' +
-        (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
-        '<div>';
+    var html = '<div style="display: flex; gap: 32px; align-items: flex-start;">' +
+      '<div style="flex: 1; min-width: 0;">' +
+        '<h2 style="margin-bottom: 8px;">' + (content.title || '') + '</h2>' +
+        (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin: 0 0 28px 0; font-size: 14px; font-weight: 500;">' + content.subtitle + '</h3>' : '') +
+        '<div style="display: flex; flex-direction: column; gap: 0;">';
 
     // Render accordion sections
     if (content.sections && content.sections.length > 0) {
       for (var s = 0; s < content.sections.length; s++) {
         var section = content.sections[s];
-        html += '<div class="accordion-section" data-section-id="' + section.id + '" style="margin-bottom: 12px; border: 1px solid var(--neutral-200); border-radius: 8px; overflow: hidden;">' +
-          '<div class="accordion-header" style="background: var(--neutral-50); padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.2s; hover: background var(--neutral-100);">' +
-            '<h4 style="margin: 0; color: var(--brand-primary); font-size: 15px; font-weight: 600;">' + (section.emoji ? section.emoji + ' ' : '') + section.title + '</h4>' +
-            '<span style="font-size: 16px; transition: transform 0.3s;" class="accordion-arrow">▼</span>' +
+        html += '<div class="accordion-section" data-section-id="' + section.id + '" style="margin-bottom: 16px; border: 1px solid var(--neutral-300); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">' +
+          '<div class="accordion-header" style="background: var(--neutral-50); padding: 18px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.2s ease;">' +
+            '<h4 style="margin: 0; color: var(--brand-primary); font-size: 14px; font-weight: 700; letter-spacing: 0.3px;">' + (section.emoji ? section.emoji + ' ' : '') + section.title + '</h4>' +
+            '<span style="font-size: 18px; transition: transform 0.3s; flex-shrink: 0; margin-left: 12px;" class="accordion-arrow">▼</span>' +
           '</div>' +
         '</div>';
       }
     }
 
     html += '</div>' +
-      '<p style="text-align: center; color: var(--brand-secondary); margin-top: 24px; margin-bottom: 16px;">Изучено секций: <strong id="accordion-progress">0/' + (content.sections ? content.sections.length : 0) + '</strong></p>' +
+      '<p style="text-align: center; color: var(--brand-secondary); margin: 32px 0 0 0; font-size: 13px; font-weight: 600;">Изучено секций: <strong id="accordion-progress">0/' + (content.sections ? content.sections.length : 0) + '</strong></p>' +
       '</div>';
 
     // Right column: Image (if provided)
     if (content.image) {
-      html += '<div style="flex: 0 0 280px; text-align: center;">' +
+      html += '<div style="flex: 0 0 300px; text-align: center;">' +
         '<img src="' + content.image + '" alt="Accordion" class="character-image" loading="lazy">' +
       '</div>';
     }
