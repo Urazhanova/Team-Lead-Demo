@@ -12,9 +12,17 @@ var DragDrop = {
    * Initialize drag-drop handlers
    */
   init: function() {
+    // Check if this is a drag-drop screen
+    var dragCards = document.querySelectorAll(".drag-card");
+
+    if (dragCards.length === 0) {
+      console.log("[DragDrop] Not a drag-drop screen, skipping initialization");
+      return;
+    }
+
     this.bindDragDropEvents();
     this.bindCheckButton();
-    console.log("[DragDrop] Module initialized");
+    console.log("[DragDrop] Module initialized for drag-drop screen");
   },
 
   /**
@@ -28,11 +36,6 @@ var DragDrop = {
     var dropSlots = document.querySelectorAll(".drop-slot");
 
     console.log("[DragDrop] Found " + dragCards.length + " drag cards and " + dropSlots.length + " drop slots");
-
-    if (dragCards.length === 0) {
-      console.warn("[DragDrop] No drag cards found - not a drag-drop screen");
-      return;
-    }
 
     // Bind drag events to cards
     dragCards.forEach(function(card, idx) {
@@ -392,21 +395,25 @@ var DragDrop = {
  * Initialize drag-drop when DOM is ready
  */
 document.addEventListener("DOMContentLoaded", function() {
-  // Wait a bit for dynamic content to be loaded
+  // Wait for dynamic content to be loaded
   setTimeout(function() {
+    console.log("[DragDrop] Initializing on DOMContentLoaded");
     DragDrop.init();
-  }, 100);
+  }, 500);
 });
 
 // Re-initialize when new screens are loaded
-var originalNavigationShowScreen = Navigation.showScreen;
-Navigation.showScreen = function(index, animate) {
-  originalNavigationShowScreen.call(this, index, animate);
+if (typeof Navigation !== 'undefined') {
+  var originalNavigationShowScreen = Navigation.showScreen;
+  Navigation.showScreen = function(index, animate) {
+    originalNavigationShowScreen.call(this, index, animate);
 
-  // Re-initialize drag-drop for new screen
-  setTimeout(function() {
-    DragDrop.init();
-  }, 200);
-};
+    // Re-initialize drag-drop for new screen after content is rendered
+    setTimeout(function() {
+      console.log("[DragDrop] Re-initializing after screen change");
+      DragDrop.init();
+    }, 300);
+  };
+}
 
-console.log("[DragDrop] Module loaded");
+console.log("[DragDrop] Module loaded and attached to Navigation");
