@@ -135,23 +135,36 @@ var Modals = {
     this.activeModals.push(modal);
 
     // Close button handler
-    var closeBtn = modal.querySelector(".modal-close");
-    var confirmBtn = modal.querySelector(".btn-primary");
     var self = this;
 
-    var closeHandler = function() {
+    var closeHandler = function(e) {
+      if (e) {
+        e.stopPropagation();
+      }
+      console.log("[Modals] Close handler triggered");
       // Mark block as studied
       self.markBlockAsStudied(blockData.id);
       self.closeModal(modal);
     };
 
-    closeBtn.addEventListener("click", closeHandler);
-    confirmBtn.addEventListener("click", closeHandler);
-    modal.addEventListener("click", function(e) {
-      if (e.target === modal) {
-        closeHandler();
+    // Bind close handlers after DOM is ready
+    setTimeout(function() {
+      var closeBtn = modal.querySelector(".modal-close");
+      var confirmBtn = modal.querySelector(".btn-primary");
+
+      if (closeBtn) {
+        closeBtn.addEventListener("click", closeHandler);
       }
-    });
+      if (confirmBtn) {
+        confirmBtn.addEventListener("click", closeHandler);
+      }
+
+      modal.addEventListener("click", function(e) {
+        if (e.target === modal) {
+          closeHandler();
+        }
+      });
+    }, 50);
   },
 
   /**
@@ -165,8 +178,6 @@ var Modals = {
     var blockButton = document.querySelector("[data-block-id='" + blockId + "']");
     if (blockButton) {
       blockButton.classList.add("studied");
-      blockButton.style.opacity = "0.7";
-      blockButton.innerHTML = blockButton.innerHTML + " ✓";
     }
 
     // Update progress counter
