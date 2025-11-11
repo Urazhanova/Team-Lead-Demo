@@ -768,10 +768,12 @@ var ScreenRenderer = {
     var card = document.createElement('div');
     card.className = 'card card-content';
 
-    var html = '<div class="carousel-container">' +
-      '<h2>' + (content.title || '') + '</h2>' +
-      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
-      '<div style="display: flex; gap: 16px; overflow-x: auto; padding: 16px 0; margin-bottom: 24px;" class="carousel-track">';
+    // Two-column layout
+    var html = '<div style="display: flex; gap: 24px; align-items: flex-start;">' +
+      '<div class="carousel-container" style="flex: 1;">' +
+        '<h2>' + (content.title || '') + '</h2>' +
+        (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
+        '<div style="display: flex; gap: 16px; overflow-x: auto; padding: 16px 0; margin-bottom: 24px;" class="carousel-track">';
 
     // Render character cards
     if (content.characters && content.characters.length > 0) {
@@ -806,6 +808,15 @@ var ScreenRenderer = {
     html += '</div>' +
       '<p style="text-align: center; color: var(--brand-secondary); margin-bottom: 16px;">' + (content.progressText || 'Изучено') + ': <strong id="carousel-progress">0/' + (content.characters ? content.characters.length : 0) + '</strong></p>' +
       '</div>';
+
+    // Right column: Image (if provided)
+    if (content.image) {
+      html += '<div style="flex: 0 0 280px; text-align: center;">' +
+        '<img src="' + content.image + '" alt="Team" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">' +
+      '</div>';
+    }
+
+    html += '</div>';
 
     card.innerHTML = html;
     card.__carouselData = {

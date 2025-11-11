@@ -462,6 +462,7 @@
           "content": {
             "title": "ПОЗНАКОМЬСЯ СО СВОЕЙ КОМАНДОЙ",
             "subtitle": "Нажми на каждого члена команды, чтобы узнать о нём больше",
+            "image": "assets/images/scenes/1firstmeeting.svg",
             "characters": [
               {
                 "id": "maria",
