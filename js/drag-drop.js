@@ -56,7 +56,22 @@ var DragDrop = {
         self.handleDragEnd(e, card);
       });
 
-      console.log("[DragDrop] Bound drag events to card " + cardId);
+      // Touch events for mobile
+      card.addEventListener("touchstart", function(e) {
+        console.log("[DragDrop] touchstart on card " + cardId);
+        self.handleTouchStart(e, card);
+      });
+
+      card.addEventListener("touchmove", function(e) {
+        self.handleTouchMove(e, card);
+      });
+
+      card.addEventListener("touchend", function(e) {
+        console.log("[DragDrop] touchend on card " + cardId);
+        self.handleTouchEnd(e, card);
+      });
+
+      console.log("[DragDrop] Bound drag/touch events to card " + cardId);
     });
 
     // Bind drop events to slots
@@ -76,7 +91,17 @@ var DragDrop = {
         self.handleDrop(e, slot);
       });
 
-      console.log("[DragDrop] Bound drop events to slot " + slotId);
+      // Touch events for mobile drop zones
+      slot.addEventListener("touchmove", function(e) {
+        e.preventDefault();
+        self.handleTouchOver(e, slot);
+      });
+
+      slot.addEventListener("touchleave", function(e) {
+        self.handleDragLeave(e, slot);
+      });
+
+      console.log("[DragDrop] Bound drop/touch events to slot " + slotId);
     });
   },
 
@@ -199,6 +224,80 @@ var DragDrop = {
 
     // Hide original card
     this.draggedElement.style.display = "none";
+    this.draggedElement = null;
+  },
+
+  /**
+   * Handle touch start on card
+   */
+  handleTouchStart: function(e, card) {
+    this.draggedElement = card;
+    var cardId = card.getAttribute("data-card-id");
+
+    // Visual feedback
+    card.style.opacity = "0.5";
+    card.style.transform = "scale(1.05)";
+    card.style.zIndex = "1000";
+
+    console.log("[DragDrop] Touch started on card: " + cardId);
+  },
+
+  /**
+   * Handle touch move on card (show ghost image)
+   */
+  handleTouchMove: function(e, card) {
+    if (!this.draggedElement) return;
+    // Touch move is handled by the browser showing the card being moved
+  },
+
+  /**
+   * Handle touch over slot
+   */
+  handleTouchOver: function(e, slot) {
+    if (!this.draggedElement) return;
+
+    var touch = e.touches[0];
+    var element = document.elementFromPoint(touch.clientX, touch.clientY);
+
+    if (element && (element === slot || element.closest(".drop-slot"))) {
+      var targetSlot = element.closest(".drop-slot") || slot;
+      targetSlot.style.borderColor = "#4CAF50";
+      targetSlot.style.backgroundColor = "rgba(76, 175, 80, 0.1)";
+      targetSlot.style.transform = "scale(1.02)";
+      targetSlot.setAttribute("data-touch-over", "true");
+    }
+  },
+
+  /**
+   * Handle touch end on card
+   */
+  handleTouchEnd: function(e, card) {
+    if (!this.draggedElement) return;
+
+    var touch = e.changedTouches[0];
+    var element = document.elementFromPoint(touch.clientX, touch.clientY);
+    var slot = element ? element.closest(".drop-slot") : null;
+
+    if (slot && this.draggedElement) {
+      // Simulate drop
+      this.handleDrop({preventDefault: function(){}, stopPropagation: function(){}}, slot);
+    } else {
+      // Reset visual feedback if not dropped
+      card.style.opacity = "1";
+      card.style.transform = "scale(1)";
+      card.style.zIndex = "auto";
+    }
+
+    // Reset all slots
+    var dropSlots = document.querySelectorAll(".drop-slot");
+    dropSlots.forEach(function(s) {
+      var borderColor = s.getAttribute("data-border-color") || "#999";
+      s.style.borderColor = borderColor;
+      s.style.backgroundColor = "transparent";
+      s.style.transform = "scale(1)";
+      s.removeAttribute("data-touch-over");
+    });
+
     this.draggedElement = null;
   },
 
