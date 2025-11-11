@@ -55,11 +55,18 @@ var Modals = {
   bindSBIBlockButtons: function() {
     var self = this;
     document.addEventListener("click", function(e) {
+      // Don't open modal if clicking inside an active modal
+      if (e.target.closest(".modal-overlay")) {
+        console.log("[Modals] Click detected inside modal, ignoring block button");
+        return;
+      }
+
       var button = e.target.closest("[data-block-id]");
 
       if (button) {
         e.stopPropagation();
         var blockId = button.getAttribute("data-block-id");
+        console.log("[Modals] SBI block button clicked: " + blockId);
 
         // Get the block data from the parent screen content
         var screenContent = button.closest(".card");
@@ -160,6 +167,8 @@ var Modals = {
     if (closeBtn) {
       closeBtn.addEventListener("click", function(e) {
         console.log("[Modals] Close button (X) clicked");
+        e.preventDefault();
+        e.stopPropagation();
         closeHandler(e);
       });
       console.log("[Modals] Bound close button (X)");
@@ -170,6 +179,8 @@ var Modals = {
     if (confirmBtn) {
       confirmBtn.addEventListener("click", function(e) {
         console.log("[Modals] Confirm button (Понятно) clicked");
+        e.preventDefault();
+        e.stopPropagation();
         closeHandler(e);
       });
       console.log("[Modals] Bound confirm button (Понятно)");
