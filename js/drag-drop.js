@@ -203,12 +203,24 @@ var DragDrop = {
     var self = this;
     var checkBtn = document.querySelector("[data-action='check-dragdrop']");
 
+    console.log("[DragDrop] Looking for check button...");
+    console.log("[DragDrop] Check button found:", !!checkBtn);
+
     if (checkBtn) {
+      // Remove all existing listeners by cloning and replacing
+      var newCheckBtn = checkBtn.cloneNode(true);
+      checkBtn.parentNode.replaceChild(newCheckBtn, checkBtn);
+      checkBtn = newCheckBtn;
+
       checkBtn.addEventListener("click", function(e) {
+        console.log("[DragDrop] Check button clicked!");
         e.preventDefault();
+        e.stopPropagation();
         self.checkAnswer();
       });
-      console.log("[DragDrop] Check button bound");
+      console.log("[DragDrop] Check button bound successfully");
+    } else {
+      console.error("[DragDrop] Check button NOT found!");
     }
   },
 
@@ -216,14 +228,32 @@ var DragDrop = {
    * Check if answer is correct
    */
   checkAnswer: function() {
-    console.log("[DragDrop] Checking answer...");
+    console.log("[DragDrop] checkAnswer() called");
     console.log("[DragDrop] Placed cards:", this.placedCards);
 
-    // Get correct order from the screen
-    var screenCard = document.querySelector(".card.card-content");
+    // Get correct order from the screen - find the specific drag-drop screen card
+    var allCards = document.querySelectorAll(".card.card-content");
+    console.log("[DragDrop] Found " + allCards.length + " card elements");
+
+    var screenCard = null;
+    for (var i = 0; i < allCards.length; i++) {
+      if (allCards[i].__dragDropData) {
+        screenCard = allCards[i];
+        console.log("[DragDrop] Found screen card with drag-drop data at index " + i);
+        break;
+      }
+    }
+
     if (!screenCard || !screenCard.__dragDropData) {
-      console.error("[DragDrop] No screen data found");
-      return;
+      console.error("[DragDrop] No screen data found - checking visible card");
+      var visibleCard = document.querySelector(".dragdrop-container").closest(".card.card-content");
+      if (visibleCard && visibleCard.__dragDropData) {
+        screenCard = visibleCard;
+        console.log("[DragDrop] Found visible drag-drop card");
+      } else {
+        console.error("[DragDrop] Still no drag-drop data found!");
+        return;
+      }
     }
 
     var correctOrder = screenCard.__dragDropData.correctOrder;
