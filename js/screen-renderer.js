@@ -635,7 +635,8 @@ var ScreenRenderer = {
     var card = document.createElement('div');
     card.className = 'card card-content';
 
-    var html = '<div class="choice-container">' +
+    // Left column with content
+    var html = '<div class="content-left">' +
       '<h2>' + (content.title || '') + '</h2>' +
       (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +
       '<div style="background: rgba(123, 104, 238, 0.05); padding: 16px; border-radius: 8px; margin-bottom: 24px;">' +
@@ -654,6 +655,9 @@ var ScreenRenderer = {
     }
 
     html += '</div>' +
+      '</div>' +
+      '<div class="content-right" style="display: flex; align-items: center; justify-content: center;">' +
+        (content.image ? '<img src="' + content.image + '" alt="Choice" style="max-width: 100%; height: auto;">' : '') +
       '</div>';
 
     card.innerHTML = html;
