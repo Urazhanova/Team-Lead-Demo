@@ -321,17 +321,6 @@ var InteractiveChoice = {
           // Reset feedback flag so next choice can trigger feedback
           self.feedbackShowing = false;
           console.log("[InteractiveChoice] Feedback flag reset");
-
-          // Reset Navigation transition flag just in case
-          if (typeof Navigation !== 'undefined' && Navigation.resetTransitionFlag) {
-            Navigation.resetTransitionFlag();
-          }
-
-          // Navigate to next screen (feedback screen)
-          if (typeof Navigation !== 'undefined' && Navigation.nextScreen) {
-            console.log("[InteractiveChoice] Navigating to next screen after feedback");
-            Navigation.nextScreen();
-          }
         } catch (err) {
           console.log("[InteractiveChoice] Error removing modal:", err.message);
         }
