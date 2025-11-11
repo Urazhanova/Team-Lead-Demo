@@ -32,6 +32,14 @@ var InteractiveChoice = {
   extractCurrentChoiceData: function() {
     this.currentChoiceData = null;
 
+    // Get ALL screens and check which are visible
+    var allScreens = document.querySelectorAll(".screen");
+    console.log("[InteractiveChoice] Total screens in DOM:", allScreens.length);
+    for (var idx = 0; idx < allScreens.length; idx++) {
+      var isHidden = allScreens[idx].classList.contains("hidden");
+      console.log("[InteractiveChoice] Screen " + idx + " (id=" + allScreens[idx].id + "): hidden=" + isHidden + ", data-screen=" + allScreens[idx].getAttribute("data-screen"));
+    }
+
     // Get the currently visible screen element
     var visibleScreen = document.querySelector(".screen:not(.hidden)");
 
