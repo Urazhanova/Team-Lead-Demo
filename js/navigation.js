@@ -225,6 +225,11 @@ var Navigation = {
       var cardInner = carouselCard.querySelector(".card-inner");
       if (!cardInner) return;
 
+      // Get character data from the card
+      var charId = carouselCard.getAttribute("data-char-id");
+      var charName = carouselCard.querySelector("h4");
+      var charNameText = charName ? charName.textContent : "Unknown";
+
       // Toggle flip animation
       var currentTransform = cardInner.style.transform || "";
       var isFlipped = currentTransform.includes("rotateY(180deg)");
@@ -233,6 +238,14 @@ var Navigation = {
         cardInner.style.transform = "";
       } else {
         cardInner.style.transform = "rotateY(180deg)";
+
+        // Open modal with character details after flip animation
+        setTimeout(function() {
+          if (typeof Modals !== "undefined" && Modals.showCharacterModal && charId) {
+            console.log("[Navigation] Opening character modal for: " + charId);
+            Modals.showCharacterModal(charId);
+          }
+        }, 600);
       }
 
       // Update progress counter if not yet flipped
