@@ -64,6 +64,16 @@ var ScreenRenderer = {
         return this.renderCtaScreen(content);
       case 'quiz':
         return this.renderQuizScreen(screen);
+      case 'interactive_modal':
+        return this.renderInteractiveModalScreen(content);
+      case 'interactive_dragdrop':
+        return this.renderDragDropScreen(content);
+      case 'interactive_choice':
+        return this.renderInteractiveChoiceScreen(content);
+      case 'interactive_result':
+        return this.renderInteractiveResultScreen(content);
+      case 'celebration':
+        return this.renderCelebrationScreen(content);
       default:
         return this.renderDefaultScreen(content);
     }
@@ -419,6 +429,197 @@ var ScreenRenderer = {
 
     nav.innerHTML = html;
     return nav;
+  },
+
+  /**
+   * Render interactive modal screen (SBI model)
+   */
+  renderInteractiveModalScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="content-left">' +
+      '<h2>' + (content.title || '') + '</h2>' +
+      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +
+      (content.intro ? '<p style="margin-bottom: 24px;">' + content.intro + '</p>' : '');
+
+    // Render blocks
+    if (content.blocks && content.blocks.length > 0) {
+      html += '<div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">';
+      for (var i = 0; i < content.blocks.length; i++) {
+        var block = content.blocks[i];
+        html += '<button class="interactive-block" style="flex: 1; min-width: 120px; padding: 20px; border-radius: 8px; border: 2px solid ' + block.borderColor + '; background: ' + block.color + '; cursor: pointer; font-weight: bold; color: ' + block.textColor + ';" data-block-id="' + block.id + '">' +
+          block.label +
+        '</button>';
+      }
+      html += '</div>';
+    }
+
+    if (content.progressText) {
+      html += '<p style="text-align: center; color: var(--brand-secondary); margin-top: 16px;">' + content.progressText + ': <strong id="progress-counter">0/' + (content.blocks ? content.blocks.length : 0) + '</strong></p>';
+    }
+
+    html += '</div>' +
+      '<div class="content-right" style="display: flex; align-items: center; justify-content: center;">' +
+        (content.image ? '<img src="' + content.image + '" alt="Content" style="max-width: 100%; height: auto;">' : '') +
+      '</div>';
+
+    card.innerHTML = html;
+    return card;
+  },
+
+  /**
+   * Render drag and drop screen
+   */
+  renderDragDropScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="dragdrop-container">' +
+      '<h2>' + (content.title || '') + '</h2>' +
+      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +
+      '<p style="margin-bottom: 24px;">' + (content.instruction || '') + '</p>' +
+      '<div style="background: ' + (content.backgroundColor || '#FFF9E6') + '; padding: 20px; border-radius: 8px; margin-bottom: 24px;">' +
+        '<h4 style="margin-bottom: 12px;">Карточки для перетаскивания:</h4>' +
+        '<div style="display: flex; gap: 12px; flex-wrap: wrap;" id="drag-cards">';
+
+    if (content.cards && content.cards.length > 0) {
+      for (var i = 0; i < content.cards.length; i++) {
+        var card_item = content.cards[i];
+        html += '<div class="drag-card" draggable="true" data-card-id="' + card_item.id + '" style="flex: 1; min-width: 120px; padding: 16px; background: white; border: 2px solid var(--brand-secondary); border-radius: 6px; cursor: move;">' +
+          card_item.content +
+        '</div>';
+      }
+    }
+
+    html += '</div></div>' +
+      '<div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;" id="drop-slots">';
+
+    if (content.slots && content.slots.length > 0) {
+      for (var j = 0; j < content.slots.length; j++) {
+        var slot = content.slots[j];
+        html += '<div class="drop-slot" data-slot-id="' + slot.id + '" style="flex: 1; min-width: 120px; padding: 16px; border: 3px dashed ' + slot.borderColor + '; border-radius: 6px; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; color: ' + slot.borderColor + '; font-weight: bold;">' +
+          slot.label +
+        '</div>';
+      }
+    }
+
+    html += '</div>' +
+      '<button class="btn btn-primary" data-action="check-dragdrop">Проверить</button>' +
+      '</div>';
+
+    card.innerHTML = html;
+    return card;
+  },
+
+  /**
+   * Render interactive choice screen
+   */
+  renderInteractiveChoiceScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="choice-container">' +
+      '<h2>' + (content.title || '') + '</h2>' +
+      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +
+      '<div style="background: rgba(123, 104, 238, 0.05); padding: 16px; border-radius: 8px; margin-bottom: 24px;">' +
+        '<p>' + (content.situation || '') + '</p>' +
+      '</div>' +
+      '<div style="display: flex; flex-direction: column; gap: 12px;" id="choice-buttons">';
+
+    if (content.choices && content.choices.length > 0) {
+      for (var i = 0; i < content.choices.length; i++) {
+        var choice = content.choices[i];
+        html += '<button class="choice-btn" data-choice-id="' + choice.id + '" style="padding: 16px; border: 2px solid var(--brand-secondary); border-radius: 6px; background: white; cursor: pointer; text-align: left;">' +
+          '<strong>' + choice.label + '</strong><br>' +
+          '<small>' + choice.text + '</small>' +
+        '</button>';
+      }
+    }
+
+    html += '</div>' +
+      '</div>';
+
+    card.innerHTML = html;
+    return card;
+  },
+
+  /**
+   * Render interactive result screen
+   */
+  renderInteractiveResultScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="result-container">' +
+      '<h2>' + (content.title || '') + '</h2>' +
+      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.subtitle + '</h3>' : '') +
+      '<p>Результаты вашего выбора...</p>';
+
+    if (content.accordion) {
+      html += '<div style="margin-top: 24px; border-top: 1px solid #ddd; padding-top: 16px;">' +
+        '<button class="accordion-toggle" style="width: 100%; text-align: left; padding: 12px; background: none; border: none; cursor: pointer; font-weight: bold;">' +
+          content.accordion.title +
+        '</button>' +
+        '<div class="accordion-content" style="display: none; padding: 12px 0;">' +
+          '<p>' + content.accordion.description + '</p>' +
+        '</div>' +
+      '</div>';
+    }
+
+    html += '</div>';
+
+    card.innerHTML = html;
+    return card;
+  },
+
+  /**
+   * Render celebration screen
+   */
+  renderCelebrationScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="celebration-container" style="text-align: center;">' +
+      '<div style="font-size: 72px; margin-bottom: 16px;">' + (content.emoji || '🎉') + '</div>' +
+      '<h2 style="color: var(--brand-primary); margin-bottom: 8px;">' + (content.title || '') + '</h2>';
+
+    if (content.xpGained) {
+      html += '<div style="background: rgba(123, 104, 238, 0.1); padding: 16px; border-radius: 8px; margin-bottom: 24px;">' +
+        '<h3 style="color: var(--brand-secondary); margin-bottom: 8px;">+' + content.xpGained + ' XP</h3>' +
+        '<p>Прогресс: ' + content.totalXp + '/' + content.nextLevelXp + '</p>' +
+      '</div>';
+    }
+
+    if (content.skills && content.skills.length > 0) {
+      html += '<div style="margin-bottom: 24px;">' +
+        '<h4 style="margin-bottom: 12px;">Навыки улучшены:</h4>';
+      for (var i = 0; i < content.skills.length; i++) {
+        var skill = content.skills[i];
+        html += '<div style="margin-bottom: 8px;">' +
+          skill.name + ': ' + skill.from + ' → ' + skill.to +
+        '</div>';
+      }
+      html += '</div>';
+    }
+
+    if (content.achievements && content.achievements.length > 0) {
+      html += '<div style="margin-bottom: 24px;">' +
+        '<h4 style="margin-bottom: 12px;">Достижения:</h4>';
+      for (var j = 0; j < content.achievements.length; j++) {
+        var achievement = content.achievements[j];
+        html += '<div style="padding: 12px; background: rgba(76, 175, 80, 0.1); border-radius: 6px; margin-bottom: 8px;">' +
+          achievement.icon + ' <strong>' + achievement.name + '</strong><br>' +
+          '<small>' + achievement.description + '</small>' +
+        '</div>';
+      }
+      html += '</div>';
+    }
+
+    html += '</div>';
+
+    card.innerHTML = html;
+    return card;
   },
 
   /**
