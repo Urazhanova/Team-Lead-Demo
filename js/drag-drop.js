@@ -77,12 +77,16 @@ var DragDrop = {
   handleDragStart: function(e, card) {
     this.draggedElement = card;
     var cardId = card.getAttribute("data-card-id");
-    e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData("text/html", card.innerHTML);
+
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/html", card.innerHTML);
+    }
 
     // Visual feedback
     card.style.opacity = "0.5";
     card.style.transform = "scale(1.05)";
+    card.style.zIndex = "1000";
 
     console.log("[DragDrop] Started dragging card: " + cardId);
   },
@@ -95,6 +99,7 @@ var DragDrop = {
     if (!this.draggedElement || this.draggedElement === card) {
       card.style.opacity = "1";
       card.style.transform = "scale(1)";
+      card.style.zIndex = "auto";
     }
   },
 
