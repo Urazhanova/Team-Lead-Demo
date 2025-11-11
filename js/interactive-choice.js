@@ -31,11 +31,18 @@ var InteractiveChoice = {
     var allCards = document.querySelectorAll(".card.card-content");
     this.currentChoiceData = null;
 
-    // Find the VISIBLE choice card
+    console.log("[InteractiveChoice] Looking for choice data in " + allCards.length + " cards");
+
+    // Find the VISIBLE choice card (not .hidden)
     for (var i = 0; i < allCards.length; i++) {
-      if (!allCards[i].classList.contains("hidden") && allCards[i].__interactiveChoiceData) {
+      var isHidden = allCards[i].classList.contains("hidden");
+      var hasData = !!allCards[i].__interactiveChoiceData;
+
+      console.log("[InteractiveChoice] Card " + i + ": hidden=" + isHidden + ", hasData=" + hasData);
+
+      if (!isHidden && hasData) {
         this.currentChoiceData = allCards[i].__interactiveChoiceData;
-        console.log("[InteractiveChoice] Extracted choice data from visible card");
+        console.log("[InteractiveChoice] Extracted choice data from visible card " + i);
         console.log("[InteractiveChoice] Title:", this.currentChoiceData.title);
         break;
       }
