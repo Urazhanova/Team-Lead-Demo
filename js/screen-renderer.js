@@ -333,6 +333,15 @@ var ScreenRenderer = {
       html += '</ul>';
     }
 
+    // Add CTA button if provided
+    if (content.buttonText) {
+      html += '<div style="margin-top: var(--space-xl); display: flex; gap: var(--space-md);">' +
+        '<button class="btn btn-primary" data-action="cta-button" style="flex: 1;">' +
+          content.buttonText +
+        '</button>' +
+      '</div>';
+    }
+
     html += '</div>' +
       '<div class="content-right" style="display: flex; align-items: center; justify-content: center;">' +
         (content.image ? '<img src="' + content.image + '" alt="CTA" style="width: 100%; max-width: 400px; height: auto; border-radius: var(--radius-lg);" loading="lazy">' : '<div style="text-align: center;"><div style="font-size: 96px; margin-bottom: var(--space-lg);">🚀</div></div>') +

@@ -187,6 +187,11 @@ var Navigation = {
             Quiz.checkAnswer(quizContainer);
           }
         }
+      } else if (action === "cta-button") {
+        // CTA button - move to next lesson
+        console.log("[Navigation] CTA button clicked - loading next lesson");
+        var nextLessonId = self.currentLessonId + 1;
+        self.loadLessonScreens(nextLessonId);
       }
     });
   },
