@@ -147,24 +147,15 @@ var Modals = {
       self.closeModal(modal);
     };
 
-    // Bind close handlers after DOM is ready
-    setTimeout(function() {
-      var closeBtn = modal.querySelector(".modal-close");
-      var confirmBtn = modal.querySelector(".btn-primary");
-
-      if (closeBtn) {
-        closeBtn.addEventListener("click", closeHandler);
+    // Use event delegation on modal to handle all close actions
+    modal.addEventListener("click", function(e) {
+      // Close on X button or "Понятно" button
+      if (e.target.classList.contains("modal-close") ||
+          e.target.classList.contains("btn-primary") ||
+          e.target === modal) {
+        closeHandler(e);
       }
-      if (confirmBtn) {
-        confirmBtn.addEventListener("click", closeHandler);
-      }
-
-      modal.addEventListener("click", function(e) {
-        if (e.target === modal) {
-          closeHandler();
-        }
-      });
-    }, 50);
+    });
   },
 
   /**
