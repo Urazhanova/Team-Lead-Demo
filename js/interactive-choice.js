@@ -8,11 +8,25 @@ var InteractiveChoice = {
   currentScreen: null,
   feedbackShowing: false,  // Flag to prevent multiple feedbacks
   currentChoiceData: null,  // Store current screen's choice data
+  lastInitializedScreenId: null,  // Track which screen was last initialized
 
   /**
    * Initialize choice handlers
    */
   init: function() {
+    // Get current visible screen
+    var visibleScreen = document.querySelector(".screen:not(.hidden)");
+    var currentScreenId = visibleScreen ? visibleScreen.id : null;
+
+    // Skip if we already initialized for this screen
+    if (currentScreenId && currentScreenId === this.lastInitializedScreenId) {
+      console.log("[InteractiveChoice] Already initialized for screen " + currentScreenId + ", skipping re-initialization");
+      return;
+    }
+
+    this.lastInitializedScreenId = currentScreenId;
+    console.log("[InteractiveChoice] Initializing for screen: " + currentScreenId);
+
     // Reset ALL data for new screen
     this.feedbackShowing = false;
     this.currentChoiceData = null;
