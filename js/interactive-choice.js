@@ -152,8 +152,15 @@ var InteractiveChoice = {
         // Mark that we're showing feedback to prevent duplicates
         self.feedbackShowing = true;
 
-        // Get choice data and show feedback modal
-        self.showChoiceFeedback(choiceId);
+        // Navigate to next screen (feedback screen) after brief delay to show selection
+        setTimeout(function() {
+          if (typeof Navigation !== "undefined" && Navigation.nextScreen) {
+            console.log("[InteractiveChoice] Navigating to next screen for feedback");
+            Navigation.nextScreen();
+          } else {
+            console.warn("[InteractiveChoice] Navigation module not available");
+          }
+        }, 500);
 
         console.log("[InteractiveChoice] Button styled as selected");
       });
@@ -181,7 +188,8 @@ var InteractiveChoice = {
     var choices = this.currentChoiceData.choices || [];
 
     for (var j = 0; j < choices.length; j++) {
-      if (choices[j].id === choiceId) {
+      // Convert both to string for comparison since data attributes are strings
+      if (String(choices[j].id) === String(choiceId)) {
         choiceData = choices[j];
         console.log("[InteractiveChoice] Found choice data for id: " + choiceId);
         break;
