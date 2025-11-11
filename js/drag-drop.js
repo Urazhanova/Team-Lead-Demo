@@ -451,20 +451,21 @@ document.addEventListener("DOMContentLoaded", function() {
   setTimeout(function() {
     console.log("[DragDrop] Initializing on DOMContentLoaded");
     DragDrop.init();
-  }, 500);
+  }, 800);
 });
 
 // Re-initialize when new screens are loaded
 if (typeof Navigation !== 'undefined') {
   var originalNavigationShowScreen = Navigation.showScreen;
   Navigation.showScreen = function(index, animate) {
+    console.log("[DragDrop] Screen change detected, scheduling re-initialization");
     originalNavigationShowScreen.call(this, index, animate);
 
     // Re-initialize drag-drop for new screen after content is rendered
     setTimeout(function() {
       console.log("[DragDrop] Re-initializing after screen change");
       DragDrop.init();
-    }, 300);
+    }, 500);
   };
 }
 
