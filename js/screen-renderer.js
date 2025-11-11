@@ -455,8 +455,9 @@ var ScreenRenderer = {
         if (question.options && question.options.length > 0) {
           for (var i = 0; i < question.options.length; i++) {
             var option = question.options[i];
+            var isCorrect = (i === question.correct);
             html += '<label class="answer-option" style="display: flex; align-items: center; cursor: pointer; padding: 8px 0;">' +
-              '<input type="radio" name="' + questionId + '" value="' + i + '" data-correct="' + option.correct + '" style="margin-right: 8px; cursor: pointer;">' +
+              '<input type="radio" name="' + questionId + '" value="' + i + '" data-correct="' + isCorrect + '" style="margin-right: 8px; cursor: pointer;">' +
               '<span>' + option + '</span>' +
               '</label>';
           }
