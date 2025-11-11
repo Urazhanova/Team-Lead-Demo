@@ -79,7 +79,7 @@ var InteractiveChoice = {
 
     // Check if this card has choice data
     if (!card.__interactiveChoiceData) {
-      console.warn("[InteractiveChoice] Card in visible screen does not have choice data");
+      console.log("[InteractiveChoice] No choice data found on this screen (this is normal for non-choice screens)");
       return;
     }
 
