@@ -74,6 +74,12 @@ var ScreenRenderer = {
         return this.renderInteractiveResultScreen(content);
       case 'celebration':
         return this.renderCelebrationScreen(content);
+      case 'interactive_carousel':
+        return this.renderInteractiveCarouselScreen(content);
+      case 'interactive_accordion':
+        return this.renderInteractiveAccordionScreen(content);
+      case 'dialogue':
+        return this.renderDialogueScreen(content);
       default:
         return this.renderDefaultScreen(content);
     }
@@ -752,6 +758,171 @@ var ScreenRenderer = {
       '</div>';
 
     card.innerHTML = html;
+    return card;
+  },
+
+  /**
+   * Render interactive carousel screen (character cards with flip animation)
+   */
+  renderInteractiveCarouselScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="carousel-container">' +
+      '<h2>' + (content.title || '') + '</h2>' +
+      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
+      '<div style="display: flex; gap: 16px; overflow-x: auto; padding: 16px 0; margin-bottom: 24px;" class="carousel-track">';
+
+    // Render character cards
+    if (content.characters && content.characters.length > 0) {
+      for (var i = 0; i < content.characters.length; i++) {
+        var char = content.characters[i];
+        html += '<div class="carousel-card" data-char-id="' + char.id + '" style="flex: 0 0 280px; min-width: 280px; height: 380px; perspective: 1000px; cursor: pointer;">' +
+          '<div class="card-inner" style="position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d;">' +
+            // Front side
+            '<div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center;">' +
+              (char.avatar ? '<img src="' + char.avatar + '" alt="' + char.name + '" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 16px; object-fit: cover;">' : '<div style="width: 120px; height: 120px; border-radius: 50%; background: var(--neutral-200); margin-bottom: 16px;"></div>') +
+              '<h4 style="margin: 0 0 8px 0; color: var(--brand-primary); font-size: 18px;">' + char.name + '</h4>' +
+              '<p style="margin: 0; color: var(--neutral-600); font-size: 14px; text-align: center;">' + char.position + '</p>' +
+              '<div style="position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: var(--brand-secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; animation: pulse 2s infinite;">?</div>' +
+            '</div>' +
+            // Back side
+            '<div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #7B68EE 0%, #FF9800 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: space-between; color: white; overflow-y: auto;">' +
+              '<div>' +
+                '<h4 style="margin: 0 0 8px 0; font-size: 16px;">' + char.name + '</h4>' +
+                '<p style="margin: 0 0 12px 0; font-size: 12px; opacity: 0.9;">' + char.position + ', ' + (char.age || '') + ' лет</p>' +
+                (char.back && char.back.character ? '<p style="margin: 0 0 12px 0; font-size: 13px;"><strong>Характер:</strong></p><p style="margin: 0 0 12px 0; font-size: 12px;">' + char.back.character + '</p>' : '') +
+                (char.back && char.back.strengths && char.back.strengths.length ? '<p style="margin: 0 0 8px 0; font-size: 12px;"><strong>Сильные стороны:</strong></p><ul style="margin: 0 0 12px 0; padding-left: 16px;">' +
+                  char.back.strengths.map(s => '<li style="font-size: 11px; margin-bottom: 4px;">' + s + '</li>').join('') +
+                '</ul>' : '') +
+                (char.back && char.back.features ? '<p style="margin: 0 0 8px 0; font-size: 12px;"><strong>Особенности:</strong></p><p style="margin: 0; font-size: 11px;">' + char.back.features + '</p>' : '') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }
+    }
+
+    html += '</div>' +
+      '<p style="text-align: center; color: var(--brand-secondary); margin-bottom: 16px;">' + (content.progressText || 'Изучено') + ': <strong id="carousel-progress">0/' + (content.characters ? content.characters.length : 0) + '</strong></p>' +
+      '</div>';
+
+    card.innerHTML = html;
+    card.__carouselData = {
+      characters: content.characters || [],
+      progressText: content.progressText || 'Изучено'
+    };
+
+    return card;
+  },
+
+  /**
+   * Render interactive accordion screen (expandable sections)
+   */
+  renderInteractiveAccordionScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="accordion-container">' +
+      '<h2>' + (content.title || '') + '</h2>' +
+      (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
+      '<div>';
+
+    // Render accordion sections
+    if (content.sections && content.sections.length > 0) {
+      for (var s = 0; s < content.sections.length; s++) {
+        var section = content.sections[s];
+        html += '<div class="accordion-section" data-section-id="' + section.id + '" style="margin-bottom: 12px; border: 1px solid var(--neutral-200); border-radius: 8px; overflow: hidden;">' +
+          '<div class="accordion-header" style="background: var(--neutral-50); padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.2s;">' +
+            '<h4 style="margin: 0; color: var(--brand-primary); font-size: 15px; font-weight: 600;">' + (section.emoji ? section.emoji + ' ' : '') + section.title + '</h4>' +
+            '<span style="font-size: 16px; transition: transform 0.3s;" class="accordion-arrow">▼</span>' +
+          '</div>' +
+          '<div class="accordion-content" style="padding: 16px; display: none; background: white;">' +
+            '<ul style="margin: 0; padding-left: 20px;">';
+
+        if (section.items && section.items.length > 0) {
+          for (var j = 0; j < section.items.length; j++) {
+            html += '<li style="margin-bottom: 8px; color: var(--neutral-700); font-size: 14px;">' + section.items[j] + '</li>';
+          }
+        }
+
+        html += '</ul>' +
+          (section.tip ? '<p style="margin: 12px 0 0 0; padding-top: 12px; border-top: 1px solid var(--neutral-100); font-size: 13px; color: var(--brand-secondary); font-style: italic;">💡 ' + section.tip + '</p>' : '') +
+        '</div>' +
+      '</div>';
+      }
+    }
+
+    html += '</div>' +
+      '<p style="text-align: center; color: var(--brand-secondary); margin-top: 24px; margin-bottom: 16px;">Изучено секций: <strong id="accordion-progress">0/' + (content.sections ? content.sections.length : 0) + '</strong></p>' +
+      '</div>';
+
+    card.innerHTML = html;
+    card.__accordionData = {
+      sections: content.sections || []
+    };
+
+    return card;
+  },
+
+  /**
+   * Render dialogue screen (visual novel style)
+   */
+  renderDialogueScreen: function(content) {
+    var card = document.createElement('div');
+    card.className = 'card card-content';
+
+    var html = '<div class="dialogue-container">' +
+      (content.title ? '<h3 style="color: var(--brand-secondary); margin-bottom: 16px;">' + content.title + '</h3>' : '');
+
+    // Background image
+    if (content.image) {
+      html += '<div style="position: relative; background: url(' + content.image + ') center/cover; border-radius: 12px; height: 300px; margin-bottom: 24px; overflow: hidden;">';
+
+      // Character portraits overlay
+      if (content.characters) {
+        html += '<div style="position: absolute; width: 100%; height: 100%; display: flex; justify-content: space-between; align-items: flex-end; padding: 20px;">';
+
+        for (var charKey in content.characters) {
+          var character = content.characters[charKey];
+          if (character.portrait) {
+            html += '<div style="width: 100px; height: 180px; background: url(' + character.portrait + ') center/cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);"></div>';
+          }
+        }
+
+        html += '</div>';
+      }
+
+      html += '</div>';
+    }
+
+    // Dialogue content
+    html += '<div style="background: var(--neutral-50); padding: 20px; border-radius: 12px; margin-bottom: 24px;">';
+
+    if (content.dialogues && content.dialogues.length > 0) {
+      for (var d = 0; d < content.dialogues.length; d++) {
+        var dialogue = content.dialogues[d];
+
+        if (dialogue.speaker === 'system') {
+          html += '<p style="text-align: center; color: var(--neutral-600); font-style: italic; margin: 12px 0; font-size: 13px;">' + dialogue.text + '</p>';
+        } else {
+          var speakerName = dialogue.speaker === 'alex' ? 'АЛЕКС' : (dialogue.speaker === 'maria' ? 'МАРИЯ' : dialogue.speaker.toUpperCase());
+          html += '<div style="margin-bottom: 16px;">' +
+            '<strong style="color: var(--brand-primary); font-size: 13px;">' + speakerName + ':</strong>' +
+            '<p style="margin: 8px 0 0 0; color: var(--neutral-800); font-size: 14px; line-height: 1.6;">"' + dialogue.text + '"</p>' +
+          '</div>';
+        }
+      }
+    }
+
+    html += '</div>' +
+      '</div>';
+
+    card.innerHTML = html;
+    card.__dialogueData = {
+      dialogues: content.dialogues || []
+    };
+
     return card;
   },
 

@@ -201,6 +201,116 @@ var Navigation = {
         self.loadLessonScreens(nextLessonId);
       }
     });
+
+    // Bind carousel events
+    this.bindCarouselEvents();
+
+    // Bind accordion events
+    this.bindAccordionEvents();
+  },
+
+  /**
+   * Bind carousel interaction events
+   */
+  bindCarouselEvents: function() {
+    document.addEventListener("click", function(e) {
+      var carouselCard = e.target.closest(".carousel-card");
+      if (!carouselCard) return;
+
+      e.stopPropagation();
+      e.preventDefault();
+
+      // Get the carousel track and card inner
+      var cardInner = carouselCard.querySelector(".card-inner");
+      if (!cardInner) return;
+
+      // Toggle flip animation
+      var currentTransform = cardInner.style.transform || "";
+      var isFlipped = currentTransform.includes("rotateY(180deg)");
+
+      if (isFlipped) {
+        cardInner.style.transform = "";
+      } else {
+        cardInner.style.transform = "rotateY(180deg)";
+      }
+
+      // Update progress counter if not yet flipped
+      if (!isFlipped) {
+        var progressCounter = document.getElementById("carousel-progress");
+        if (progressCounter) {
+          var text = progressCounter.textContent;
+          var parts = text.split("/");
+          var current = parseInt(parts[0]) || 0;
+          var total = parseInt(parts[1]) || 5;
+
+          if (current < total) {
+            current++;
+            progressCounter.textContent = current + "/" + total;
+
+            // Mark this card as studied
+            carouselCard.setAttribute("data-studied", "true");
+
+            // If all cards are studied, show reward
+            if (current === total) {
+              console.log("[Navigation] All carousel cards studied!");
+            }
+          }
+        }
+      }
+    });
+  },
+
+  /**
+   * Bind accordion interaction events
+   */
+  bindAccordionEvents: function() {
+    document.addEventListener("click", function(e) {
+      var header = e.target.closest(".accordion-header");
+      if (!header) return;
+
+      e.stopPropagation();
+      e.preventDefault();
+
+      var section = header.closest(".accordion-section");
+      var content = section.querySelector(".accordion-content");
+      var arrow = header.querySelector(".accordion-arrow");
+
+      if (!content) return;
+
+      // Toggle visibility
+      var isOpen = content.style.display !== "none";
+
+      if (isOpen) {
+        content.style.display = "none";
+        if (arrow) arrow.style.transform = "rotate(0deg)";
+        section.setAttribute("data-open", "false");
+      } else {
+        content.style.display = "block";
+        if (arrow) arrow.style.transform = "rotate(180deg)";
+        section.setAttribute("data-open", "true");
+
+        // Update progress counter
+        var progressCounter = document.getElementById("accordion-progress");
+        if (progressCounter && !section.getAttribute("data-was-opened")) {
+          section.setAttribute("data-was-opened", "true");
+
+          var text = progressCounter.textContent;
+          var parts = text.split("/");
+          var current = parseInt(parts[0]) || 0;
+          var total = parseInt(parts[1]) || 5;
+
+          if (current < total) {
+            current++;
+            progressCounter.textContent = current + "/" + total;
+
+            // If all sections are studied, show reward
+            if (current === total) {
+              console.log("[Navigation] All accordion sections studied!");
+            }
+          }
+        }
+      }
+    });
   },
 
   /**
