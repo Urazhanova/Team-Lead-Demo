@@ -339,10 +339,14 @@ document.addEventListener("DOMContentLoaded", function() {
 // Set up MutationObserver to detect choice buttons
 if (typeof MutationObserver !== 'undefined') {
   var observer = new MutationObserver(function(mutations) {
-    var choiceButtons = document.querySelectorAll(".choice-btn");
-    if (choiceButtons.length > 0) {
-      console.log("[InteractiveChoice] Detected choice buttons via mutation");
-      InteractiveChoice.init();
+    // Only look for buttons in the currently visible screen
+    var visibleScreen = document.querySelector(".screen:not(.hidden)");
+    if (visibleScreen) {
+      var choiceButtons = visibleScreen.querySelectorAll(".choice-btn");
+      if (choiceButtons.length > 0) {
+        console.log("[InteractiveChoice] Detected choice buttons via mutation in visible screen");
+        InteractiveChoice.init();
+      }
     }
   });
 
