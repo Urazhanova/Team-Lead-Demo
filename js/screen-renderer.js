@@ -847,23 +847,11 @@ var ScreenRenderer = {
       for (var s = 0; s < content.sections.length; s++) {
         var section = content.sections[s];
         html += '<div class="accordion-section" data-section-id="' + section.id + '" style="margin-bottom: 12px; border: 1px solid var(--neutral-200); border-radius: 8px; overflow: hidden;">' +
-          '<div class="accordion-header" style="background: var(--neutral-50); padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.2s;">' +
+          '<div class="accordion-header" style="background: var(--neutral-50); padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: background 0.2s; hover: background var(--neutral-100);">' +
             '<h4 style="margin: 0; color: var(--brand-primary); font-size: 15px; font-weight: 600;">' + (section.emoji ? section.emoji + ' ' : '') + section.title + '</h4>' +
             '<span style="font-size: 16px; transition: transform 0.3s;" class="accordion-arrow">▼</span>' +
           '</div>' +
-          '<div class="accordion-content" style="padding: 16px; display: none; background: white;">' +
-            '<ul style="margin: 0; padding-left: 20px;">';
-
-        if (section.items && section.items.length > 0) {
-          for (var j = 0; j < section.items.length; j++) {
-            html += '<li style="margin-bottom: 8px; color: var(--neutral-700); font-size: 14px;">' + section.items[j] + '</li>';
-          }
-        }
-
-        html += '</ul>' +
-          (section.tip ? '<p style="margin: 12px 0 0 0; padding-top: 12px; border-top: 1px solid var(--neutral-100); font-size: 13px; color: var(--brand-secondary); font-style: italic;">💡 ' + section.tip + '</p>' : '') +
-        '</div>' +
-      '</div>';
+        '</div>';
       }
     }
 

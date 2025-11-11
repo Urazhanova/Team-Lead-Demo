@@ -300,6 +300,7 @@ var Navigation = {
    * Bind accordion interaction events
    */
   bindAccordionEvents: function() {
+    var self = this;
     document.addEventListener("click", function(e) {
       var header = e.target.closest(".accordion-header");
       if (!header) return;
@@ -308,28 +309,38 @@ var Navigation = {
       e.preventDefault();
 
       var section = header.closest(".accordion-section");
-      var content = section.querySelector(".accordion-content");
-      var arrow = header.querySelector(".accordion-arrow");
+      var sectionId = parseInt(section.getAttribute("data-section-id")) || 0;
 
-      if (!content) return;
+      // Get accordion data from the card
+      var card = section.closest(".card");
+      if (!card || !card.__accordionData) {
+        console.warn("[Navigation] No accordion data found");
+        return;
+      }
 
-      // Toggle visibility
-      var isOpen = content.style.display !== "none";
+      // Find the section data
+      var sectionData = null;
+      for (var i = 0; i < card.__accordionData.sections.length; i++) {
+        if (card.__accordionData.sections[i].id === sectionId) {
+          sectionData = card.__accordionData.sections[i];
+          break;
+        }
+      }
 
-      if (isOpen) {
-        content.style.display = "none";
-        if (arrow) arrow.style.transform = "rotate(0deg)";
-        section.setAttribute("data-open", "false");
-      } else {
-        content.style.display = "block";
-        if (arrow) arrow.style.transform = "rotate(180deg)";
-        section.setAttribute("data-open", "true");
+      if (!sectionData) {
+        console.warn("[Navigation] Section data not found for id: " + sectionId);
+        return;
+      }
 
-        // Update progress counter
+      // Show modal with section content
+      self.showAccordionModal(sectionData);
+
+      // Update progress counter (only first time)
+      if (!section.getAttribute("data-was-opened")) {
+        section.setAttribute("data-was-opened", "true");
+
         var progressCounter = document.getElementById("accordion-progress");
-        if (progressCounter && !section.getAttribute("data-was-opened")) {
-          section.setAttribute("data-was-opened", "true");
-
+        if (progressCounter) {
           var text = progressCounter.textContent;
           var parts = text.split("/");
           var current = parseInt(parts[0]) || 0;
@@ -338,13 +349,122 @@ var Navigation = {
           if (current < total) {
             current++;
             progressCounter.textContent = current + "/" + total;
+            console.log("[Navigation] Accordion progress: " + current + "/" + total);
 
-            // If all sections are studied, show reward
+            // If all sections are studied, show achievement
             if (current === total) {
               console.log("[Navigation] All accordion sections studied!");
             }
           }
         }
+      }
+    });
+  },
+
+  /**
+   * Show accordion section modal
+   */
+  showAccordionModal: function(sectionData) {
+    // Create modal overlay
+    var modal = document.createElement("div");
+    modal.className = "modal-overlay";
+    modal.style.zIndex = "10000";
+    modal.style.cursor = "auto";
+
+    // Create content container
+    var content = document.createElement("div");
+    content.className = "modal-content";
+    content.style.maxWidth = "600px";
+
+    // Create close button
+    var closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.className = "modal-close";
+    closeBtn.innerHTML = "×";
+    closeBtn.style.cssText = "position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border: none; background: none; font-size: 24px; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; z-index: 10001;";
+
+    // Create title
+    var titleEl = document.createElement("h2");
+    titleEl.innerHTML = (sectionData.emoji ? sectionData.emoji + ' ' : '') + sectionData.title;
+    titleEl.style.cssText = "color: var(--brand-primary); margin-bottom: 24px; margin-top: 20px;";
+
+    // Create items list
+    var itemsList = document.createElement("ul");
+    itemsList.style.cssText = "margin: 0 0 16px 0; padding-left: 24px;";
+
+    if (sectionData.items && sectionData.items.length > 0) {
+      for (var i = 0; i < sectionData.items.length; i++) {
+        var li = document.createElement("li");
+        li.style.cssText = "margin-bottom: 8px; color: var(--neutral-700); font-size: 14px; line-height: 1.6;";
+        li.innerHTML = sectionData.items[i];
+        itemsList.appendChild(li);
+      }
+    }
+
+    // Create tip box if available
+    var tipBox = null;
+    if (sectionData.tip) {
+      tipBox = document.createElement("div");
+      tipBox.style.cssText = "background: rgba(123, 104, 238, 0.05); padding: 16px; border-radius: 8px; border-left: 4px solid var(--brand-secondary);";
+
+      var tipText = document.createElement("p");
+      tipText.style.cssText = "margin: 0; color: var(--neutral-800); font-size: 14px; line-height: 1.6;";
+      tipText.innerHTML = "💡 <strong>Совет:</strong> " + sectionData.tip;
+      tipBox.appendChild(tipText);
+    }
+
+    // Create close button (text)
+    var closeTextBtn = document.createElement("button");
+    closeTextBtn.type = "button";
+    closeTextBtn.className = "btn btn-primary";
+    closeTextBtn.innerHTML = "Закрыть";
+    closeTextBtn.style.cssText = "width: 100%; padding: 12px 20px; border: none; border-radius: 6px; background: #163F6F; color: white; font-weight: 600; cursor: pointer; font-size: 16px; transition: background 0.3s; margin-top: 24px;";
+
+    // Assemble content
+    content.appendChild(closeBtn);
+    content.appendChild(titleEl);
+    content.appendChild(itemsList);
+    if (tipBox) {
+      content.appendChild(tipBox);
+    }
+    content.appendChild(closeTextBtn);
+
+    // Assemble modal
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    console.log("[Navigation] Accordion modal shown for section: " + sectionData.title);
+
+    // Close handler
+    var closeHandler = function(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      modal.style.opacity = "0";
+      modal.style.pointerEvents = "none";
+
+      setTimeout(function() {
+        try {
+          if (modal && modal.parentElement) {
+            modal.parentElement.removeChild(modal);
+            console.log("[Navigation] Accordion modal closed");
+          }
+        } catch (err) {
+          console.log("[Navigation] Error removing modal: " + err.message);
+        }
+      }, 200);
+    };
+
+    // Attach listeners
+    closeBtn.onclick = closeHandler;
+    closeTextBtn.onclick = closeHandler;
+
+    // Also close on overlay click
+    modal.addEventListener("click", function(e) {
+      if (e.target === modal) {
+        closeHandler();
       }
     });
   },
