@@ -201,16 +201,37 @@ var DragDrop = {
    */
   bindCheckButton: function() {
     var self = this;
+
+    // Try multiple selectors to find the check button
     var checkBtn = document.querySelector("[data-action='check-dragdrop']");
 
     console.log("[DragDrop] Looking for check button...");
+    console.log("[DragDrop] querySelector result:", !!checkBtn);
+
+    if (!checkBtn) {
+      console.log("[DragDrop] Not found with direct query, searching in visible cards...");
+      var visibleCards = document.querySelectorAll(".card:not(.hidden)");
+      console.log("[DragDrop] Found " + visibleCards.length + " visible cards");
+
+      for (var i = 0; i < visibleCards.length; i++) {
+        var btn = visibleCards[i].querySelector("[data-action='check-dragdrop']");
+        if (btn) {
+          checkBtn = btn;
+          console.log("[DragDrop] Found check button in visible card " + i);
+          break;
+        }
+      }
+    }
+
     console.log("[DragDrop] Check button found:", !!checkBtn);
 
     if (checkBtn) {
       // Remove all existing listeners by cloning and replacing
       var newCheckBtn = checkBtn.cloneNode(true);
-      checkBtn.parentNode.replaceChild(newCheckBtn, checkBtn);
-      checkBtn = newCheckBtn;
+      if (checkBtn.parentNode) {
+        checkBtn.parentNode.replaceChild(newCheckBtn, checkBtn);
+        checkBtn = newCheckBtn;
+      }
 
       checkBtn.addEventListener("click", function(e) {
         console.log("[DragDrop] Check button clicked!");
@@ -221,6 +242,7 @@ var DragDrop = {
       console.log("[DragDrop] Check button bound successfully");
     } else {
       console.error("[DragDrop] Check button NOT found!");
+      console.error("[DragDrop] Searched in all cards and queries");
     }
   },
 
