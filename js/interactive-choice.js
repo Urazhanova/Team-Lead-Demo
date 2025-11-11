@@ -30,29 +30,35 @@ var InteractiveChoice = {
    * Extract choice data from visible card
    */
   extractCurrentChoiceData: function() {
-    var allCards = document.querySelectorAll(".card.card-content");
     this.currentChoiceData = null;
 
-    console.log("[InteractiveChoice] Looking for choice data in " + allCards.length + " cards");
+    // Get the currently visible screen element
+    var visibleScreen = document.querySelector(".screen:not(.hidden)");
 
-    // Find the VISIBLE choice card (not .hidden)
-    for (var i = 0; i < allCards.length; i++) {
-      var isHidden = allCards[i].classList.contains("hidden");
-      var hasData = !!allCards[i].__interactiveChoiceData;
-
-      console.log("[InteractiveChoice] Card " + i + ": hidden=" + isHidden + ", hasData=" + hasData);
-
-      if (!isHidden && hasData) {
-        this.currentChoiceData = allCards[i].__interactiveChoiceData;
-        console.log("[InteractiveChoice] Extracted choice data from visible card " + i);
-        console.log("[InteractiveChoice] Title:", this.currentChoiceData.title);
-        break;
-      }
+    if (!visibleScreen) {
+      console.warn("[InteractiveChoice] No visible screen found");
+      return;
     }
 
-    if (!this.currentChoiceData) {
-      console.warn("[InteractiveChoice] No choice data found on this screen");
+    console.log("[InteractiveChoice] Found visible screen with id:", visibleScreen.id);
+
+    // Look for choice card only within the visible screen
+    var card = visibleScreen.querySelector(".card.card-content");
+
+    if (!card) {
+      console.warn("[InteractiveChoice] No card found in visible screen");
+      return;
     }
+
+    // Check if this card has choice data
+    if (!card.__interactiveChoiceData) {
+      console.warn("[InteractiveChoice] Card in visible screen does not have choice data");
+      return;
+    }
+
+    this.currentChoiceData = card.__interactiveChoiceData;
+    console.log("[InteractiveChoice] Extracted choice data from card in screen:", visibleScreen.id);
+    console.log("[InteractiveChoice] Title:", this.currentChoiceData.title);
   },
 
   /**
