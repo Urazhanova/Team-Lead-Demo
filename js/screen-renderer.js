@@ -276,15 +276,18 @@ var ScreenRenderer = {
     var html = '<h2>' + (content.title || '') + '</h2>' +
       (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: var(--space-lg);">' + content.subtitle + '</h3>' : '');
 
-    if (content.sections && content.sections.length > 0) {
+    // Support both 'sections' and 'rules' formats
+    var items = content.sections || content.rules || [];
+
+    if (items && items.length > 0) {
       html += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-lg); margin-top: var(--space-lg);">';
 
-      for (var i = 0; i < content.sections.length; i++) {
-        var section = content.sections[i];
+      for (var i = 0; i < items.length; i++) {
+        var item = items[i];
         html += '<div style="background: var(--neutral-50); padding: var(--space-md); border-radius: var(--radius-md); border-top: 4px solid var(--brand-accent);">' +
-          (section.icon ? '<div style="font-size: 32px; margin-bottom: var(--space-sm);">' + section.icon + '</div>' : '') +
-          '<h3 style="color: var(--brand-primary); margin-bottom: var(--space-sm); font-size: 16px;">' + section.title + '</h3>' +
-          '<p style="font-size: 14px; color: var(--neutral-700);">' + section.text + '</p>' +
+          (item.icon ? '<div style="font-size: 32px; margin-bottom: var(--space-sm);">' + item.icon + '</div>' : '') +
+          '<h3 style="color: var(--brand-primary); margin-bottom: var(--space-sm); font-size: 16px;">' + item.title + '</h3>' +
+          '<p style="font-size: 14px; color: var(--neutral-700);">' + (item.text || item.description || '') + '</p>' +
           '</div>';
       }
 
