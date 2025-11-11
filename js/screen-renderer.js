@@ -773,31 +773,32 @@ var ScreenRenderer = {
       '<div class="carousel-container" style="flex: 1;">' +
         '<h2>' + (content.title || '') + '</h2>' +
         (content.subtitle ? '<h3 style="color: var(--brand-secondary); margin-bottom: 24px;">' + content.subtitle + '</h3>' : '') +
-        '<div style="display: flex; gap: 16px; overflow-x: auto; padding: 16px 0; margin-bottom: 24px;" class="carousel-track">';
+        '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">' +
+          '<button class="carousel-prev" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--brand-secondary); color: white; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">‹</button>' +
+          '<div style="display: flex; gap: 16px; overflow-x: auto; padding: 16px 0; flex: 1; scroll-behavior: smooth;" class="carousel-track">';
 
     // Render character cards
     if (content.characters && content.characters.length > 0) {
       for (var i = 0; i < content.characters.length; i++) {
         var char = content.characters[i];
-        html += '<div class="carousel-card" data-char-id="' + char.id + '" style="flex: 0 0 280px; min-width: 280px; height: 380px; perspective: 1000px; cursor: pointer;">' +
+        html += '<div class="carousel-card" data-char-id="' + char.id + '" style="flex: 0 0 200px; min-width: 200px; height: 280px; perspective: 1000px; cursor: pointer;">' +
           '<div class="card-inner" style="position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d;">' +
             // Front side
-            '<div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center;">' +
-              (char.avatar ? '<img src="' + char.avatar + '" alt="' + char.name + '" style="width: 120px; height: 120px; border-radius: 50%; margin-bottom: 16px; object-fit: cover;">' : '<div style="width: 120px; height: 120px; border-radius: 50%; background: var(--neutral-200); margin-bottom: 16px;"></div>') +
-              '<h4 style="margin: 0 0 8px 0; color: var(--brand-primary); font-size: 18px;">' + char.name + '</h4>' +
-              '<p style="margin: 0; color: var(--neutral-600); font-size: 14px; text-align: center;">' + char.position + '</p>' +
-              '<div style="position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; background: var(--brand-secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; animation: pulse 2s infinite;">?</div>' +
+            '<div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center;">' +
+              (char.avatar ? '<img src="' + char.avatar + '" alt="' + char.name + '" style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 12px; object-fit: cover;">' : '<div style="width: 80px; height: 80px; border-radius: 50%; background: var(--neutral-200); margin-bottom: 12px;"></div>') +
+              '<h4 style="margin: 0 0 4px 0; color: var(--brand-primary); font-size: 14px; text-align: center;">' + char.name + '</h4>' +
+              '<p style="margin: 0; color: var(--neutral-600); font-size: 12px; text-align: center;">' + char.position + '</p>' +
+              '<div style="position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--brand-secondary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; animation: pulse 2s infinite; font-size: 14px;">?</div>' +
             '</div>' +
             // Back side
-            '<div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #7B68EE 0%, #FF9800 100%); border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: space-between; color: white; overflow-y: auto;">' +
+            '<div style="position: absolute; width: 100%; height: 100%; backface-visibility: hidden; background: linear-gradient(135deg, #7B68EE 0%, #FF9800 100%); border-radius: 12px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: space-between; color: white; overflow-y: auto; font-size: 11px;">' +
               '<div>' +
-                '<h4 style="margin: 0 0 8px 0; font-size: 16px;">' + char.name + '</h4>' +
-                '<p style="margin: 0 0 12px 0; font-size: 12px; opacity: 0.9;">' + char.position + ', ' + (char.age || '') + ' лет</p>' +
-                (char.back && char.back.character ? '<p style="margin: 0 0 12px 0; font-size: 13px;"><strong>Характер:</strong></p><p style="margin: 0 0 12px 0; font-size: 12px;">' + char.back.character + '</p>' : '') +
-                (char.back && char.back.strengths && char.back.strengths.length ? '<p style="margin: 0 0 8px 0; font-size: 12px;"><strong>Сильные стороны:</strong></p><ul style="margin: 0 0 12px 0; padding-left: 16px;">' +
-                  char.back.strengths.map(s => '<li style="font-size: 11px; margin-bottom: 4px;">' + s + '</li>').join('') +
+                '<h4 style="margin: 0 0 4px 0; font-size: 13px;">' + char.name + '</h4>' +
+                '<p style="margin: 0 0 6px 0; font-size: 10px; opacity: 0.9;">' + char.position + ', ' + (char.age || '') + ' лет</p>' +
+                (char.back && char.back.character ? '<p style="margin: 0 0 6px 0; font-size: 10px;"><strong>Характер:</strong> ' + char.back.character + '</p>' : '') +
+                (char.back && char.back.strengths && char.back.strengths.length ? '<p style="margin: 0 0 4px 0; font-size: 10px;"><strong>Сильные:</strong></p><ul style="margin: 0; padding-left: 12px; font-size: 9px;">' +
+                  char.back.strengths.map(s => '<li style="margin-bottom: 2px;">' + s + '</li>').join('') +
                 '</ul>' : '') +
-                (char.back && char.back.features ? '<p style="margin: 0 0 8px 0; font-size: 12px;"><strong>Особенности:</strong></p><p style="margin: 0; font-size: 11px;">' + char.back.features + '</p>' : '') +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -806,7 +807,9 @@ var ScreenRenderer = {
     }
 
     html += '</div>' +
-      '<p style="text-align: center; color: var(--brand-secondary); margin-bottom: 16px;">' + (content.progressText || 'Изучено') + ': <strong id="carousel-progress">0/' + (content.characters ? content.characters.length : 0) + '</strong></p>' +
+          '<button class="carousel-next" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: var(--brand-secondary); color: white; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center;">›</button>' +
+        '</div>' +
+        '<p style="text-align: center; color: var(--brand-secondary); margin-bottom: 16px;">' + (content.progressText || 'Изучено') + ': <strong id="carousel-progress">0/' + (content.characters ? content.characters.length : 0) + '</strong></p>' +
       '</div>';
 
     // Right column: Image (if provided)

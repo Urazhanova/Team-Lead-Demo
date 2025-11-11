@@ -213,6 +213,7 @@ var Navigation = {
    * Bind carousel interaction events
    */
   bindCarouselEvents: function() {
+    // Handle card flip and modal opening
     document.addEventListener("click", function(e) {
       var carouselCard = e.target.closest(".carousel-card");
       if (!carouselCard) return;
@@ -256,6 +257,28 @@ var Navigation = {
             }
           }
         }
+      }
+    });
+
+    // Handle carousel scroll buttons
+    document.addEventListener("click", function(e) {
+      var scrollBtn = e.target.closest(".carousel-prev, .carousel-next");
+      if (!scrollBtn) return;
+
+      e.stopPropagation();
+      e.preventDefault();
+
+      var container = scrollBtn.closest(".carousel-container");
+      if (!container) return;
+
+      var track = container.querySelector(".carousel-track");
+      if (!track) return;
+
+      var scrollAmount = 200;
+      if (scrollBtn.classList.contains("carousel-prev")) {
+        track.scrollLeft -= scrollAmount;
+      } else {
+        track.scrollLeft += scrollAmount;
       }
     });
   },
