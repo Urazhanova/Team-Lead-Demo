@@ -428,26 +428,70 @@ var ScreenRenderer = {
 
     var content = screen.content || screen;
 
-    var html = '<div class="quiz-container">' +
-      '<h3 class="quiz-question">' + (content.question || '') + '</h3>' +
-      '<div class="quiz-options">';
+    var html = '<div class="quiz-container">';
 
-    if (content.options && content.options.length > 0) {
-      for (var i = 0; i < content.options.length; i++) {
-        var option = content.options[i];
-        html += '<label class="answer-option">' +
-          '<input type="radio" name="quiz-' + screen.id + '" value="' + option.id + '" data-correct="' + option.correct + '">' +
-          '<span>' + option.text + '</span>' +
-          '</label>';
-      }
+    // Add title if present
+    if (content.title) {
+      html += '<h2 style="margin-bottom: var(--space-lg); color: var(--brand-primary);">' + content.title + '</h2>';
     }
 
-    html += '</div>' +
-      '<button class="btn btn-primary mt-6" data-action="check" aria-label="Проверить ответ">' +
+    // Check if this is a multi-question quiz or single question
+    var questions = content.questions || [];
+
+    if (questions.length > 0) {
+      // Multi-question quiz format
+      html += '<div style="display: flex; flex-direction: column; gap: var(--space-lg);">';
+
+      for (var q = 0; q < questions.length; q++) {
+        var question = questions[q];
+        var questionId = 'quiz-' + screen.id + '-q' + question.id;
+
+        html += '<div style="padding: var(--space-md); background: var(--neutral-50); border-radius: var(--radius-md); border-left: 4px solid var(--brand-accent);">' +
+          '<h4 style="margin-top: 0; margin-bottom: var(--space-md); color: var(--brand-primary);">' +
+            (q + 1) + '. ' + question.question +
+          '</h4>' +
+          '<div class="quiz-options" style="display: flex; flex-direction: column; gap: 12px;">';
+
+        if (question.options && question.options.length > 0) {
+          for (var i = 0; i < question.options.length; i++) {
+            var option = question.options[i];
+            html += '<label class="answer-option" style="display: flex; align-items: center; cursor: pointer; padding: 8px 0;">' +
+              '<input type="radio" name="' + questionId + '" value="' + i + '" data-correct="' + option.correct + '" style="margin-right: 8px; cursor: pointer;">' +
+              '<span>' + option + '</span>' +
+              '</label>';
+          }
+        }
+
+        html += '</div></div>';
+      }
+
+      html += '</div>';
+
+      html += '<button class="btn btn-primary" data-action="check" style="width: 100%; margin-top: var(--space-lg);" aria-label="Проверить ответ">' +
         'Проверить ответ' +
-      '</button>' +
-      '<div class="feedback-container"></div>' +
-      '</div>';
+      '</button>';
+    } else {
+      // Old single-question format (for backwards compatibility)
+      html += '<h3 class="quiz-question">' + (content.question || '') + '</h3>' +
+        '<div class="quiz-options">';
+
+      if (content.options && content.options.length > 0) {
+        for (var i = 0; i < content.options.length; i++) {
+          var option = content.options[i];
+          html += '<label class="answer-option">' +
+            '<input type="radio" name="quiz-' + screen.id + '" value="' + option.id + '" data-correct="' + option.correct + '">' +
+            '<span>' + option.text + '</span>' +
+            '</label>';
+        }
+      }
+
+      html += '</div>' +
+        '<button class="btn btn-primary mt-6" data-action="check" aria-label="Проверить ответ">' +
+          'Проверить ответ' +
+        '</button>';
+    }
+
+    html += '<div class="feedback-container"></div></div>';
 
     card.innerHTML = html;
     return card;
