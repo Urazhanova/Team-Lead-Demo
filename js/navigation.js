@@ -631,6 +631,9 @@ var Navigation = {
    * Update UI elements
    */
   updateUI: function() {
+    // Scroll to top of page on screen change
+    window.scrollTo(0, 0);
+
     // Update progress bar
     var progress = ((this.currentScreenIndex + 1) / this.screens.length) * 100;
     var progressBar = document.getElementById("globalProgress");
