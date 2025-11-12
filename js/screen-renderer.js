@@ -752,6 +752,15 @@ var ScreenRenderer = {
       html += '</div>';
     }
 
+    // CTA Button for next lesson
+    if (content.ctaButton) {
+      html += '<div style="margin-top: var(--space-xl);">' +
+        '<button class="btn btn-primary" data-action="' + content.ctaButton.action + '" style="width: 100%; padding: 12px 20px; font-size: 16px; font-weight: 600;">' +
+          content.ctaButton.text +
+        '</button>' +
+      '</div>';
+    }
+
     html += '</div>' +
       '<div class="content-right" style="display: flex; align-items: flex-start; justify-content: center;">' +
         (content.image ? '<img src="' + content.image + '" alt="Celebration" class="character-image" loading="lazy">' : '') +

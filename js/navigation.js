@@ -66,6 +66,7 @@ var Navigation = {
 
       console.log("[Navigation] Lesson loaded: " + result.lesson.title);
       self.currentLesson = result.lesson;
+      self.currentLessonId = lessonId;
 
       var mainContent = document.getElementById("mainContent");
       if (!mainContent) {
