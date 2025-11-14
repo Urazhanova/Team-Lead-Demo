@@ -428,6 +428,8 @@ const GameLesson2D = (() => {
         const modal = document.getElementById('theory-modal-2d');
         modal.classList.remove('active');
         document.getElementById('gameCanvas2D').style.display = 'block';
+        // Refresh side panel to show "✓ прочитано" status
+        updateSidePanel();
     }
 
     // ============================================
@@ -755,7 +757,7 @@ const GameLesson2D = (() => {
                     return `
                         <div class="game-2d-theory-button-item">
                             <button class="game-2d-theory-button ${isRead ? 'game-2d-theory-read' : ''}"
-                                    onclick="GameLesson2D.showTheoryModal('${blockId}')">
+                                    data-theory-id="${blockId}">
                                 <span class="game-2d-theory-icon">${block.icon}</span>
                                 <span class="game-2d-theory-title">${block.title}</span>
                                 ${isRead ? '<span class="game-2d-theory-status">✓ прочитано</span>' : '<span class="game-2d-theory-status">+${block.reward} XP</span>'}
@@ -777,6 +779,24 @@ const GameLesson2D = (() => {
         `;
 
         panel.innerHTML = html;
+
+        // Attach event listeners to theory buttons
+        attachTheoryButtonListeners();
+    }
+
+    function attachTheoryButtonListeners() {
+        const panel = document.getElementById('side-panel');
+        if (!panel) return;
+
+        const theoryButtons = panel.querySelectorAll('.game-2d-theory-button');
+        theoryButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const blockId = button.dataset.theoryId;
+                console.log('[Game2D] Theory button clicked, blockId:', blockId);
+                showTheoryModal(blockId);
+            });
+        });
     }
 
     // ============================================
