@@ -231,9 +231,9 @@ const GameData = {
         igor: {
             name: 'Игорь',
             role: 'QA Engineer',
-            defaultZone: 'work_area',
-            startX: 550,
-            startY: 400,
+            defaultZone: 'hallway',
+            startX: 370,
+            startY: 310,
             canMove: false,
             canInteract: true,
             state: 'working',
