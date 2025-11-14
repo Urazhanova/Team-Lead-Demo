@@ -1,0 +1,326 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                                                                            ║
+║         ПЛАН РЕАЛИЗАЦИИ УРОКА 3: Планирование и Приоритизация            ║
+║                                                                            ║
+║                         Team Lead Academy Course                           ║
+║                                                                            ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+
+📊 СТАТУС ПРОЕКТА
+═══════════════════════════════════════════════════════════════════════════
+
+✅ ЗАВЕРШЕНО (Фаза 0):
+   ✓ Архитектура game-type lessons
+   ✓ Модуль GameContent создан
+   ✓ Поддержка в navigation.js добавлена
+   ✓ Lesson 3 добавлен в lessons.json
+
+📍 В РАБОТЕ (Фазы 1-6):
+   ○ Расширение GameContent с game logic
+   ○ UI для игровой доски
+   ○ Drag-and-drop интеграция
+   ○ Scoring и validation логика
+   ○ Results экран
+   ○ Тестирование и доработка
+
+
+🎮 КОНЦЕПЦИЯ ИГРЫ
+═══════════════════════════════════════════════════════════════════════════
+
+📌 Тип: Sprint Planning Simulator
+🎯 Цель: Научить приоритизировать задачи и управлять ресурсами
+⏱️  Время: 15-20 минут
+🏆 Сложность: Средняя
+
+
+🎮 GAME FLOW (4 фазы)
+═══════════════════════════════════════════════════════════════════════════
+
+1️⃣  INTRO PHASE (Текущее состояние)
+    ✓ Экран введения с описанием задачи
+    ✓ Кнопка "Начать игру"
+
+2️⃣  GAME PHASE (Требуется реализация)
+    ○ Отображение 10 доступных задач
+    ○ Выбор задач (click или drag-drop)
+    ○ Счётчик пропускной способности (используется/максимум)
+    ○ Кнопка "Завершить спринт"
+
+3️⃣  REVIEW PHASE (Требуется реализация)
+    ○ Валидация выбранных задач
+    ○ Расчёт score на основе 4 критериев
+    ○ Генерация персонализированного feedback
+    ○ Опция переделать или продолжить
+
+4️⃣  RESULTS PHASE (Требуется реализация)
+    ○ Отображение финального score (0-100)
+    ○ Анализ выбора
+    ○ Обновление skill bars
+    ○ Unlock achievements
+    ○ Award XP
+    ○ Кнопка следующего урока
+
+
+📋 ДАННЫЕ ИГРЫ
+═══════════════════════════════════════════════════════════════════════════
+
+🔴 10 ЗАДАЧ в файле data/sprint-tasks.json:
+
+  Пример структуры:
+  {
+    "id": "task_1",
+    "title": "Implement authentication",
+    "points": 8,
+    "priority": "critical",
+    "category": "feature",
+    "reason": "🔴 CRITICAL: Required for security"
+  }
+
+📊 МЕТРИКИ:
+  • Пропускная способность: 40 story points
+  • Каждая задача: 3-10 points
+  • Категории: feature, bugfix, technical_debt
+  • Приоритеты: critical, important, medium, low
+
+
+⚙️ ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ
+═══════════════════════════════════════════════════════════════════════════
+
+Архитектура:
+  • Модуль: js/game-content.js (расширить с 150 до ~500 строк)
+  • Данные: data/sprint-tasks.json (новый файл)
+  • Конфиг: data/lessons.json (обновить lesson 3)
+  • Стили: css/components.css (добавить game styles)
+
+Интеграции:
+  • Navigation: Уже поддерживает type="game"
+  • SCORM: Логирование через SCORM.addInteraction()
+  • Skills: Обновление через achievement system
+  • UI: Использование существующих CSS переменных
+
+
+🏆 КРИТЕРИИ ОЦЕНКИ (Score 0-100)
+═══════════════════════════════════════════════════════════════════════════
+
+Каждый критерий = 25%:
+
+  ✓ Включить все критические задачи     → +25%
+  ✓ Включить техническую работу         → +25%
+  ✓ Хороший баланс между типами задач   → +25%
+  ✓ Не превышить пропускную способность → +25%
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  = 0-100 points (в зависимости от выбора)
+
+
+📈 ВРЕМЕННАЯ ОЦЕНКА
+═══════════════════════════════════════════════════════════════════════════
+
+Фаза 1: Game State Management        1-2 часа
+        ├─ Расширить GameContent
+        ├─ Создать game state object
+        └─ Методы selectTask, removeTask, validate
+
+Фаза 2: Game Board UI                2-3 часа
+        ├─ Рендеринг доступных задач
+        ├─ Рендеринг sprint plan
+        ├─ Capacity meter
+        └─ CSS стили
+
+Фаза 3: Drag-and-Drop                2 часа
+        ├─ Drag events handlers
+        ├─ Mobile touch support
+        └─ Visual feedback
+
+Фаза 4: Scoring & Validation         1.5 часа
+        ├─ validateSelection()
+        ├─ calculateScore()
+        ├─ generateFeedback()
+        └─ logToSCORM()
+
+Фаза 5: Results Screen               1.5 часа
+        ├─ Score display
+        ├─ Analysis
+        ├─ Skill updates
+        └─ Achievement unlock
+
+Фаза 6: Testing & Integration        2 часа
+        ├─ Unit testing
+        ├─ Integration testing
+        ├─ Mobile testing
+        └─ SCORM verification
+
+                                    ─────────
+ИТОГО:                              10-13 часов
+
+
+✅ CHECKLIST РЕАЛИЗАЦИИ
+═══════════════════════════════════════════════════════════════════════════
+
+ФАЗА 1: Game State
+  ☐ Расширить GameContent.gameState object
+  ☐ Добавить методы selectTask(), removeTask()
+  ☐ Добавить initializeGameData()
+  ☐ Добавить validateSelection()
+  ☐ Протестировать состояние в консоли
+
+ФАЗА 2: Game Board UI
+  ☐ Создать renderGameBoard() метод
+  ☐ Отрендерить доступные задачи
+  ☐ Отрендерить sprint plan
+  ☐ Добавить capacity meter
+  ☐ updateSelectedTasksList()
+  ☐ updateCapacityMeter()
+  ☐ CSS стили для доски
+  ☐ Тестировать на desktop & mobile
+
+ФАЗА 3: Drag-and-Drop
+  ☐ bindGameEvents() для drag
+  ☐ handleDragStart, Over, Drop
+  ☐ Touch events (для мобилей)
+  ☐ Visual feedback при drag
+  ☐ Валидация при drop
+
+ФАЗА 4: Scoring
+  ☐ calculateScore() логика
+  ☐ hasCriticalTasks()
+  ☐ hasTechDebtTasks()
+  ☐ hasGoodBalance()
+  ☐ generateFeedback() для разных scores
+  ☐ logToSCORM()
+
+ФАЗА 5: Results
+  ☐ showResults() экран
+  ☐ Score display с анимацией
+  ☐ Analysis таблица
+  ☐ Skill progression bars
+  ☐ Achievement unlock logic
+  ☐ XP calculation
+  ☐ Retry button
+  ☐ Next lesson button
+
+ФАЗА 6: Testing
+  ☐ No JavaScript errors
+  ☐ All features working on desktop
+  ☐ Mobile responsive
+  ☐ SCORM logging works
+  ☐ Accessibility check
+  ☐ Performance < 2s load
+  ☐ Achievement unlocks correctly
+  ☐ XP awarded correctly
+
+
+📁 ФАЙЛЫ ДЛЯ СОЗДАНИЯ/ИЗМЕНЕНИЯ
+═══════════════════════════════════════════════════════════════════════════
+
+Создать новые файлы:
+  ✓ data/sprint-tasks.json          (220 строк)
+
+Изменить существующие файлы:
+  ✓ js/game-content.js              (+350 строк в gameContent)
+  ✓ data/lessons.json               (+150 строк для lesson 3)
+  ✓ css/components.css              (+300 строк для стилей)
+
+Файлы, которые НЕ менять:
+  ✓ js/navigation.js                (уже поддерживает game type)
+  ✓ index.html                      (уже загружает game-content.js)
+  ✓ js/screen-renderer.js           (не нужна)
+
+
+🔗 ПРИМЕРЫ И ДОКУМЕНТАЦИЯ
+═══════════════════════════════════════════════════════════════════════════
+
+Смотрите подробные примеры в файлах:
+
+  📄 ПЛАН_РАЗРАБОТКИ_УРОКА_3.md
+     ├─ Полная концепция игры
+     ├─ 4 фазы реализации
+     ├─ Структура данных
+     ├─ Learning outcomes
+     └─ Future enhancements
+
+  📄 АРХИТЕКТУРА_УРОКА_3.md
+     ├─ Data flow диаграммы
+     ├─ State machine
+     ├─ Component breakdown
+     ├─ Integration points
+     └─ Testing checklist
+
+  📄 КОД_ПРИМЕРЫ_УРОКА_3.md
+     ├─ Полный код game-content.js (~800 строк)
+     ├─ sprint-tasks.json пример
+     ├─ CSS стили
+     ├─ lessons.json обновления
+     └─ Использование в navigation.js
+
+
+🚀 БЫСТРЫЙ СТАРТ
+═══════════════════════════════════════════════════════════════════════════
+
+Рекомендуемый порядок работы:
+
+День 1:
+  1. Прочитать ПЛАН_РАЗРАБОТКИ_УРОКА_3.md
+  2. Прочитать АРХИТЕКТУРА_УРОКА_3.md
+  3. Реализовать Фазу 1 (Game State Management)
+
+День 2:
+  1. Реализовать Фазу 2 (Game Board UI)
+  2. Реализовать Фазу 3 (Drag-and-Drop)
+  3. Протестировать на desktop
+
+День 3:
+  1. Реализовать Фазу 4 (Scoring)
+  2. Реализовать Фазу 5 (Results)
+  3. Полное тестирование (Фаза 6)
+
+
+📞 ПОЛЕЗНАЯ ИНФОРМАЦИЯ
+═══════════════════════════════════════════════════════════════════════════
+
+Существующие паттерны для переиспользования:
+  • Quiz scoring logic    → js/quiz.js
+  • Drag-drop handling    → js/drag-drop.js
+  • Modal dialogs         → js/modals.js
+  • Progress tracking     → Navigation.js
+  • SCORM integration     → js/scorm-api.js
+  • Celebration screen    → screen-renderer.js (type: celebration)
+
+CSS переменные:
+  --brand-primary         (#163F6F)
+  --brand-secondary       (#7B68EE)
+  --brand-accent          (#FF9800)
+  --neutral-50 до 900     (grayscale)
+
+Модули, которые уже загружены:
+  • GameContent (js/game-content.js)
+  • Navigation (js/navigation.js)
+  • Data (js/data.js)
+  • SCORM (js/scorm-api.js)
+
+
+🎯 ОЖИДАЕМЫЕ РЕЗУЛЬТАТЫ
+═══════════════════════════════════════════════════════════════════════════
+
+По завершении Урока 3 пользователь будет:
+
+✓ Понимать как приоритизировать задачи на основе business value
+✓ Уметь управлять пропускной способностью команды
+✓ Видеть важность баланса между feature и technical debt
+✓ Принимать компромиссные решения с ограниченными ресурсами
+✓ Планировать спринт с учётом всех факторов
+
+Система будет:
+✓ Рассчитывать score на основе выбора (0-100)
+✓ Давать персонализированную обратную связь
+✓ Обновлять skill progression
+✓ Unlock achievement
+✓ Логировать в SCORM
+✓ Award XP points
+
+
+═══════════════════════════════════════════════════════════════════════════
+
+                    Готовы начать реализацию? 🚀
+
+═══════════════════════════════════════════════════════════════════════════
