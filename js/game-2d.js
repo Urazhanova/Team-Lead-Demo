@@ -1074,6 +1074,8 @@ const GameLesson2D = (() => {
                     'skill_people_management': 'Навык управления людьми',
                     'skill_project_management': 'Навык управления проектами',
                     'estimation_accuracy': 'Точность оценок',
+                    'strategic_value': 'Стратегическая ценность',
+                    'sprint_quality': 'Качество спринта',
                     'political_capital': 'Политический капитал',
                     'work_life_balance': 'Баланс жизни и работы',
                     'personal_life': 'Личная жизнь',
