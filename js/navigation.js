@@ -88,7 +88,9 @@ var Navigation = {
         // Render game content directly
         GameLesson2D.render(self.currentLesson, mainContent);
         // Create a single screen wrapper for game content
+        mainContent.classList.add("screen");
         self.screens = [mainContent];
+        console.log("[Navigation] Game screens set. Total: " + self.screens.length);
         self.initializeNavigation();
         return;
       }
