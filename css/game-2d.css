@@ -503,6 +503,54 @@
   font-size: 12px;
 }
 
+/* ========== TEAM METRICS ========== */
+
+.game-2d-team-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.game-2d-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.game-2d-metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: var(--button-weight);
+}
+
+.game-2d-metric-label {
+  color: var(--neutral-white);
+}
+
+.game-2d-metric-value {
+  color: var(--success);
+  font-weight: bold;
+  min-width: 30px;
+  text-align: right;
+}
+
+.game-2d-metric-bar-bg {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(78, 204, 163, 0.3);
+  border-radius: var(--radius-sm);
+  height: 8px;
+  overflow: hidden;
+}
+
+.game-2d-metric-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4ECC A3 0%, #4ECC A3 100%);
+  border-radius: var(--radius-sm);
+  transition: width 0.3s ease;
+}
+
 /* ========== MENU BUTTONS ========== */
 
 .game-2d-menu-button {

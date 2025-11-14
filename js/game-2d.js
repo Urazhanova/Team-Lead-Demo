@@ -955,6 +955,55 @@ const GameLesson2D = (() => {
         modal.classList.add('active');
     }
 
+    function getTeamMetricsHTML() {
+        // Main team mood metrics to display
+        const metrics = [
+            { key: 'team_satisfaction', label: 'Удовлетворение', emoji: '😊', max: 100 },
+            { key: 'team_morale', label: 'Боевой дух', emoji: '🚀', max: 100 },
+            { key: 'team_stress', label: 'Стресс', emoji: '😰', max: 100, isNegative: true },
+            { key: 'strategic_value', label: 'Стратегическая ценность', emoji: '🎯', max: 100 },
+            { key: 'sprint_quality', label: 'Качество спринта', emoji: '✨', max: 100 }
+        ];
+
+        let html = '<div class="game-2d-team-metrics">';
+
+        metrics.forEach(metric => {
+            // Get metric value from gameState.totalSkills or default to 50
+            const value = gameState.totalSkills && gameState.totalSkills[metric.key]
+                ? gameState.totalSkills[metric.key]
+                : 50;
+
+            // Clamp value between 0 and max
+            const clampedValue = Math.max(0, Math.min(metric.max, value));
+            const percentage = (clampedValue / metric.max) * 100;
+
+            // Determine color based on value
+            let barColor = '#4ECC A3'; // success green
+            if (metric.isNegative) {
+                // For negative metrics (stress), invert colors
+                barColor = percentage > 70 ? '#FF6B6B' : percentage > 40 ? '#FFD93D' : '#4ECC A3';
+            } else {
+                // For positive metrics, green is good
+                barColor = percentage > 70 ? '#4ECC A3' : percentage > 40 ? '#FFD93D' : '#FF6B6B';
+            }
+
+            html += `
+                <div class="game-2d-metric-item">
+                    <div class="game-2d-metric-header">
+                        <span class="game-2d-metric-label">${metric.emoji} ${metric.label}</span>
+                        <span class="game-2d-metric-value">${Math.round(clampedValue)}</span>
+                    </div>
+                    <div class="game-2d-metric-bar-bg">
+                        <div class="game-2d-metric-bar" style="width: ${percentage}%; background-color: ${barColor};"></div>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        return html;
+    }
+
     function updateSidePanel() {
         const panel = document.getElementById('side-panel');
         if (!panel) return;
@@ -993,6 +1042,11 @@ const GameLesson2D = (() => {
                 <div class="game-2d-mt-sm">Сценариев пройдено: <span id="scenarios-stat">${gameState.completedScenarios.length}</span></div>
                 <div class="game-2d-mt-sm">Блоков прочитано: <span id="theory-stat">${(gameState.theoriesRead && gameState.theoriesRead.length) || 0}</span>/5</div>
             </div>
+
+            <div class="game-2d-panel-title game-2d-mt-lg">
+                👥 СОСТОЯНИЕ КОМАНДЫ
+            </div>
+            ${getTeamMetricsHTML()}
         `;
 
         panel.innerHTML = html;
