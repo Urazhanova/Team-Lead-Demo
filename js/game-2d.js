@@ -698,6 +698,11 @@ const GameLesson2D = (() => {
             }
         });
 
+        // Debug: Check unlocked theory blocks
+        const unlockedBlocks = getUnlockedTheoryBlocks();
+        console.log('[Game2D] Unlocked theory blocks:', unlockedBlocks);
+        console.log('[Game2D] GameData.theoryBlocks exists:', !!GameData.theoryBlocks);
+
         let html = `
             <div class="game-2d-panel-title">👥 РЯДОМ</div>
             ${nearbyNPCs.length > 0
@@ -720,20 +725,23 @@ const GameLesson2D = (() => {
             <div class="game-2d-panel-title game-2d-mt-lg">
                 💡 ОБУЧЕНИЕ
             </div>
-            ${getUnlockedTheoryBlocks().map(blockId => {
-                const block = GameData.theoryBlocks[blockId];
-                const isRead = gameState.theoriesRead && gameState.theoriesRead.includes(blockId);
-                return `
-                    <div class="game-2d-theory-button-item">
-                        <button class="game-2d-theory-button ${isRead ? 'game-2d-theory-read' : ''}"
-                                onclick="GameLesson2D.showTheoryModal('${blockId}')">
-                            <span class="game-2d-theory-icon">${block.icon}</span>
-                            <span class="game-2d-theory-title">${block.title}</span>
-                            ${isRead ? '<span class="game-2d-theory-status">✓ прочитано</span>' : '<span class="game-2d-theory-status">+${block.reward} XP</span>'}
-                        </button>
-                    </div>
-                `;
-            }).join('')}
+            ${unlockedBlocks.length > 0
+                ? unlockedBlocks.map(blockId => {
+                    const block = GameData.theoryBlocks[blockId];
+                    const isRead = gameState.theoriesRead && gameState.theoriesRead.includes(blockId);
+                    return `
+                        <div class="game-2d-theory-button-item">
+                            <button class="game-2d-theory-button ${isRead ? 'game-2d-theory-read' : ''}"
+                                    onclick="GameLesson2D.showTheoryModal('${blockId}')">
+                                <span class="game-2d-theory-icon">${block.icon}</span>
+                                <span class="game-2d-theory-title">${block.title}</span>
+                                ${isRead ? '<span class="game-2d-theory-status">✓ прочитано</span>' : '<span class="game-2d-theory-status">+${block.reward} XP</span>'}
+                            </button>
+                        </div>
+                    `;
+                }).join('')
+                : '<div class="game-2d-text-muted">Обучение заблокировано</div>'
+            }
 
             <div class="game-2d-panel-title game-2d-mt-lg">
                 📊 СТАТИСТИКА
