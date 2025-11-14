@@ -1002,11 +1002,57 @@ const GameLesson2D = (() => {
                 html += `
                     <div class="game-2d-stats-box">
                         <div class="game-2d-stats-title">📊 Изменения:</div>
-                        ${Object.entries(consequence.stats).map(([key, value]) => {
-                            const sign = value > 0 ? '+' : '';
-                            const colorClass = value > 0 ? 'game-2d-stat-positive' : 'game-2d-stat-negative';
-                            return `<div class="${colorClass} game-2d-stat-value">• ${key}: ${sign}${value}</div>`;
-                        }).join('')}
+                `;
+
+                // Define stat icons and categories
+                const statIcons = {
+                    'xp': '⭐',
+                    'time_left': '⏱️',
+                    'time_cost': '⏱️',
+                    'alex_stress': '😰',
+                    'team_morale': '😊',
+                    'team_stress': '😰',
+                    'satisfaction': '😊',
+                    'motivation': '💪',
+                    'growth': '📈',
+                    'problem_managed': '✅',
+                    'risk_of_failure': '⚠️',
+                    'sprint_plan': '📋',
+                    'communication_skill': '💬',
+                    'political_capital': '🏛️',
+                    'work_life_balance': '⚖️',
+                    'personal_life': '👨‍👩‍👧‍👦',
+                    'loyalty': '💙'
+                };
+
+                Object.entries(consequence.stats).forEach(([key, value]) => {
+                    // Skip non-numeric values
+                    if (typeof value !== 'number') return;
+
+                    const sign = value > 0 ? '+' : '';
+                    const colorClass = value > 0 ? 'game-2d-stat-positive' : 'game-2d-stat-negative';
+                    const icon = statIcons[key] || '•';
+                    const displayKey = key.replace(/_/g, ' ');
+                    const absValue = Math.abs(value);
+
+                    // Create scale visualization
+                    const scaleWidth = Math.min(absValue * 5, 100); // Max 100px for scale
+                    const scaleColor = value > 0 ? '#4ecca3' : '#ff6b6b';
+
+                    html += `
+                        <div class="game-2d-stat-item">
+                            <div class="game-2d-stat-label">
+                                ${icon} <span class="game-2d-stat-name">${displayKey}</span>
+                                <span class="${colorClass}"> ${sign}${value}</span>
+                            </div>
+                            <div class="game-2d-stat-scale">
+                                <div class="game-2d-scale-bar" style="width: ${scaleWidth}px; background-color: ${scaleColor};"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `
                     </div>
                 `;
 
