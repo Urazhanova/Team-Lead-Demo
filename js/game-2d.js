@@ -59,7 +59,7 @@ const GameLesson2D = (() => {
         gameState.player = {
             x: 100,
             y: 100,
-            size: 40,
+            size: 60,
             speed: 3,
             color: GameData.npcs.alex.color,
             emoji: GameData.npcs.alex.emoji
@@ -74,8 +74,8 @@ const GameLesson2D = (() => {
                     ...npcData,
                     x: behaviorData.startX || 400,
                     y: behaviorData.startY || 300,
-                    size: 40,
-                    interactionDistance: 70,
+                    size: 60,
+                    interactionDistance: 100,
                     canInteract: false
                 };
             }
@@ -611,7 +611,7 @@ const GameLesson2D = (() => {
                     const hasImage = npc.image ? 'style="background-image: url(' + npc.image + '); background-size: cover; background-position: center;"' : '';
                     return `
                         <div class="game-2d-npc-card">
-                            ${npc.image ? `<div style="width: 100%; height: 80px; margin: -8px -8px 8px -8px; background-image: url(${npc.image}); background-size: cover; background-position: center; border-radius: 8px 8px 0 0;"></div>` : ''}
+                            ${npc.image ? `<div style="width: 100%; height: 120px; margin: -8px -8px 8px -8px; background-image: url(${npc.image}); background-size: cover; background-position: center; border-radius: 8px 8px 0 0;"></div>` : ''}
                             <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
                             <div class="game-2d-npc-card-role">${npc.role}</div>
                             <div class="game-2d-npc-card-hint">
