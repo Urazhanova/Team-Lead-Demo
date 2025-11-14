@@ -135,10 +135,8 @@ const GameLesson2D = (() => {
                     <div id="mobile-controls" class="game-2d-mobile-controls">
                         <div class="game-2d-joystick">
                             <button class="game-2d-move-btn game-2d-move-up" data-direction="up">▲</button>
-                            <div class="game-2d-move-horizontal">
-                                <button class="game-2d-move-btn game-2d-move-left" data-direction="left">◄</button>
-                                <button class="game-2d-move-btn game-2d-move-right" data-direction="right">►</button>
-                            </div>
+                            <button class="game-2d-move-btn game-2d-move-left" data-direction="left">◄</button>
+                            <button class="game-2d-move-btn game-2d-move-right" data-direction="right">►</button>
                             <button class="game-2d-move-btn game-2d-move-down" data-direction="down">▼</button>
                         </div>
                         <div class="game-2d-action-buttons">

@@ -1121,8 +1121,8 @@
 
 .game-2d-joystick {
   display: grid;
-  grid-template-columns: repeat(3, 18px);
-  grid-template-rows: repeat(3, 18px);
+  grid-template-columns: 18px 18px 18px;
+  grid-template-rows: 18px 18px 18px;
   gap: 2px;
   margin-bottom: 3px;
   justify-content: center;
@@ -1143,8 +1143,6 @@
   justify-content: center;
   width: 18px;
   height: 18px;
-  min-width: 18px;
-  min-height: 18px;
 }
 
 .game-2d-move-btn:active,
@@ -1159,21 +1157,14 @@
   grid-row: 1;
 }
 
-.game-2d-move-horizontal {
-  grid-column: 1 / 4;
+.game-2d-move-left {
+  grid-column: 1;
   grid-row: 2;
-  display: grid;
-  grid-template-columns: 18px 18px;
-  gap: 2px;
-  justify-content: center;
 }
 
-.game-2d-move-left,
 .game-2d-move-right {
-  width: 18px !important;
-  height: 18px !important;
-  min-width: 18px !important;
-  min-height: 18px !important;
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .game-2d-move-down {
