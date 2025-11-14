@@ -81,6 +81,7 @@
   border-left: 3px solid var(--brand-accent);
   padding: var(--space-lg);
   overflow-y: auto;
+  scrollbar-gutter: stable;
   color: var(--neutral-white);
   font-size: var(--body-small-size);
 }
