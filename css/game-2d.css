@@ -1106,36 +1106,36 @@
 /* ========== MOBILE CONTROLS ========== */
 
 .game-2d-mobile-controls {
-  display: none;
+  display: flex;
+  flex-direction: column;
   position: absolute;
   bottom: 10px;
-  left: 10px;
   right: 10px;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   border-radius: var(--radius-md);
-  padding: var(--space-md);
+  padding: 6px;
   z-index: 100;
 }
 
 .game-2d-joystick {
   display: grid;
-  grid-template-columns: repeat(3, 50px);
-  grid-template-rows: repeat(3, 50px);
-  gap: 4px;
-  margin-bottom: var(--space-md);
+  grid-template-columns: repeat(3, 30px);
+  grid-template-rows: repeat(3, 30px);
+  gap: 2px;
+  margin-bottom: 6px;
   justify-content: center;
 }
 
 .game-2d-move-btn {
-  background: rgba(78, 204, 163, 0.6);
-  border: 2px solid var(--success);
-  border-radius: var(--radius-md);
+  background: rgba(78, 204, 163, 0.7);
+  border: 1px solid var(--success);
+  border-radius: 4px;
   color: var(--neutral-white);
-  font-size: 20px;
+  font-size: 14px;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 8px;
+  transition: all 0.15s ease;
+  padding: 4px;
 }
 
 .game-2d-move-btn:active,
@@ -1173,20 +1173,20 @@
 
 .game-2d-action-buttons {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-sm);
+  grid-template-columns: 1fr;
+  gap: 2px;
 }
 
 .game-2d-action-btn {
-  background: rgba(255, 217, 61, 0.6);
-  border: 2px solid var(--brand-accent);
-  border-radius: var(--radius-md);
+  background: rgba(255, 217, 61, 0.7);
+  border: 1px solid var(--brand-accent);
+  border-radius: 4px;
   color: var(--neutral-900);
-  font-size: 14px;
+  font-size: 11px;
   font-weight: bold;
-  padding: var(--space-sm);
+  padding: 4px 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
 }
 
@@ -1214,23 +1214,11 @@
     grid-template-rows: 50px 1fr auto;
   }
 
-  .game-2d-mobile-controls {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    bottom: auto;
-    left: auto;
-    right: auto;
-    margin-top: var(--space-sm);
-    width: 100%;
-  }
-
   .game-2d-main {
     flex-direction: column;
   }
 
   .game-2d-canvas-wrapper {
-    position: relative;
     width: 100%;
     flex: 1;
   }
@@ -1242,16 +1230,6 @@
     overflow-y: auto;
     border-left: none;
     border-top: 1px solid rgba(78, 204, 163, 0.2);
-  }
-
-  .game-2d-joystick {
-    grid-template-columns: repeat(3, 40px);
-    grid-template-rows: repeat(3, 40px);
-  }
-
-  .game-2d-move-btn {
-    font-size: 16px;
-    padding: 6px;
   }
 }
 
