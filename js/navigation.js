@@ -80,13 +80,13 @@ var Navigation = {
 
       // Check if this is a game-type lesson
       if (self.currentLesson.type === "game") {
-        console.log("[Navigation] Game-type lesson detected. Using GameContent module.");
-        if (typeof GameContent === "undefined") {
-          console.error("[Navigation] GameContent module not available");
+        console.log("[Navigation] Game-type lesson detected. Using GameLesson2D module.");
+        if (typeof GameLesson2D === "undefined") {
+          console.error("[Navigation] GameLesson2D module not available");
           return;
         }
         // Render game content directly
-        GameContent.render(self.currentLesson, mainContent);
+        GameLesson2D.render(self.currentLesson, mainContent);
         // Create a single screen wrapper for game content
         self.screens = [mainContent];
         self.initializeNavigation();
