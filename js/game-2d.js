@@ -511,9 +511,29 @@ const GameLesson2D = (() => {
 
         const theoryContent = document.getElementById('theory-content');
         const lines = block.content.split('\n');
+
+        // Format content with project styles
         const htmlContent = lines.map(line => {
             if (!line.trim()) return '<br>';
-            return `<div class="game-2d-theory-line">${escapeHtml(line)}</div>`;
+
+            const text = escapeHtml(line);
+
+            // Apply styles to different types of lines
+            if (text.match(/^[0-9]+\./)) {
+                // Numbered lists
+                return `<div class="game-2d-theory-line game-2d-theory-numbered">${text}</div>`;
+            } else if (text.match(/^[•✓❌]/)) {
+                // Bullet points
+                return `<div class="game-2d-theory-line game-2d-theory-bullet">${text}</div>`;
+            } else if (text.match(/^[A-Z\s]+\s*[-–]/)) {
+                // Headers/titles (ALL CAPS with dash)
+                return `<div class="game-2d-theory-line game-2d-theory-title">${text}</div>`;
+            } else if (text.match(/^[🎯📊⏱️🎴🚨R\s]/)) {
+                // Section headers with emoji/letters
+                return `<div class="game-2d-theory-line game-2d-theory-section">${text}</div>`;
+            } else {
+                return `<div class="game-2d-theory-line">${text}</div>`;
+            }
         }).join('');
 
         theoryContent.innerHTML = `

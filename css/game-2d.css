@@ -1007,6 +1007,45 @@
   color: var(--success);
 }
 
+/* ========== THEORY CONTENT FORMATTING ========== */
+
+.game-2d-theory-line {
+  line-height: 1.8;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Courier New', monospace;
+  font-size: var(--body-small-size);
+  margin-bottom: 4px;
+}
+
+.game-2d-theory-numbered {
+  margin-left: 16px;
+  color: var(--success);
+  font-weight: 500;
+}
+
+.game-2d-theory-bullet {
+  margin-left: 16px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.game-2d-theory-title {
+  color: var(--brand-accent);
+  font-weight: var(--h4-weight);
+  font-size: var(--h5-size);
+  margin: var(--space-md) 0 var(--space-sm) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.game-2d-theory-section {
+  color: var(--success);
+  font-weight: 600;
+  margin: var(--space-sm) 0;
+  font-size: var(--body-size);
+}
+
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   .game-2d-modal-overlay,
