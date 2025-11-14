@@ -493,7 +493,7 @@
 }
 
 .game-2d-npc-card-image-small {
-  width: 100%;
+  width: 100px;
   height: 100px;
   background-size: cover;
   background-position: center;
