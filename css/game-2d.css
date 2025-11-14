@@ -581,42 +581,23 @@
 /* ========== TEAM METRICS ========== */
 
 .game-2d-team-metrics {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-  position: relative;
-  z-index: 10;
-  background: transparent;
-  padding: var(--space-sm) 0;
+  display: none;
 }
 
 .game-2d-metric-item {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  position: relative;
-  z-index: 10;
+  display: none;
 }
 
 .game-2d-metric-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  font-weight: var(--button-weight);
-  position: relative;
-  z-index: 10;
+  display: none;
 }
 
 .game-2d-metric-label {
-  color: var(--neutral-white);
+  display: none;
 }
 
 .game-2d-metric-value {
-  color: var(--success);
-  font-weight: bold;
-  min-width: 30px;
-  text-align: right;
+  display: none;
 }
 
 .game-2d-metric-bar-bg {
