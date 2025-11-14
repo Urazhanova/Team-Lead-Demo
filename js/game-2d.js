@@ -985,11 +985,23 @@ const GameLesson2D = (() => {
             `;
 
             if (consequence.dialogue) {
+                const speakerNames = {
+                    'alex': 'Алекс',
+                    'denis': 'Денис',
+                    'katya': 'Катя',
+                    'maria': 'Мария',
+                    'igor': 'Игорь',
+                    'lena': 'Лена',
+                    'olga': 'Ольга',
+                    'ceo': 'CEO',
+                    'system': '📢'
+                };
+
                 html += `
                     <div class="game-2d-dialogue-box">
                         ${consequence.dialogue.map(line => `
                             <div class="game-2d-info-line">
-                                <strong class="game-2d-dialogue-speaker">${line.speaker}:</strong>
+                                <strong class="game-2d-dialogue-speaker">${speakerNames[line.speaker] || line.speaker}:</strong>
                                 <span>${line.text}</span>
                             </div>
                         `).join('')}
@@ -1003,7 +1015,7 @@ const GameLesson2D = (() => {
                         <div class="game-2d-stats-title">📊 Изменения:</div>
                 `;
 
-                // Define stat icons and categories
+                // Define stat icons and Russian names
                 const statIcons = {
                     'xp': '⭐',
                     'time_left': '⏱️',
@@ -1024,6 +1036,49 @@ const GameLesson2D = (() => {
                     'loyalty': '💙'
                 };
 
+                const statNames = {
+                    'xp': 'Опыт',
+                    'time_left': 'Время осталось',
+                    'time_cost': 'Затрачено времени',
+                    'alex_stress': 'Стресс Алекса',
+                    'team_morale': 'Боевой дух команды',
+                    'team_stress': 'Стресс команды',
+                    'katya_satisfaction': 'Удовлетворение Кати',
+                    'katya_motivation': 'Мотивация Кати',
+                    'katya_growth': 'Рост Кати',
+                    'denis_satisfaction': 'Удовлетворение Дениса',
+                    'denis_motivation': 'Мотивация Дениса',
+                    'denis_growth': 'Рост Дениса',
+                    'maria_satisfaction': 'Удовлетворение Марии',
+                    'maria_growth': 'Рост Марии',
+                    'maria_leadership': 'Лидерство Марии',
+                    'lena_satisfaction': 'Удовлетворение Лены',
+                    'igor_satisfaction': 'Удовлетворение Игоря',
+                    'olga_satisfaction': 'Удовлетворение Ольги',
+                    'satisfaction': 'Удовлетворение',
+                    'motivation': 'Мотивация',
+                    'growth': 'Рост',
+                    'problem_managed': 'Проблема решена',
+                    'risk_of_failure': 'Риск провала',
+                    'sprint_plan': 'План спринта',
+                    'sprint_impact': 'Влияние на спринт',
+                    'communication_skill': 'Навык общения',
+                    'political_capital': 'Политический капитал',
+                    'work_life_balance': 'Баланс жизни и работы',
+                    'personal_life': 'Личная жизнь',
+                    'loyalty': 'Лояльность',
+                    'code_quality': 'Качество кода',
+                    'skill_development': 'Развитие навыков',
+                    'team_morale_impact': 'Влияние на боевой дух',
+                    'clarity': 'Ясность',
+                    'quality_of_decision': 'Качество решения',
+                    'client_satisfaction': 'Удовлетворение клиента',
+                    'weekend_work': 'Работа в выходные',
+                    'future_commitment': 'Будущие обязательства',
+                    'maria_weekend': 'Выходные Марии',
+                    'future_burnout_risk': 'Риск выгорания в будущем'
+                };
+
                 Object.entries(consequence.stats).forEach(([key, value]) => {
                     // Skip non-numeric values
                     if (typeof value !== 'number') return;
@@ -1031,7 +1086,7 @@ const GameLesson2D = (() => {
                     const sign = value > 0 ? '+' : '';
                     const colorClass = value > 0 ? 'game-2d-stat-positive' : 'game-2d-stat-negative';
                     const icon = statIcons[key] || '•';
-                    const displayKey = key.replace(/_/g, ' ');
+                    const displayKey = statNames[key] || key.replace(/_/g, ' ');
                     const absValue = Math.abs(value);
 
                     // Create scale visualization
