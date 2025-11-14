@@ -950,7 +950,6 @@ const GameLesson2D = (() => {
                         <div class="game-2d-choice-description">
                             ${choice.hint}
                         </div>
-                        ${choice.recommended ? '<div class="game-2d-recommended-badge">⭐ Рекомендуемый выбор</div>' : ''}
                     </div>
                 `;
             });
@@ -981,7 +980,7 @@ const GameLesson2D = (() => {
             let html = `
                 <div class="game-2d-mb-lg">
                     <h2 class="game-2d-dialogue-header game-2d-text-center">
-                        ${choice.recommended ? '✅ Отличный выбор!' : '⚠️ Результат'}
+                        Результат выбора
                     </h2>
             `;
 
@@ -1197,7 +1196,6 @@ const GameLesson2D = (() => {
                         </div>
                         <div class="game-2d-text-tiny">
                             ⏱️ ${choice.time_cost} мин
-                            ${choice.recommended ? ' | ⭐ Рекомендуемо' : ''}
                         </div>
                     </div>
                 `;
