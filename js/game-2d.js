@@ -315,6 +315,8 @@ const GameLesson2D = (() => {
         // Special handling for theory zone - show theory menu
         if (zoneId === 'theory_zone') {
             console.log('[Game2D] Entered theory zone - showing theory menu');
+            // Hide body scrollbar before opening modal
+            document.body.style.overflow = 'hidden';
             showTheoryMenu();
             return;
         }
@@ -436,8 +438,9 @@ const GameLesson2D = (() => {
         modal.classList.remove('active');
         document.getElementById('gameCanvas2D').style.display = 'block';
 
-        // Restore body scrollbar
-        document.body.style.overflow = 'auto';
+        // Restore body and html scrollbar
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
 
         // Refresh side panel to show "✓ прочитано" status
         updateSidePanel();
@@ -490,8 +493,9 @@ const GameLesson2D = (() => {
         modal.classList.add('active');
         document.getElementById('gameCanvas2D').style.display = 'none';
 
-        // Hide body scrollbar to prevent white stripe
+        // Hide body and html scrollbar to prevent white stripe
         document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
 
         // Attach listeners to theory menu buttons
         attachTheoryMenuListeners();
