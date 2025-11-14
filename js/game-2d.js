@@ -960,6 +960,64 @@ const GameLesson2D = (() => {
         modal.classList.add('active');
     }
 
+    function getStatisticsMetricsHTML() {
+        const xp = gameState.totalXP || 0;
+        const scenarios = gameState.completedScenarios.length || 0;
+        const theories = (gameState.theoriesRead && gameState.theoriesRead.length) || 0;
+
+        // Define max values for scaling
+        const maxXP = 1000;
+        const maxScenarios = 5;
+        const maxTheories = 5;
+
+        // Calculate percentages
+        const xpPercent = Math.min((xp / maxXP) * 100, 100);
+        const scenariosPercent = (scenarios / maxScenarios) * 100;
+        const theoriesPercent = (theories / maxTheories) * 100;
+
+        // Determine colors based on progress
+        const xpColor = xp > 500 ? '#4ecca3' : xp > 250 ? '#ffd93d' : '#ff6b6b';
+        const scenariosColor = scenarios >= 4 ? '#4ecca3' : scenarios >= 2 ? '#ffd93d' : '#ff6b6b';
+        const theoriesColor = theories >= 4 ? '#4ecca3' : theories >= 2 ? '#ffd93d' : '#ff6b6b';
+
+        let html = '<div class="game-2d-stats-metrics">';
+
+        html += `
+            <div class="game-2d-stat-metric-item">
+                <div class="game-2d-stat-metric-header">
+                    <span class="game-2d-stat-metric-label">⭐ XP</span>
+                    <span class="game-2d-stat-metric-value">${xp}</span>
+                </div>
+                <div class="game-2d-metric-bar-bg">
+                    <div class="game-2d-metric-bar" style="width: ${xpPercent}%; background-color: ${xpColor};"></div>
+                </div>
+            </div>
+
+            <div class="game-2d-stat-metric-item">
+                <div class="game-2d-stat-metric-header">
+                    <span class="game-2d-stat-metric-label">📖 Сценарии</span>
+                    <span class="game-2d-stat-metric-value">${scenarios}/${maxScenarios}</span>
+                </div>
+                <div class="game-2d-metric-bar-bg">
+                    <div class="game-2d-metric-bar" style="width: ${scenariosPercent}%; background-color: ${scenariosColor};"></div>
+                </div>
+            </div>
+
+            <div class="game-2d-stat-metric-item">
+                <div class="game-2d-stat-metric-header">
+                    <span class="game-2d-stat-metric-label">📚 Блоки</span>
+                    <span class="game-2d-stat-metric-value">${theories}/${maxTheories}</span>
+                </div>
+                <div class="game-2d-metric-bar-bg">
+                    <div class="game-2d-metric-bar" style="width: ${theoriesPercent}%; background-color: ${theoriesColor};"></div>
+                </div>
+            </div>
+        `;
+
+        html += '</div>';
+        return html;
+    }
+
     function getTeamMetricsHTML() {
         // Main team mood metrics to display
         const metrics = [
@@ -1044,11 +1102,7 @@ const GameLesson2D = (() => {
             <div class="game-2d-panel-title game-2d-mt-lg">
                 📊 СТАТИСТИКА
             </div>
-            <div class="game-2d-text-small">
-                <div>XP: <span id="xp-stat">${gameState.totalXP}</span></div>
-                <div class="game-2d-mt-sm">Сценариев пройдено: <span id="scenarios-stat">${gameState.completedScenarios.length}</span></div>
-                <div class="game-2d-mt-sm">Блоков прочитано: <span id="theory-stat">${(gameState.theoriesRead && gameState.theoriesRead.length) || 0}</span>/5</div>
-            </div>
+            ${getStatisticsMetricsHTML()}
 
             <div class="game-2d-panel-title game-2d-mt-lg">
                 👥 СОСТОЯНИЕ КОМАНДЫ

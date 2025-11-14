@@ -537,6 +537,47 @@
   font-size: 12px;
 }
 
+/* ========== STATISTICS METRICS ========== */
+
+.game-2d-stats-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  position: relative;
+  z-index: 10;
+  background: transparent;
+  padding: var(--space-sm) 0;
+}
+
+.game-2d-stat-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  position: relative;
+  z-index: 10;
+}
+
+.game-2d-stat-metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: var(--button-weight);
+  position: relative;
+  z-index: 10;
+}
+
+.game-2d-stat-metric-label {
+  color: var(--neutral-white);
+}
+
+.game-2d-stat-metric-value {
+  color: var(--success);
+  font-weight: bold;
+  min-width: 40px;
+  text-align: right;
+}
+
 /* ========== TEAM METRICS ========== */
 
 .game-2d-team-metrics {
