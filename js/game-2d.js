@@ -82,6 +82,17 @@ const GameLesson2D = (() => {
             }
         });
 
+        // Initialize team metrics with default values
+        if (!gameState.totalSkills) {
+            gameState.totalSkills = {
+                team_satisfaction: 50,
+                team_morale: 50,
+                team_stress: 50,
+                strategic_value: 50,
+                sprint_quality: 50
+            };
+        }
+
         // Load character images
         loadCharacterImages();
 
@@ -1256,7 +1267,30 @@ const GameLesson2D = (() => {
                     </div>
                 `;
 
-                // Apply stats
+                // Apply stats to gameState
+                Object.entries(consequence.stats).forEach(([key, value]) => {
+                    if (typeof value === 'number') {
+                        // Initialize totalSkills if needed
+                        if (!gameState.totalSkills) {
+                            gameState.totalSkills = {};
+                        }
+
+                        // Initialize metric if it doesn't exist (default to 50)
+                        if (!gameState.totalSkills[key]) {
+                            gameState.totalSkills[key] = 50;
+                        }
+
+                        // Apply change
+                        gameState.totalSkills[key] += value;
+
+                        // Clamp values between 0 and 100 for most metrics
+                        if (key !== 'xp' && key !== 'time_left') {
+                            gameState.totalSkills[key] = Math.max(0, Math.min(100, gameState.totalSkills[key]));
+                        }
+                    }
+                });
+
+                // Apply XP separately
                 gameState.totalXP += (consequence.stats.xp || 0);
             }
 
@@ -1296,6 +1330,7 @@ const GameLesson2D = (() => {
             this.closeMenu();
             gameState.currentScene = 'game';
             document.getElementById('gameCanvas2D').style.display = 'block';
+            updateSidePanel();
         },
 
         closeMenu: function() {
