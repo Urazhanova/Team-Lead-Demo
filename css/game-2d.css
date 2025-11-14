@@ -477,6 +477,8 @@
   border: 2px solid var(--success);
   margin-bottom: var(--space-md);
   overflow: hidden;
+  position: relative;
+  z-index: 5;
 }
 
 .game-2d-npc-card-image {
@@ -486,6 +488,8 @@
   background-position: center;
   margin: -8px -8px 12px -8px;
   border-radius: var(--radius-md) var(--radius-md) 0 0;
+  position: relative;
+  z-index: 5;
 }
 
 .game-2d-npc-card-name {
