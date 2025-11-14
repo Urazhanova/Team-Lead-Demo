@@ -492,6 +492,17 @@
   z-index: 5;
 }
 
+.game-2d-npc-card-image-small {
+  width: 100%;
+  height: 100px;
+  background-size: cover;
+  background-position: center;
+  margin: -8px -8px 8px -8px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  position: relative;
+  z-index: 5;
+}
+
 .game-2d-npc-card-name {
   font-weight: var(--button-weight);
 }
