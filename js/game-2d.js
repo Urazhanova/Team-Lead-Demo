@@ -507,7 +507,7 @@ const GameLesson2D = (() => {
         `;
 
         content.innerHTML = html;
-        modal.style.display = 'flex';
+        modal.classList.add('active');
     }
 
     // ============================================
@@ -549,7 +549,7 @@ const GameLesson2D = (() => {
         `;
 
         content.innerHTML = html;
-        modal.style.display = 'flex';
+        modal.classList.add('active');
     }
 
     function updateSidePanel() {
@@ -715,7 +715,7 @@ const GameLesson2D = (() => {
 
         closeDialogue: function() {
             const modal = document.getElementById('dialogue-modal-2d');
-            modal.style.display = 'none';
+            modal.classList.remove('active');
             document.getElementById('gameCanvas2D').style.display = 'block';
             gameState.currentScene = 'game';
             updateSidePanel();
@@ -729,7 +729,7 @@ const GameLesson2D = (() => {
 
         closeMenu: function() {
             const modal = document.getElementById('menu-modal-2d');
-            modal.style.display = 'none';
+            modal.classList.remove('active');
         },
 
         showScenarioList: function() {
@@ -797,7 +797,7 @@ const GameLesson2D = (() => {
             `;
 
             content.innerHTML = html;
-            modal.style.display = 'flex';
+            modal.classList.add('active');
             gameState.currentScene = 'crisis';
         },
 
@@ -955,7 +955,7 @@ const GameLesson2D = (() => {
             `;
 
             content.innerHTML = html;
-            modal.style.display = 'flex';
+            modal.classList.add('active');
         },
 
         startQuiz: function() {
@@ -1061,7 +1061,7 @@ const GameLesson2D = (() => {
 
             // Go back to main screen
             const modal = document.getElementById('dialogue-modal-2d');
-            modal.style.display = 'none';
+            modal.classList.remove('active');
             alert(`✅ Урок пройден!\n\nВы получили: ${gameState.totalXP} XP\n\nВозвращаемся к меню...`);
             window.location.reload();
         },
