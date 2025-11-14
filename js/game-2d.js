@@ -947,9 +947,6 @@ const GameLesson2D = (() => {
                         <div class="game-2d-choice-title">
                             ${String.fromCharCode(65 + index)}. ${choice.title}
                         </div>
-                        <div class="game-2d-choice-description">
-                            ${choice.hint}
-                        </div>
                     </div>
                 `;
             });
