@@ -1111,25 +1111,27 @@
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background: rgba(0, 0, 0, 0.8);
-  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(78, 204, 163, 0.15) 0%, rgba(24, 43, 51, 0.8) 100%);
+  border: 2px solid var(--success);
+  border-radius: var(--radius-lg);
   padding: 6px;
   z-index: 100;
+  backdrop-filter: blur(4px);
 }
 
 .game-2d-joystick {
   display: grid;
   grid-template-columns: repeat(3, 18px);
   grid-template-rows: repeat(3, 18px);
-  gap: 1px;
+  gap: 2px;
   margin-bottom: 3px;
   justify-content: center;
 }
 
 .game-2d-move-btn {
-  background: rgba(78, 204, 163, 0.7);
-  border: 1px solid var(--success);
-  border-radius: 2px;
+  background: linear-gradient(135deg, var(--success-light) 0%, var(--success) 100%);
+  border: 2px solid var(--success);
+  border-radius: var(--radius-md);
   color: var(--neutral-white);
   font-size: 10px;
   font-weight: bold;
@@ -1178,9 +1180,9 @@
 }
 
 .game-2d-action-btn {
-  background: rgba(255, 217, 61, 0.7);
-  border: 1px solid var(--brand-accent);
-  border-radius: 2px;
+  background: linear-gradient(135deg, rgba(255, 217, 61, 0.8) 0%, rgba(255, 217, 61, 0.6) 100%);
+  border: 2px solid var(--brand-accent);
+  border-radius: var(--radius-md);
   color: var(--neutral-900);
   font-size: 9px;
   font-weight: bold;
@@ -1192,20 +1194,21 @@
 
 .game-2d-action-btn:active,
 .game-2d-action-btn.active {
-  background: rgba(255, 217, 61, 0.9);
-  box-shadow: 0 0 10px rgba(255, 217, 61, 0.8);
+  background: linear-gradient(135deg, var(--brand-accent) 0%, rgba(255, 217, 61, 0.8) 100%);
+  box-shadow: 0 0 12px var(--brand-accent);
   transform: scale(0.95);
 }
 
 .game-2d-interact-btn {
-  background: rgba(78, 204, 163, 0.6);
+  background: linear-gradient(135deg, var(--success-light) 0%, var(--success) 100%);
   border-color: var(--success);
   color: var(--neutral-white);
 }
 
 .game-2d-interact-btn:active,
 .game-2d-interact-btn.active {
-  background: rgba(78, 204, 163, 0.9);
+  background: linear-gradient(135deg, var(--success) 0%, rgba(78, 204, 163, 0.7) 100%);
+  box-shadow: 0 0 12px var(--success);
 }
 
 /* Mobile Layout */
