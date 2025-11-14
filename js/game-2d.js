@@ -1034,10 +1034,12 @@ const GameLesson2D = (() => {
                     return `
                         <div class="game-2d-npc-card">
                             ${npc.image ? `<div class="game-2d-npc-card-image-small" style="background-image: url(${npc.image});"></div>` : ''}
-                            <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
-                            <div class="game-2d-npc-card-role">${npc.role}</div>
-                            <div class="game-2d-npc-card-hint">
-                                ⏎ Нажми ENTER
+                            <div class="game-2d-npc-card-content">
+                                <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
+                                <div class="game-2d-npc-card-role">${npc.role}</div>
+                                <div class="game-2d-npc-card-hint">
+                                    ⏎ Нажми ENTER
+                                </div>
                             </div>
                         </div>
                     `;
