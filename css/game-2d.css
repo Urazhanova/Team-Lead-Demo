@@ -1163,9 +1163,17 @@
   grid-column: 1 / 4;
   grid-row: 2;
   display: grid;
-  grid-template-columns: repeat(2, 18px);
+  grid-template-columns: 18px 18px;
   gap: 2px;
   justify-content: center;
+}
+
+.game-2d-move-left,
+.game-2d-move-right {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
 }
 
 .game-2d-move-down {
