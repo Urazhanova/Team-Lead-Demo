@@ -78,6 +78,21 @@ var Navigation = {
       mainContent.innerHTML = "";
       console.log("[Navigation] Cleared mainContent");
 
+      // Check if this is a game-type lesson
+      if (self.currentLesson.type === "game") {
+        console.log("[Navigation] Game-type lesson detected. Using GameContent module.");
+        if (typeof GameContent === "undefined") {
+          console.error("[Navigation] GameContent module not available");
+          return;
+        }
+        // Render game content directly
+        GameContent.render(self.currentLesson, mainContent);
+        // Create a single screen wrapper for game content
+        self.screens = [mainContent];
+        self.initializeNavigation();
+        return;
+      }
+
       // Generate screens from lesson data
       if (typeof ScreenRenderer === "undefined") {
         console.error("[Navigation] ScreenRenderer module not available");
