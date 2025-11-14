@@ -315,8 +315,12 @@ const GameLesson2D = (() => {
         // Special handling for theory zone - show theory menu
         if (zoneId === 'theory_zone') {
             console.log('[Game2D] Entered theory zone - showing theory menu');
-            // Hide body scrollbar before opening modal
+            // Hide scrollbars before opening modal
+            document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
+            if (document.querySelector('main')) {
+                document.querySelector('main').style.overflow = 'hidden';
+            }
             showTheoryMenu();
             return;
         }
@@ -438,9 +442,12 @@ const GameLesson2D = (() => {
         modal.classList.remove('active');
         document.getElementById('gameCanvas2D').style.display = 'block';
 
-        // Restore body and html scrollbar
-        document.body.style.overflow = '';
+        // Restore scrollbars
         document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        if (document.querySelector('main')) {
+            document.querySelector('main').style.overflow = '';
+        }
 
         // Refresh side panel to show "✓ прочитано" status
         updateSidePanel();
@@ -456,7 +463,9 @@ const GameLesson2D = (() => {
         const theoryContent = document.getElementById('theory-content');
         const unlockedBlocks = getUnlockedTheoryBlocks();
 
+        console.log('[Game2D] Unlocked blocks count:', unlockedBlocks.length);
         console.log('[Game2D] Unlocked blocks:', unlockedBlocks);
+        console.log('[Game2D] All theory blocks:', Object.keys(GameData.theoryBlocks));
 
         const blocksHtml = unlockedBlocks.map(blockId => {
             const block = GameData.theoryBlocks[blockId];
@@ -493,9 +502,12 @@ const GameLesson2D = (() => {
         modal.classList.add('active');
         document.getElementById('gameCanvas2D').style.display = 'none';
 
-        // Hide body and html scrollbar to prevent white stripe
-        document.body.style.overflow = 'hidden';
+        // Hide scrollbars to prevent white stripe
         document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+        if (document.querySelector('main')) {
+            document.querySelector('main').style.overflow = 'hidden';
+        }
 
         // Attach listeners to theory menu buttons
         attachTheoryMenuListeners();
