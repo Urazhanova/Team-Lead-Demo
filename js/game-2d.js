@@ -1041,13 +1041,14 @@ const GameLesson2D = (() => {
             const percentage = (clampedValue / metric.max) * 100;
 
             // Determine color based on value
-            let barColor = '#4ECC A3'; // success green
+            let barColor = '#4ECCA3'; // success green
             if (metric.isNegative) {
                 // For negative metrics (stress), invert colors
-                barColor = percentage > 70 ? '#FF6B6B' : percentage > 40 ? '#FFD93D' : '#4ECC A3';
+                // Low stress (good) = green, high stress (bad) = red
+                barColor = percentage < 30 ? '#4ECCA3' : percentage < 70 ? '#FFD93D' : '#FF6B6B';
             } else {
                 // For positive metrics, green is good
-                barColor = percentage > 70 ? '#4ECC A3' : percentage > 40 ? '#FFD93D' : '#FF6B6B';
+                barColor = percentage > 70 ? '#4ECCA3' : percentage > 40 ? '#FFD93D' : '#FF6B6B';
             }
 
             html += `
