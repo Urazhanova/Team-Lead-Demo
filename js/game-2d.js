@@ -349,10 +349,15 @@ const GameLesson2D = (() => {
 
     function getUnlockedTheoryBlocks() {
         const unlocked = [];
-        Object.keys(GameData.theoryBlocks).forEach(blockId => {
-            const block = GameData.theoryBlocks[blockId];
-            if (isTheoryBlockUnlocked(blockId)) {
-                unlocked.push(blockId);
+        // Use explicit order to ensure correct ordering
+        const blockOrder = ['theory1', 'theory2', 'theory3', 'theory4', 'theory5'];
+
+        blockOrder.forEach(blockId => {
+            if (GameData.theoryBlocks[blockId]) {
+                const block = GameData.theoryBlocks[blockId];
+                if (isTheoryBlockUnlocked(blockId)) {
+                    unlocked.push(blockId);
+                }
             }
         });
         return unlocked;

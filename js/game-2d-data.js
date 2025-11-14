@@ -1734,7 +1734,7 @@ const GameData = {
             id: 'theory2',
             title: '📊 Eisenhower Matrix',
             icon: '📊',
-            unlockedAt: 'after_theory1',
+            unlockedAt: 'start',
             reward: 15,
             content: `EISENHOWER MATRIX
 Матрица важности-срочности
