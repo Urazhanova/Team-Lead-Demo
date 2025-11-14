@@ -1167,6 +1167,11 @@
   grid-row: 2;
 }
 
+.game-2d-move-left,
+.game-2d-move-right {
+  font-size: 11px;
+}
+
 .game-2d-move-down {
   grid-column: 2;
   grid-row: 3;
