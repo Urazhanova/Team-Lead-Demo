@@ -126,21 +126,15 @@ const GameLesson2D = (() => {
         container.id = 'game-2d-container';
 
         container.innerHTML = `
-            <!-- Top Bar -->
-            <div class="game-2d-top-bar">
-                <div class="game-2d-day-info">
-                    📅 ДЕНЬ 5 | Пятница, 16:00
-                </div>
-                <div class="game-2d-stats">
-                    <div class="game-2d-stat-item">⭐ <span id="xp-counter">0</span> XP</div>
-                    <div class="game-2d-stat-item">🏆 Level <span id="level-counter">1</span></div>
-                </div>
-            </div>
-
             <!-- Main Game Area -->
             <div class="game-2d-main">
                 <div class="game-2d-canvas-wrapper">
                     <canvas id="gameCanvas2D" width="800" height="600"></canvas>
+
+                    <!-- Day Info Badge -->
+                    <div class="game-2d-day-badge">
+                        📅 ДЕНЬ 5 | Пятница, 16:00
+                    </div>
 
                     <!-- Mobile Controls -->
                     <div id="mobile-controls" class="game-2d-mobile-controls">

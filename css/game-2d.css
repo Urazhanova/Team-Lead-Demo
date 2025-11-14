@@ -7,7 +7,7 @@
 
 #game-2d-container {
   display: grid;
-  grid-template-rows: 60px 1fr 80px;
+  grid-template-rows: 1fr 80px;
   height: 100vh;
   background: var(--neutral-900);
   font-family: var(--font-primary);
@@ -16,12 +16,7 @@
 /* ========== TOP BAR ========== */
 
 .game-2d-top-bar {
-  background: linear-gradient(180deg, var(--neutral-800) 0%, var(--neutral-900) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-lg);
-  border-bottom: 3px solid var(--brand-accent);
+  display: none;
 }
 
 .game-2d-day-info {
@@ -72,6 +67,20 @@
   display: block;
   background: var(--brand-primary-dark);
   image-rendering: pixelated;
+}
+
+.game-2d-day-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient(135deg, var(--error) 0%, var(--error-light) 100%);
+  color: var(--neutral-white);
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-weight: var(--button-weight);
+  font-size: 12px;
+  box-shadow: var(--shadow-md);
+  z-index: 50;
 }
 
 /* ========== SIDE PANEL ========== */
