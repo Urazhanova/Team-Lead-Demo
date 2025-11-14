@@ -871,6 +871,142 @@
   flex: 1;
 }
 
+/* ========== THEORY MENU ========== */
+
+.game-2d-theory-menu {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.game-2d-theory-menu-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-lg);
+  border-bottom: 2px solid rgba(78, 204, 163, 0.3);
+}
+
+.game-2d-theory-menu-header h2 {
+  color: var(--success);
+  font-size: var(--h2-size);
+  margin: 0 0 var(--space-sm) 0;
+}
+
+.game-2d-theory-menu-header p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  font-size: var(--body-small-size);
+}
+
+.game-2d-theory-menu-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md) 0;
+  scrollbar-gutter: stable;
+}
+
+.game-2d-theory-menu-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.game-2d-theory-menu-list::-webkit-scrollbar-track {
+  background: rgba(78, 204, 163, 0.1);
+}
+
+.game-2d-theory-menu-list::-webkit-scrollbar-thumb {
+  background: var(--success);
+  border-radius: var(--radius-full);
+}
+
+.game-2d-theory-menu-button {
+  width: 100%;
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  border: 2px solid var(--success);
+  background: rgba(78, 204, 163, 0.15);
+  color: var(--neutral-white);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  font-family: inherit;
+  font-size: var(--body-small-size);
+  text-align: left;
+}
+
+.game-2d-theory-menu-button:hover {
+  background: rgba(78, 204, 163, 0.3);
+  border-color: var(--brand-accent);
+  transform: translateX(4px);
+}
+
+.game-2d-theory-menu-button:active {
+  transform: translateX(2px);
+}
+
+.game-2d-theory-menu-button.read {
+  border-color: rgba(78, 204, 163, 0.4);
+  background: rgba(78, 204, 163, 0.08);
+  opacity: 0.7;
+}
+
+.game-2d-theory-menu-icon {
+  font-size: var(--h3-size);
+  flex-shrink: 0;
+}
+
+.game-2d-theory-menu-title {
+  flex: 1;
+  font-weight: var(--button-weight);
+}
+
+.game-2d-theory-menu-reward {
+  color: var(--brand-accent);
+  font-weight: var(--button-weight);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.game-2d-theory-menu-footer {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 2px solid rgba(78, 204, 163, 0.3);
+}
+
+.game-2d-theory-menu-footer .game-2d-button {
+  flex: 1;
+}
+
+.game-2d-theory-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.game-2d-theory-back-button {
+  margin-bottom: var(--space-lg);
+}
+
+.game-2d-button-link {
+  background: none;
+  border: none;
+  color: var(--brand-accent);
+  cursor: pointer;
+  font-size: var(--body-small-size);
+  padding: 0;
+  text-decoration: underline;
+  transition: color var(--transition-base);
+  font-family: inherit;
+}
+
+.game-2d-button-link:hover {
+  color: var(--success);
+}
+
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   .game-2d-modal-overlay,

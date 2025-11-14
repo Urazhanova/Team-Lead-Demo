@@ -312,6 +312,13 @@ const GameLesson2D = (() => {
             return;
         }
 
+        // Special handling for theory zone - show theory menu
+        if (zoneId === 'theory_zone') {
+            console.log('[Game2D] Entered theory zone - showing theory menu');
+            showTheoryMenu();
+            return;
+        }
+
         // Add visual feedback
         gameState.lastZoneMessage = {
             text: `Вы вошли в ${zone.label}`,
@@ -430,6 +437,114 @@ const GameLesson2D = (() => {
         document.getElementById('gameCanvas2D').style.display = 'block';
         // Refresh side panel to show "✓ прочитано" status
         updateSidePanel();
+    }
+
+    function showTheoryMenu() {
+        const modal = document.getElementById('theory-modal-2d');
+        if (!modal) {
+            console.error('[Game2D] Theory modal not found!');
+            return;
+        }
+
+        const theoryContent = document.getElementById('theory-content');
+        const unlockedBlocks = getUnlockedTheoryBlocks();
+
+        console.log('[Game2D] Unlocked blocks:', unlockedBlocks);
+
+        const blocksHtml = unlockedBlocks.map(blockId => {
+            const block = GameData.theoryBlocks[blockId];
+            const isRead = gameState.theoriesRead && gameState.theoriesRead.includes(blockId);
+            return `
+                <button class="game-2d-theory-menu-button ${isRead ? 'read' : ''}"
+                        data-theory-id="${blockId}">
+                    <span class="game-2d-theory-menu-icon">${block.icon}</span>
+                    <span class="game-2d-theory-menu-title">${block.title}</span>
+                    <span class="game-2d-theory-menu-reward">
+                        ${isRead ? '✓ Прочитано' : `+${block.reward} XP`}
+                    </span>
+                </button>
+            `;
+        }).join('');
+
+        theoryContent.innerHTML = `
+            <div class="game-2d-theory-menu">
+                <div class="game-2d-theory-menu-header">
+                    <h2>💡 Зона обучения</h2>
+                    <p>Выбери тему для изучения</p>
+                </div>
+                <div class="game-2d-theory-menu-list">
+                    ${blocksHtml || '<div class="game-2d-text-muted">Нет доступных блоков</div>'}
+                </div>
+                <div class="game-2d-theory-menu-footer">
+                    <button class="game-2d-button game-2d-button-secondary" onclick="GameLesson2D.closeTheoryModal()">
+                        Выйти из зоны обучения
+                    </button>
+                </div>
+            </div>
+        `;
+
+        modal.classList.add('active');
+        document.getElementById('gameCanvas2D').style.display = 'none';
+
+        // Attach listeners to theory menu buttons
+        attachTheoryMenuListeners();
+    }
+
+    function attachTheoryMenuListeners() {
+        const theoryContent = document.getElementById('theory-content');
+        if (!theoryContent) return;
+
+        const buttons = theoryContent.querySelectorAll('.game-2d-theory-menu-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const blockId = button.dataset.theoryId;
+                console.log('[Game2D] Theory menu button clicked:', blockId);
+                showTheoryContent(blockId);
+            });
+        });
+    }
+
+    function showTheoryContent(blockId) {
+        const block = GameData.theoryBlocks[blockId];
+        if (!block) return;
+
+        const theoryContent = document.getElementById('theory-content');
+        const lines = block.content.split('\n');
+        const htmlContent = lines.map(line => {
+            if (!line.trim()) return '<br>';
+            return `<div class="game-2d-theory-line">${escapeHtml(line)}</div>`;
+        }).join('');
+
+        theoryContent.innerHTML = `
+            <div class="game-2d-theory-view">
+                <div class="game-2d-theory-back-button">
+                    <button class="game-2d-button-link" onclick="GameLesson2D.showTheoryMenu()">← Вернуться к списку</button>
+                </div>
+                <div class="game-2d-theory-header">
+                    <h2>${block.title}</h2>
+                    <p class="game-2d-theory-reward">+${block.reward} XP</p>
+                </div>
+                <div class="game-2d-theory-content">
+                    ${htmlContent}
+                </div>
+                <div class="game-2d-theory-footer">
+                    <button class="game-2d-button game-2d-button-primary" onclick="GameLesson2D.closeTheoryModal()">
+                        Закрыть и выйти
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Mark theory as read
+        if (!gameState.theoriesRead) {
+            gameState.theoriesRead = [];
+        }
+        if (!gameState.theoriesRead.includes(blockId)) {
+            gameState.theoriesRead.push(blockId);
+            gameState.totalXP += block.reward;
+            console.log('[Game2D] Theory marked as read:', blockId, 'New XP:', gameState.totalXP);
+        }
     }
 
     // ============================================
@@ -1283,6 +1398,10 @@ const GameLesson2D = (() => {
 
         showTheoryModal: function(blockId) {
             showTheoryModal(blockId);
+        },
+
+        showTheoryMenu: function() {
+            showTheoryMenu();
         },
 
         closeTheoryModal: function() {
