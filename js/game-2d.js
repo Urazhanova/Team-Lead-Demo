@@ -58,8 +58,8 @@ const GameLesson2D = (() => {
 
         // Setup player
         gameState.player = {
-            x: 100,
-            y: 100,
+            x: 710,
+            y: 110,
             size: 60,
             speed: 3,
             color: GameData.npcs.alex.color,
