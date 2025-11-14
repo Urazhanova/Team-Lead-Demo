@@ -1767,7 +1767,7 @@ const GameData = {
             id: 'theory3',
             title: '👥 Распределение задач',
             icon: '👥',
-            unlockedAt: 'after_case1',
+            unlockedAt: 'start',
             reward: 15,
             content: `РАСПРЕДЕЛЕНИЕ ЗАДАЧ
 
@@ -1804,7 +1804,7 @@ const GameData = {
             id: 'theory4',
             title: '⏱️ Story Points и Planning Poker',
             icon: '⏱️',
-            unlockedAt: 'after_case2',
+            unlockedAt: 'start',
             reward: 20,
             content: `ОЦЕНКА ЗАДАЧ
 
@@ -1846,7 +1846,7 @@ Fibonacci: 1, 2, 3, 5, 8, 13, 21
             id: 'theory5',
             title: '⚡ RAID Framework',
             icon: '⚡',
-            unlockedAt: 'after_case3',
+            unlockedAt: 'start',
             reward: 20,
             content: `RAID FRAMEWORK
 Для кризисных ситуаций
