@@ -88,87 +88,46 @@ const GameLesson2D = (() => {
     function createGameHTML() {
         const container = document.createElement('div');
         container.id = 'game-2d-container';
-        container.style.cssText = `
-            display: grid;
-            grid-template-rows: 60px 1fr 80px;
-            height: 100vh;
-            background: #1a1a2e;
-            font-family: Arial, sans-serif;
-        `;
 
         container.innerHTML = `
             <!-- Top Bar -->
-            <div style="background: linear-gradient(180deg, #2d2d44 0%, #1f1f2e 100%);
-                        display: flex; align-items: center; justify-content: space-between;
-                        padding: 0 20px; border-bottom: 3px solid #3d3d5c;">
-                <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-                            color: white; padding: 8px 20px; border-radius: 20px;
-                            font-weight: bold; font-size: 14px;">
+            <div class="game-2d-top-bar">
+                <div class="game-2d-day-info">
                     📅 ДЕНЬ 5 | Пятница, 16:00
                 </div>
-                <div style="color: #4ecca3; font-size: 13px; display: flex; gap: 16px;">
-                    <div>⭐ <span id="xp-counter">0</span> XP</div>
-                    <div>🏆 Level <span id="level-counter">1</span></div>
+                <div class="game-2d-stats">
+                    <div class="game-2d-stat-item">⭐ <span id="xp-counter">0</span> XP</div>
+                    <div class="game-2d-stat-item">🏆 Level <span id="level-counter">1</span></div>
                 </div>
             </div>
 
             <!-- Main Game Area -->
-            <div style="display: grid; grid-template-columns: 1fr 350px; gap: 0; background: #16213e;">
-                <div style="position: relative; background: linear-gradient(135deg, #0f3460 0%, #16213e 100%);
-                            display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                    <canvas id="gameCanvas2D" width="800" height="600"
-                            style="border: 3px solid #1f4068; display: block;"></canvas>
+            <div class="game-2d-main">
+                <div class="game-2d-canvas-wrapper">
+                    <canvas id="gameCanvas2D" width="800" height="600"></canvas>
                 </div>
 
-                <div id="side-panel" style="background: linear-gradient(135deg, #1f4068 0%, #16213e 100%);
-                                            border-left: 3px solid #2d5f8d;
-                                            padding: 20px; overflow-y: auto;
-                                            color: white; font-size: 13px;">
-                    <div style="color: #4ecca3; font-weight: bold; margin-bottom: 16px;">📋 СТАТУС</div>
-                    <div id="game-status" style="color: rgba(255,255,255,0.9);"></div>
+                <div id="side-panel">
+                    <div class="game-2d-panel-title">📋 СТАТУС</div>
+                    <div id="game-status"></div>
                 </div>
             </div>
 
             <!-- Bottom Panel -->
-            <div style="background: linear-gradient(180deg, #1f1f2e 0%, #2d2d44 100%);
-                        border-top: 3px solid #3d3d5c;
-                        display: flex; align-items: center; justify-content: center;
-                        padding: 0 20px;">
-                <div id="bottom-objective" style="color: #4ecca3; font-size: 14px; font-weight: bold; text-align: center;">
+            <div class="game-2d-bottom-panel">
+                <div id="bottom-objective">
                     Добро пожаловать! Нажми SPACE для меню.
                 </div>
             </div>
 
             <!-- Dialogue Modal -->
-            <div id="dialogue-modal-2d" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                                               background: rgba(0,0,0,0.85); z-index: 1000;
-                                               align-items: center; justify-content: center;">
-                <div id="dialogue-content" style="background: linear-gradient(135deg, #2d2d44 0%, #1f1f2e 100%);
-                                                  border: 3px solid #4ecca3;
-                                                  border-radius: 24px;
-                                                  padding: 30px;
-                                                  max-width: 600px;
-                                                  width: 90%;
-                                                  max-height: 80vh;
-                                                  overflow-y: auto;
-                                                  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-                                                  color: white;">
-                </div>
+            <div id="dialogue-modal-2d" class="game-2d-modal-overlay">
+                <div id="dialogue-content" class="game-2d-modal-content"></div>
             </div>
 
             <!-- Menu Modal -->
-            <div id="menu-modal-2d" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                                           background: rgba(0,0,0,0.85); z-index: 1001;
-                                           align-items: center; justify-content: center;">
-                <div id="menu-content" style="background: linear-gradient(135deg, #2d2d44 0%, #1f1f2e 100%);
-                                              border: 3px solid #4ecca3;
-                                              border-radius: 24px;
-                                              padding: 40px;
-                                              max-width: 500px;
-                                              width: 90%;
-                                              box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-                                              color: white;">
-                </div>
+            <div id="menu-modal-2d" class="game-2d-modal-overlay">
+                <div id="menu-content" class="game-2d-modal-content"></div>
             </div>
         `;
 
@@ -329,6 +288,38 @@ const GameLesson2D = (() => {
         };
     }
 
+    // ============================================
+    // MODAL HELPERS
+    // ============================================
+
+    function showDialogueModal(content) {
+        const modal = document.getElementById('dialogue-modal-2d');
+        const dialogueContent = document.getElementById('dialogue-content');
+        dialogueContent.innerHTML = content;
+        modal.classList.add('active');
+        document.getElementById('gameCanvas2D').style.display = 'none';
+    }
+
+    function hideDialogueModal() {
+        const modal = document.getElementById('dialogue-modal-2d');
+        modal.classList.remove('active');
+        document.getElementById('gameCanvas2D').style.display = 'block';
+    }
+
+    function showMenuModal(content) {
+        const modal = document.getElementById('menu-modal-2d');
+        const menuContent = document.getElementById('menu-content');
+        menuContent.innerHTML = content;
+        modal.classList.add('active');
+        document.getElementById('gameCanvas2D').style.display = 'none';
+    }
+
+    function hideMenuModal() {
+        const modal = document.getElementById('menu-modal-2d');
+        modal.classList.remove('active');
+        document.getElementById('gameCanvas2D').style.display = 'block';
+    }
+
     function drawGame() {
         const ctx = gameState.ctx;
 
@@ -483,21 +474,21 @@ const GameLesson2D = (() => {
         const content = document.getElementById('dialogue-content');
 
         let html = `
-            <div style="margin-bottom: 30px;">
-                <h2 style="color: #4ecca3; margin-bottom: 20px; text-align: center;">
+            <div class="game-2d-mb-xl">
+                <h2 class="game-2d-dialogue-header game-2d-text-center">
                     ${scenario.title}
                 </h2>
 
-                <div style="background: rgba(78, 204, 163, 0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                    <div style="color: #4ecca3; font-weight: bold; margin-bottom: 10px;">📖 Ситуация:</div>
+                <div class="game-2d-context">
+                    <div class="game-2d-context-title">📖 Ситуация:</div>
                     <div>${scenario.introduction.text}</div>
                 </div>
         `;
 
         if (scenario.introduction.context) {
             html += `
-                <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #ffd93d;">
-                    <div style="color: #ffd93d; font-weight: bold; margin-bottom: 8px;">${scenario.introduction.context.title}</div>
+                <div class="game-2d-warning-box">
+                    <div class="game-2d-warning-title">${scenario.introduction.context.title}</div>
                     <div>
                         ${scenario.introduction.context.items.map(item => `<div>• ${item}</div>`).join('')}
                     </div>
@@ -506,12 +497,9 @@ const GameLesson2D = (() => {
         }
 
         html += `
-            <div style="text-align: center;">
+            <div class="game-2d-text-center">
                 <button onclick="GameLesson2D.showChoices('${scenario.id}')"
-                        style="background: linear-gradient(135deg, #4ecca3 0%, #2ecc71 100%);
-                               color: white; border: none; padding: 12px 30px;
-                               border-radius: 12px; cursor: pointer; font-weight: bold;
-                               margin-top: 20px;">
+                        class="game-2d-button">
                     Что делать? →
                 </button>
             </div>
@@ -531,41 +519,29 @@ const GameLesson2D = (() => {
         const content = document.getElementById('menu-content');
 
         let html = `
-            <h2 style="color: #4ecca3; margin-bottom: 20px; text-align: center;">МЕНЮ</h2>
+            <h2 class="game-2d-dialogue-header game-2d-text-center">МЕНЮ</h2>
 
-            <div style="margin-bottom: 15px;">
-                <button onclick="GameLesson2D.resumeGame()"
-                        style="width: 100%; padding: 12px; background: #4ecca3; color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Продолжить игру (SPACE)
-                </button>
-            </div>
+            <button onclick="GameLesson2D.resumeGame()"
+                    class="game-2d-menu-button game-2d-menu-button-primary">
+                Продолжить игру (SPACE)
+            </button>
 
-            <div style="margin-bottom: 15px;">
-                <button onclick="GameLesson2D.showScenarioList()"
-                        style="width: 100%; padding: 12px; background: rgba(78, 204, 163, 0.5); color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Выбрать сценарий
-                </button>
-            </div>
+            <button onclick="GameLesson2D.showScenarioList()"
+                    class="game-2d-menu-button game-2d-menu-button-secondary">
+                Выбрать сценарий
+            </button>
 
-            <div style="margin-bottom: 15px;">
-                <button onclick="GameLesson2D.startCrisis()"
-                        style="width: 100%; padding: 12px; background: #ff6b6b; color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Финальный кризис (🚨)
-                </button>
-            </div>
+            <button onclick="GameLesson2D.startCrisis()"
+                    class="game-2d-menu-button game-2d-menu-button-danger">
+                Финальный кризис (🚨)
+            </button>
 
-            <div style="margin-bottom: 15px;">
-                <button onclick="GameLesson2D.closeMenu()"
-                        style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.2); color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                    Закрыть
-                </button>
-            </div>
+            <button onclick="GameLesson2D.closeMenu()"
+                    class="game-2d-menu-button game-2d-menu-button-muted">
+                Закрыть
+            </button>
 
-            <div style="margin-top: 20px; color: rgba(255, 255, 255, 0.6); font-size: 12px; text-align: center;">
+            <div class="game-2d-controls-info">
                 <div>⌨️ Управление: WASD или стрелки</div>
                 <div>💬 Взаимодействие: E</div>
                 <div>📋 Меню: SPACE</div>
@@ -588,30 +564,29 @@ const GameLesson2D = (() => {
         });
 
         let html = `
-            <div style="color: #4ecca3; font-weight: bold; margin-bottom: 16px;">👥 РЯДОМ</div>
+            <div class="game-2d-panel-title">👥 РЯДОМ</div>
             ${nearbyNPCs.length > 0
                 ? nearbyNPCs.map(key => {
                     const npc = gameState.npcs[key];
                     return `
-                        <div style="background: rgba(78, 204, 163, 0.2); padding: 12px;
-                                   border-radius: 8px; border-left: 3px solid #4ecca3; margin-bottom: 12px;">
-                            <div style="font-weight: bold;">${npc.emoji} ${npc.name}</div>
-                            <div style="font-size: 11px; opacity: 0.8;">${npc.role}</div>
-                            <div style="margin-top: 8px; color: #4ecca3; font-size: 12px;">
+                        <div class="game-2d-npc-card">
+                            <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
+                            <div class="game-2d-npc-card-role">${npc.role}</div>
+                            <div class="game-2d-npc-card-hint">
                                 Нажми E для диалога
                             </div>
                         </div>
                     `;
                 }).join('')
-                : '<div style="color: rgba(255, 255, 255, 0.6);">Никого рядом</div>'
+                : '<div class="game-2d-text-muted">Никого рядом</div>'
             }
 
-            <div style="margin-top: 20px; color: #4ecca3; font-weight: bold; margin-bottom: 8px;">
+            <div class="game-2d-panel-title game-2d-mt-lg">
                 📊 СТАТИСТИКА
             </div>
-            <div style="font-size: 12px;">
+            <div class="game-2d-text-small">
                 <div>XP: <span id="xp-stat">${gameState.totalXP}</span></div>
-                <div style="margin-top: 8px;">Сценариев пройдено: <span id="scenarios-stat">${gameState.completedScenarios.length}</span></div>
+                <div class="game-2d-mt-sm">Сценариев пройдено: <span id="scenarios-stat">${gameState.completedScenarios.length}</span></div>
             </div>
         `;
 
@@ -637,27 +612,20 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             let html = `
-                <h2 style="color: #4ecca3; margin-bottom: 20px; text-align: center;">Что выбираешь?</h2>
+                <h2 class="game-2d-dialogue-header game-2d-text-center">Что выбираешь?</h2>
             `;
 
             scenario.choices.forEach((choice, index) => {
                 html += `
-                    <div style="background: rgba(78, 204, 163, 0.2); padding: 15px;
-                               border-radius: 12px; margin-bottom: 12px; cursor: pointer;
-                               border: 2px solid rgba(78, 204, 163, 0.5);
-                               transition: all 0.3s ease;"
-                         onclick="GameLesson2D.selectChoice('${scenarioId}', '${choice.id}')"
-                         onmouseover="this.style.background='rgba(78, 204, 163, 0.3)';
-                                     this.style.borderColor='#4ecca3';"
-                         onmouseout="this.style.background='rgba(78, 204, 163, 0.2)';
-                                    this.style.borderColor='rgba(78, 204, 163, 0.5)';">
-                        <div style="font-weight: bold; margin-bottom: 4px;">
+                    <div class="game-2d-choice-option"
+                         onclick="GameLesson2D.selectChoice('${scenarioId}', '${choice.id}')">
+                        <div class="game-2d-choice-title">
                             ${String.fromCharCode(65 + index)}. ${choice.title}
                         </div>
-                        <div style="font-size: 12px; opacity: 0.8;">
+                        <div class="game-2d-choice-description">
                             ${choice.hint}
                         </div>
-                        ${choice.recommended ? '<div style="color: #ffd93d; font-size: 11px; margin-top: 4px;">⭐ Рекомендуемый выбор</div>' : ''}
+                        ${choice.recommended ? '<div class="game-2d-recommended-badge">⭐ Рекомендуемый выбор</div>' : ''}
                     </div>
                 `;
             });
@@ -686,20 +654,19 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             let html = `
-                <div style="margin-bottom: 20px;">
-                    <h2 style="color: #4ecca3; margin-bottom: 20px; text-align: center;">
+                <div class="game-2d-mb-lg">
+                    <h2 class="game-2d-dialogue-header game-2d-text-center">
                         ${choice.recommended ? '✅ Отличный выбор!' : '⚠️ Результат'}
                     </h2>
             `;
 
             if (consequence.dialogue) {
                 html += `
-                    <div style="background: rgba(78, 204, 163, 0.1); padding: 15px;
-                               border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #4ecca3;">
+                    <div class="game-2d-dialogue-box">
                         ${consequence.dialogue.map(line => `
-                            <div style="margin-bottom: 8px;">
-                                <strong style="color: #4ecca3;">${line.speaker}:</strong>
-                                <span style="color: white;">${line.text}</span>
+                            <div class="game-2d-info-line">
+                                <strong class="game-2d-dialogue-speaker">${line.speaker}:</strong>
+                                <span>${line.text}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -708,13 +675,12 @@ const GameLesson2D = (() => {
 
             if (consequence.stats) {
                 html += `
-                    <div style="background: rgba(255, 217, 61, 0.1); padding: 15px;
-                               border-radius: 12px; margin-bottom: 15px; border-left: 4px solid #ffd93d;">
-                        <div style="color: #ffd93d; font-weight: bold; margin-bottom: 10px;">📊 Изменения:</div>
+                    <div class="game-2d-stats-box">
+                        <div class="game-2d-stats-title">📊 Изменения:</div>
                         ${Object.entries(consequence.stats).map(([key, value]) => {
                             const sign = value > 0 ? '+' : '';
-                            const color = value > 0 ? '#4ecca3' : '#ff6b6b';
-                            return `<div style="color: ${color}; font-size: 12px;">• ${key}: ${sign}${value}</div>`;
+                            const colorClass = value > 0 ? 'game-2d-stat-positive' : 'game-2d-stat-negative';
+                            return `<div class="${colorClass} game-2d-stat-value">• ${key}: ${sign}${value}</div>`;
                         }).join('')}
                     </div>
                 `;
@@ -725,13 +691,12 @@ const GameLesson2D = (() => {
 
             if (consequence.feedback) {
                 html += `
-                    <div style="background: rgba(78, 204, 163, 0.15); padding: 15px;
-                               border-radius: 12px; margin-bottom: 15px;">
-                        <div style="color: #4ecca3; font-weight: bold; margin-bottom: 10px;">
+                    <div class="game-2d-feedback-box">
+                        <div class="game-2d-feedback-title">
                             ${consequence.feedback.title}
                         </div>
                         ${(consequence.feedback.points || []).map(point =>
-                            `<div style="font-size: 12px; margin-bottom: 6px; line-height: 1.5;">• ${point}</div>`
+                            `<div class="game-2d-text-small game-2d-list-item">• ${point}</div>`
                         ).join('')}
                     </div>
                 `;
@@ -739,9 +704,7 @@ const GameLesson2D = (() => {
 
             html += `
                 <button onclick="GameLesson2D.closeDialogue()"
-                        style="width: 100%; padding: 12px; background: #4ecca3; color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
-                               margin-top: 15px;">
+                        class="game-2d-button game-2d-mt-md">
                     Продолжить
                 </button>
                 </div>
@@ -788,74 +751,49 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             let html = `
-                <h2 style="color: #ff6b6b; margin-bottom: 20px; text-align: center;">
+                <h2 class="game-2d-crisis-header">
                     🚨 КРИЗИС: ПЯТНИЦА В 17:00
                 </h2>
 
-                <div style="background: rgba(255, 107, 107, 0.2); padding: 20px; border-radius: 12px;
-                           border-left: 4px solid #ff6b6b; margin-bottom: 20px;">
-                    <div style="color: #ff6b6b; font-weight: bold; margin-bottom: 10px;">
+                <div class="game-2d-crisis-box">
+                    <div class="game-2d-crisis-box-title">
                         ⏰ На тебя одновременно свалилось 6 проблем
                     </div>
-                    <div style="color: white; font-size: 13px; line-height: 1.6;">
+                    <div>
                         Только 60 минут до твоей личной встречи.
                         Как ты будешь расставлять приоритеты?
                     </div>
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <button onclick="GameLesson2D.handleCrisisProblem(0)"
-                            style="width: 100%; padding: 12px; background: rgba(255, 107, 107, 0.3);
-                                   color: white; border: 2px solid #ff6b6b; border-radius: 8px;
-                                   cursor: pointer; font-weight: bold; text-align: left;">
-                        ① ДЕНИС ЗАСТРЯЛ - Помощь?
-                    </button>
-                </div>
+                <button onclick="GameLesson2D.handleCrisisProblem(0)"
+                        class="game-2d-crisis-button game-2d-mb-md">
+                    ① ДЕНИС ЗАСТРЯЛ - Помощь?
+                </button>
 
-                <div style="margin-bottom: 15px;">
-                    <button onclick="GameLesson2D.handleCrisisProblem(1)"
-                            style="width: 100%; padding: 12px; background: rgba(255, 107, 107, 0.3);
-                                   color: white; border: 2px solid #ff6b6b; border-radius: 8px;
-                                   cursor: pointer; font-weight: bold; text-align: left;">
-                        ② ИГОРЬ: БАГ В БОЕВОМ - Исправлять?
-                    </button>
-                </div>
+                <button onclick="GameLesson2D.handleCrisisProblem(1)"
+                        class="game-2d-crisis-button game-2d-mb-md">
+                    ② ИГОРЬ: БАГ В БОЕВОМ - Исправлять?
+                </button>
 
-                <div style="margin-bottom: 15px;">
-                    <button onclick="GameLesson2D.handleCrisisProblem(2)"
-                            style="width: 100%; padding: 12px; background: rgba(255, 107, 107, 0.3);
-                                   color: white; border: 2px solid #ff6b6b; border-radius: 8px;
-                                   cursor: pointer; font-weight: bold; text-align: left;">
-                        ③ CEO: ПРЕЗЕНТАЦИЯ - Делать сам?
-                    </button>
-                </div>
+                <button onclick="GameLesson2D.handleCrisisProblem(2)"
+                        class="game-2d-crisis-button game-2d-mb-md">
+                    ③ CEO: ПРЕЗЕНТАЦИЯ - Делать сам?
+                </button>
 
-                <div style="margin-bottom: 15px;">
-                    <button onclick="GameLesson2D.handleCrisisProblem(3)"
-                            style="width: 100%; padding: 12px; background: rgba(255, 107, 107, 0.3);
-                                   color: white; border: 2px solid #ff6b6b; border-radius: 8px;
-                                   cursor: pointer; font-weight: bold; text-align: left;">
-                        ④ ПРОДАКТ: ПЕРЕДЕЛКА - Согласиться?
-                    </button>
-                </div>
+                <button onclick="GameLesson2D.handleCrisisProblem(3)"
+                        class="game-2d-crisis-button game-2d-mb-md">
+                    ④ ПРОДАКТ: ПЕРЕДЕЛКА - Согласиться?
+                </button>
 
-                <div style="margin-bottom: 15px;">
-                    <button onclick="GameLesson2D.handleCrisisProblem(4)"
-                            style="width: 100%; padding: 12px; background: rgba(255, 107, 107, 0.3);
-                                   color: white; border: 2px solid #ff6b6b; border-radius: 8px;
-                                   cursor: pointer; font-weight: bold; text-align: left;">
-                        ⑤ МАРИЯ: УХОДИТ - Отпустить?
-                    </button>
-                </div>
+                <button onclick="GameLesson2D.handleCrisisProblem(4)"
+                        class="game-2d-crisis-button game-2d-mb-md">
+                    ⑤ МАРИЯ: УХОДИТ - Отпустить?
+                </button>
 
-                <div style="margin-bottom: 15px;">
-                    <button onclick="GameLesson2D.handleCrisisProblem(5)"
-                            style="width: 100%; padding: 12px; background: rgba(255, 107, 107, 0.3);
-                                   color: white; border: 2px solid #ff6b6b; border-radius: 8px;
-                                   cursor: pointer; font-weight: bold; text-align: left;">
-                        ⑥ ЛИЧНАЯ ВСТРЕЧА - Идти или остаться?
-                    </button>
-                </div>
+                <button onclick="GameLesson2D.handleCrisisProblem(5)"
+                        class="game-2d-crisis-button game-2d-mb-md">
+                    ⑥ ЛИЧНАЯ ВСТРЕЧА - Идти или остаться?
+                </button>
             `;
 
             content.innerHTML = html;
@@ -871,27 +809,22 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             let html = `
-                <h2 style="color: #ff6b6b; margin-bottom: 20px;">${problem.title}</h2>
+                <h2 class="game-2d-crisis-header">${problem.title}</h2>
 
-                <div style="background: rgba(255, 107, 107, 0.15); padding: 15px; border-radius: 12px;
-                           border-left: 4px solid #ff6b6b; margin-bottom: 20px;">
+                <div class="game-2d-crisis-box">
                     <strong>${problem.from}</strong> (${problem.time})<br>
-                    <div style="margin-top: 10px; font-size: 13px;">${problem.message}</div>
+                    <div class="game-2d-mt-sm">${problem.message}</div>
                 </div>
             `;
 
             problem.choices.forEach((choice, index) => {
                 html += `
-                    <div style="background: rgba(78, 204, 163, 0.1); padding: 12px;
-                               border-radius: 8px; margin-bottom: 10px; cursor: pointer;
-                               border: 2px solid rgba(78, 204, 163, 0.3);"
-                         onclick="GameLesson2D.selectCrisisChoice(${problemIndex}, '${choice.id}')"
-                         onmouseover="this.style.borderColor='#4ecca3';"
-                         onmouseout="this.style.borderColor='rgba(78, 204, 163, 0.3)';">
-                        <div style="font-weight: bold; color: #4ecca3; margin-bottom: 4px;">
+                    <div class="game-2d-choice-option game-2d-mb-sm"
+                         onclick="GameLesson2D.selectCrisisChoice(${problemIndex}, '${choice.id}')">
+                        <div class="game-2d-choice-title">
                             ${String.fromCharCode(65 + index)}. ${choice.label}
                         </div>
-                        <div style="font-size: 11px; opacity: 0.8;">
+                        <div class="game-2d-text-tiny">
                             ⏱️ ${choice.time_cost} мин
                             ${choice.recommended ? ' | ⭐ Рекомендуемо' : ''}
                         </div>
@@ -926,22 +859,19 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             let html = `
-                <h2 style="color: #4ecca3; margin-bottom: 15px; text-align: center;">✓ Выбор сделан</h2>
+                <h2 class="game-2d-dialogue-header game-2d-text-center">✓ Выбор сделан</h2>
 
-                <div style="background: rgba(78, 204, 163, 0.15); padding: 15px; border-radius: 12px;
-                           margin-bottom: 15px; border-left: 4px solid #4ecca3;">
+                <div class="game-2d-feedback-box">
                     <strong>${choice.label}</strong>
                 </div>
 
-                <div style="background: rgba(255, 217, 61, 0.1); padding: 12px; border-radius: 8px;
-                           margin-bottom: 15px; border-left: 4px solid #ffd93d; font-size: 12px;">
-                    <div style="color: #ffd93d; font-weight: bold; margin-bottom: 8px;">⏱️ Время:</div>
+                <div class="game-2d-stats-box game-2d-text-small">
+                    <div class="game-2d-stats-title">⏱️ Время:</div>
                     Потратил: ${choice.time_cost} мин | Осталось: ${gameState.crisisTime} мин
                 </div>
 
                 <button onclick="GameLesson2D.showCrisisScenario()"
-                        style="width: 100%; padding: 12px; background: #4ecca3; color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        class="game-2d-button">
                     Следующая проблема
                 </button>
             `;
@@ -1003,28 +933,23 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             let html = `
-                <h2 style="color: ${path.outcome === 'optimal' ? '#4ecca3' : '#ff6b6b'};
-                          margin-bottom: 20px; text-align: center;">
+                <h2 class="${path.outcome === 'optimal' ? 'game-2d-dialogue-header' : 'game-2d-crisis-header'}">
                     ${path.title}
                 </h2>
 
-                <div style="background: rgba(78, 204, 163, 0.15); padding: 15px; border-radius: 12px;
-                           margin-bottom: 15px; border-left: 4px solid #4ecca3;">
-                    <div style="color: #4ecca3; font-weight: bold; margin-bottom: 10px;">📊 Результаты:</div>
-                    ${path.immediate.map(result => `<div style="margin-bottom: 6px;">✓ ${result}</div>`).join('')}
+                <div class="game-2d-feedback-box">
+                    <div class="game-2d-feedback-title">📊 Результаты:</div>
+                    ${path.immediate.map(result => `<div class="game-2d-list-item">✓ ${result}</div>`).join('')}
                 </div>
 
-                <div style="background: rgba(255, 217, 61, 0.1); padding: 15px; border-radius: 12px;
-                           margin-bottom: 15px; border-left: 4px solid #ffd93d;">
-                    <div style="color: #ffd93d; font-weight: bold; margin-bottom: 10px;">📈 Награды:</div>
+                <div class="game-2d-stats-box">
+                    <div class="game-2d-stats-title">📈 Награды:</div>
                     <div>⭐ +${path.xp} XP</div>
                     ${path.achievements ? `<div>🏆 Достижения: ${path.achievements.join(', ')}</div>` : ''}
                 </div>
 
                 <button onclick="GameLesson2D.startQuiz()"
-                        style="width: 100%; padding: 12px; background: #4ecca3; color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
-                               margin-top: 15px;">
+                        class="game-2d-button game-2d-mt-md">
                     Пройти финальный тест →
                 </button>
             `;
@@ -1044,24 +969,19 @@ const GameLesson2D = (() => {
                 const q = questions[currentQuestion];
 
                 let html = `
-                    <h2 style="color: #4ecca3; margin-bottom: 20px;">
+                    <h2 class="game-2d-dialogue-header">
                         Вопрос ${currentQuestion + 1}/${questions.length}
                     </h2>
 
-                    <div style="background: rgba(78, 204, 163, 0.1); padding: 15px; border-radius: 12px;
-                               margin-bottom: 20px; border-left: 4px solid #4ecca3;">
+                    <div class="game-2d-context">
                         ${q.question}
                     </div>
                 `;
 
                 q.options.forEach((option, index) => {
                     html += `
-                        <div style="background: rgba(78, 204, 163, 0.1); padding: 12px;
-                                   border-radius: 8px; margin-bottom: 10px; cursor: pointer;
-                                   border: 2px solid rgba(78, 204, 163, 0.3);"
-                             onclick="GameLesson2D.selectQuizAnswer('${q.id}', '${option.id}', ${option.correct}, ${currentQuestion}, ${questions.length})"
-                             onmouseover="this.style.borderColor='#4ecca3';"
-                             onmouseout="this.style.borderColor='rgba(78, 204, 163, 0.3)';">
+                        <div class="game-2d-choice-option game-2d-mb-sm"
+                             onclick="GameLesson2D.selectQuizAnswer('${q.id}', '${option.id}', ${option.correct}, ${currentQuestion}, ${questions.length})">
                             ${String.fromCharCode(65 + index)}. ${option.text}
                         </div>
                     `;
@@ -1104,30 +1024,27 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             let html = `
-                <h2 style="color: #4ecca3; margin-bottom: 20px; text-align: center;">
+                <h2 class="game-2d-dialogue-header game-2d-text-center">
                     🎉 ПОЗДРАВЛЯЕМ!
                 </h2>
 
-                <div style="background: rgba(78, 204, 163, 0.2); padding: 20px; border-radius: 12px;
-                           margin-bottom: 20px; text-align: center;">
-                    <div style="font-size: 36px; color: #4ecca3; font-weight: bold;">
+                <div class="game-2d-feedback-box game-2d-text-center">
+                    <div class="game-2d-result-score">
                         ${percentage}%
                     </div>
-                    <div style="margin-top: 10px;">
+                    <div class="game-2d-mt-sm">
                         Правильно: ${correctAnswers}/${totalAnswers}
                     </div>
                 </div>
 
-                <div style="background: rgba(255, 217, 61, 0.15); padding: 15px; border-radius: 12px;
-                           border-left: 4px solid #ffd93d; margin-bottom: 20px;">
-                    <div style="color: #ffd93d; font-weight: bold; margin-bottom: 10px;">🎁 ФИНАЛЬНЫЕ НАГРАДЫ:</div>
+                <div class="game-2d-stats-box">
+                    <div class="game-2d-stats-title">🎁 ФИНАЛЬНЫЕ НАГРАДЫ:</div>
                     <div>⭐ +${quizBonus} XP (бонус за тест)</div>
                     <div>💫 Итого XP за урок: ${gameState.totalXP}</div>
                 </div>
 
                 <button onclick="GameLesson2D.finishLesson()"
-                        style="width: 100%; padding: 12px; background: #4ecca3; color: white;
-                               border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        class="game-2d-button">
                     ✓ ЗАВЕРШИТЬ УРОК
                 </button>
             `;
