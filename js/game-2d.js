@@ -435,6 +435,10 @@ const GameLesson2D = (() => {
         const modal = document.getElementById('theory-modal-2d');
         modal.classList.remove('active');
         document.getElementById('gameCanvas2D').style.display = 'block';
+
+        // Restore body scrollbar
+        document.body.style.overflow = 'auto';
+
         // Refresh side panel to show "✓ прочитано" status
         updateSidePanel();
     }
@@ -485,6 +489,9 @@ const GameLesson2D = (() => {
 
         modal.classList.add('active');
         document.getElementById('gameCanvas2D').style.display = 'none';
+
+        // Hide body scrollbar to prevent white stripe
+        document.body.style.overflow = 'hidden';
 
         // Attach listeners to theory menu buttons
         attachTheoryMenuListeners();
