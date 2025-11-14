@@ -193,6 +193,12 @@
   max-width: 500px;
 }
 
+#theory-content {
+  max-width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
 /* Modal scrollbar styling */
 .game-2d-modal-content::-webkit-scrollbar {
   width: 8px;
