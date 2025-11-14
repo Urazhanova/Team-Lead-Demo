@@ -130,6 +130,22 @@ const GameLesson2D = (() => {
             <div class="game-2d-main">
                 <div class="game-2d-canvas-wrapper">
                     <canvas id="gameCanvas2D" width="800" height="600"></canvas>
+
+                    <!-- Mobile Controls -->
+                    <div id="mobile-controls" class="game-2d-mobile-controls">
+                        <div class="game-2d-joystick">
+                            <button class="game-2d-move-btn game-2d-move-up" data-direction="up">▲</button>
+                            <div class="game-2d-move-horizontal">
+                                <button class="game-2d-move-btn game-2d-move-left" data-direction="left">◄</button>
+                                <button class="game-2d-move-btn game-2d-move-right" data-direction="right">►</button>
+                            </div>
+                            <button class="game-2d-move-btn game-2d-move-down" data-direction="down">▼</button>
+                        </div>
+                        <div class="game-2d-action-buttons">
+                            <button class="game-2d-action-btn game-2d-interact-btn" id="interact-btn">⏎ ENTER</button>
+                            <button class="game-2d-action-btn game-2d-menu-btn" id="menu-btn">☰ MENU</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="side-panel">
@@ -188,6 +204,72 @@ const GameLesson2D = (() => {
         document.addEventListener('keyup', (e) => {
             gameState.keys[e.key.toLowerCase()] = false;
         });
+
+        // Mobile Controls - Movement Buttons
+        const moveButtons = document.querySelectorAll('.game-2d-move-btn');
+        moveButtons.forEach(btn => {
+            btn.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                const direction = e.currentTarget.getAttribute('data-direction');
+                const keyMap = {
+                    'up': 'w',
+                    'down': 's',
+                    'left': 'a',
+                    'right': 'd'
+                };
+                gameState.keys[keyMap[direction]] = true;
+                e.currentTarget.classList.add('active');
+            });
+
+            btn.addEventListener('pointerup', (e) => {
+                const direction = e.currentTarget.getAttribute('data-direction');
+                const keyMap = {
+                    'up': 'w',
+                    'down': 's',
+                    'left': 'a',
+                    'right': 'd'
+                };
+                gameState.keys[keyMap[direction]] = false;
+                e.currentTarget.classList.remove('active');
+            });
+
+            btn.addEventListener('pointercancel', (e) => {
+                const direction = e.currentTarget.getAttribute('data-direction');
+                const keyMap = {
+                    'up': 'w',
+                    'down': 's',
+                    'left': 'a',
+                    'right': 'd'
+                };
+                gameState.keys[keyMap[direction]] = false;
+                e.currentTarget.classList.remove('active');
+            });
+        });
+
+        // Mobile Controls - Action Buttons
+        const interactBtn = document.getElementById('interact-btn');
+        if (interactBtn) {
+            interactBtn.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                handleInteraction();
+                e.currentTarget.classList.add('active');
+            });
+            interactBtn.addEventListener('pointerup', (e) => {
+                e.currentTarget.classList.remove('active');
+            });
+        }
+
+        const menuBtn = document.getElementById('menu-btn');
+        if (menuBtn) {
+            menuBtn.addEventListener('pointerdown', (e) => {
+                e.preventDefault();
+                showMenu();
+                e.currentTarget.classList.add('active');
+            });
+            menuBtn.addEventListener('pointerup', (e) => {
+                e.currentTarget.classList.remove('active');
+            });
+        }
     }
 
     // ============================================
