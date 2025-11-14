@@ -159,13 +159,14 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.9);
-  z-index: var(--z-modal-backdrop);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
   align-items: center;
   justify-content: center;
   animation: fadeIn var(--transition-base);
+  overflow: hidden;
 }
 
 .game-2d-modal-overlay.active {

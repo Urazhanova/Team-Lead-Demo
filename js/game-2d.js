@@ -858,11 +858,6 @@ const GameLesson2D = (() => {
             }
         });
 
-        // Debug: Check unlocked theory blocks
-        const unlockedBlocks = getUnlockedTheoryBlocks();
-        console.log('[Game2D] Unlocked theory blocks:', unlockedBlocks);
-        console.log('[Game2D] GameData.theoryBlocks exists:', !!GameData.theoryBlocks);
-
         let html = `
             <div class="game-2d-panel-title">👥 РЯДОМ</div>
             ${nearbyNPCs.length > 0
@@ -883,27 +878,6 @@ const GameLesson2D = (() => {
             }
 
             <div class="game-2d-panel-title game-2d-mt-lg">
-                💡 ОБУЧЕНИЕ
-            </div>
-            ${unlockedBlocks.length > 0
-                ? unlockedBlocks.map(blockId => {
-                    const block = GameData.theoryBlocks[blockId];
-                    const isRead = gameState.theoriesRead && gameState.theoriesRead.includes(blockId);
-                    return `
-                        <div class="game-2d-theory-button-item">
-                            <button class="game-2d-theory-button ${isRead ? 'game-2d-theory-read' : ''}"
-                                    data-theory-id="${blockId}">
-                                <span class="game-2d-theory-icon">${block.icon}</span>
-                                <span class="game-2d-theory-title">${block.title}</span>
-                                ${isRead ? '<span class="game-2d-theory-status">✓ прочитано</span>' : '<span class="game-2d-theory-status">+${block.reward} XP</span>'}
-                            </button>
-                        </div>
-                    `;
-                }).join('')
-                : '<div class="game-2d-text-muted">Обучение заблокировано</div>'
-            }
-
-            <div class="game-2d-panel-title game-2d-mt-lg">
                 📊 СТАТИСТИКА
             </div>
             <div class="game-2d-text-small">
@@ -914,24 +888,6 @@ const GameLesson2D = (() => {
         `;
 
         panel.innerHTML = html;
-
-        // Attach event listeners to theory buttons
-        attachTheoryButtonListeners();
-    }
-
-    function attachTheoryButtonListeners() {
-        const panel = document.getElementById('side-panel');
-        if (!panel) return;
-
-        const theoryButtons = panel.querySelectorAll('.game-2d-theory-button');
-        theoryButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                const blockId = button.dataset.theoryId;
-                console.log('[Game2D] Theory button clicked, blockId:', blockId);
-                showTheoryModal(blockId);
-            });
-        });
     }
 
     // ============================================
