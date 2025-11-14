@@ -608,10 +608,9 @@ const GameLesson2D = (() => {
             ${nearbyNPCs.length > 0
                 ? nearbyNPCs.map(key => {
                     const npc = gameState.npcs[key];
-                    const hasImage = npc.image ? 'style="background-image: url(' + npc.image + '); background-size: cover; background-position: center;"' : '';
                     return `
                         <div class="game-2d-npc-card">
-                            ${npc.image ? `<div style="width: 100%; height: 120px; margin: -8px -8px 8px -8px; background-image: url(${npc.image}); background-size: cover; background-position: center; border-radius: 8px 8px 0 0;"></div>` : ''}
+                            ${npc.image ? `<div class="game-2d-npc-card-image" style="background-image: url(${npc.image});"></div>` : ''}
                             <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
                             <div class="game-2d-npc-card-role">${npc.role}</div>
                             <div class="game-2d-npc-card-hint">
