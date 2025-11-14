@@ -671,9 +671,9 @@ const GameLesson2D = (() => {
             const npc = gameState.npcs[key];
             if (npc.canInteract) {
                 ctx.fillStyle = '#4ecca3';
-                ctx.font = 'bold 20px Arial';
+                ctx.font = 'bold 16px Arial';
                 ctx.textAlign = 'center';
-                ctx.fillText('E', npc.x + npc.size/2, npc.y - 20);
+                ctx.fillText('⏎ ENTER', npc.x + npc.size/2, npc.y - 20);
 
                 // Interaction circle
                 ctx.strokeStyle = 'rgba(78, 204, 163, 0.5)';
@@ -897,7 +897,7 @@ const GameLesson2D = (() => {
                             <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
                             <div class="game-2d-npc-card-role">${npc.role}</div>
                             <div class="game-2d-npc-card-hint">
-                                Нажми E для диалога
+                                ⏎ Нажми ENTER
                             </div>
                         </div>
                     `;
