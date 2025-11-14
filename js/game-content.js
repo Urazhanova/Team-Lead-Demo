@@ -1,22 +1,35 @@
 /**
- * Game Content Module
- * Handles game-type lessons (separate from screen-based lessons)
- * Minimal, isolated implementation to avoid breaking existing lessons
+ * Game Content Module - Sprint Planning Game
+ * Handles all game logic for Lesson 3
  */
 
 var GameContent = {
+  // ============================================
+  // STATE MANAGEMENT
+  // ============================================
   currentGame: null,
   gameContainer: null,
+  allTasks: [],
 
-  /**
-   * Check if this module should handle the lesson
-   */
-  canHandle: function(lesson) {
-    return lesson && lesson.type === 'game';
+  gameState: {
+    currentPhase: 'intro',      // intro, game, review, results
+    selectedTasks: [],          // Array of task IDs
+    usedCapacity: 0,
+    totalCapacity: 40,
+    allTasks: [],
+    score: 0,
+    feedback: '',
+    attempts: 0,
+    startTime: null,
+    endTime: null
   },
 
+  // ============================================
+  // INITIALIZATION
+  // ============================================
+
   /**
-   * Initialize and render game lesson
+   * Render initial game intro screen
    */
   render: function(lesson, container) {
     console.log("[GameContent] Rendering game lesson: " + lesson.title);
@@ -62,7 +75,7 @@ var GameContent = {
     gameArea.id = 'game-area';
     gameArea.style.cssText = 'background: white; border-radius: 8px; padding: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); min-height: 400px; display: flex; align-items: center; justify-content: center;';
 
-    // Add intro text if available
+    // Add intro content
     if (lesson.content && lesson.content.introText) {
       var introContent = document.createElement('div');
       introContent.className = 'game-intro';
@@ -75,26 +88,22 @@ var GameContent = {
 
       var introText = document.createElement('p');
       introText.innerHTML = lesson.content.introText;
-      introText.style.cssText = 'color: var(--neutral-700); font-size: 16px; line-height: 1.6; margin-bottom: 30px;';
+      introText.style.cssText = 'color: var(--neutral-700); font-size: 16px; line-height: 1.6; margin-bottom: 30px; max-width: 600px;';
       introContent.appendChild(introText);
 
-      // Add start game button
+      // Add start button
       var startBtn = document.createElement('button');
       startBtn.className = 'btn btn-primary';
       startBtn.textContent = 'Начать игру';
       startBtn.style.cssText = 'padding: 12px 30px; background: var(--brand-primary); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.3s;';
-      startBtn.onclick = function() {
-        GameContent.startGame();
-      };
-      introContent.appendChild(startBtn);
 
+      var self = this;
+      startBtn.onclick = function() {
+        self.startGame();
+      };
+
+      introContent.appendChild(startBtn);
       gameArea.appendChild(introContent);
-    } else {
-      // No intro text - show placeholder for game content
-      var placeholder = document.createElement('p');
-      placeholder.textContent = 'Игровое содержание здесь';
-      placeholder.style.cssText = 'color: var(--neutral-500); font-style: italic;';
-      gameArea.appendChild(placeholder);
     }
 
     gameWrapper.appendChild(gameArea);
@@ -115,7 +124,8 @@ var GameContent = {
     nextBtn.className = 'btn btn-primary';
     nextBtn.textContent = 'Следующий урок →';
     nextBtn.setAttribute('data-action', 'next');
-    nextBtn.style.cssText = 'padding: 10px 20px; background: var(--brand-primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-left: auto;';
+    nextBtn.disabled = true;  // Disabled until game complete
+    nextBtn.style.cssText = 'padding: 10px 20px; background: var(--brand-primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; margin-left: auto; opacity: 0.5;';
     navContainer.appendChild(nextBtn);
 
     gameWrapper.appendChild(navContainer);
@@ -127,11 +137,67 @@ var GameContent = {
     return true;
   },
 
+  // ============================================
+  // GAME INITIALIZATION & DATA LOADING
+  // ============================================
+
   /**
-   * Start the actual game logic
+   * Initialize game data and render game board
    */
   startGame: function() {
-    console.log("[GameContent] Starting game: " + (this.currentGame ? this.currentGame.title : 'unknown'));
+    console.log("[GameContent] Starting game");
+    this.gameState.currentPhase = 'game';
+    this.gameState.startTime = Date.now();
+    this.gameState.attempts++;
+
+    var self = this;
+
+    // Load tasks from JSON
+    this.loadSprintTasks(function(error, tasks) {
+      if (error) {
+        console.error("[GameContent] Error loading tasks: " + error.message);
+        return;
+      }
+
+      self.allTasks = tasks;
+      self.gameState.allTasks = tasks;
+      self.renderGameBoard();
+      self.bindGameEvents();
+    });
+  },
+
+  /**
+   * Load sprint tasks from JSON file
+   */
+  loadSprintTasks: function(callback) {
+    console.log("[GameContent] Loading sprint tasks...");
+
+    fetch('data/sprint-tasks.json?v=' + new Date().getTime())
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error("Failed to load tasks: " + response.statusText);
+        }
+        return response.json();
+      })
+      .then(function(data) {
+        console.log("[GameContent] Tasks loaded: " + data.availableTasks.length + " tasks");
+        callback(null, data.availableTasks);
+      })
+      .catch(function(error) {
+        console.error("[GameContent] Error: " + error.message);
+        callback(error, null);
+      });
+  },
+
+  // ============================================
+  // GAME BOARD RENDERING
+  // ============================================
+
+  /**
+   * Render game board with two panels
+   */
+  renderGameBoard: function() {
+    console.log("[GameContent] Rendering game board");
 
     var gameArea = document.getElementById('game-area');
     if (!gameArea) {
@@ -142,24 +208,707 @@ var GameContent = {
     // Clear intro
     gameArea.innerHTML = '';
 
-    // Create simple game board placeholder
+    // Create board container
     var board = document.createElement('div');
     board.className = 'game-board';
-    board.style.cssText = 'width: 100%; max-width: 600px; margin: 0 auto;';
+    board.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 30px; width: 100%; min-height: 600px;';
 
-    var boardTitle = document.createElement('h2');
-    boardTitle.textContent = 'Планирование спринта';
-    boardTitle.style.cssText = 'color: var(--brand-primary); margin-bottom: 20px; text-align: center;';
-    board.appendChild(boardTitle);
+    // Left panel: Available tasks
+    var leftPanel = document.createElement('div');
+    leftPanel.className = 'available-tasks-panel';
+    leftPanel.style.cssText = 'border: 1px solid var(--neutral-200); border-radius: 8px; padding: 20px; background: var(--neutral-50); overflow-y: auto; max-height: 600px;';
 
-    var boardContent = document.createElement('p');
-    boardContent.innerHTML = 'Игровое содержание будет здесь. Это интерактивная игра для планирования и приоритизации задач.<br><br>Система готова к расширению с добавлением конкретной игровой логики.';
-    boardContent.style.cssText = 'color: var(--neutral-700); font-size: 16px; line-height: 1.6; text-align: center; padding: 40px 20px; background: var(--neutral-50); border-radius: 8px;';
-    board.appendChild(boardContent);
+    var leftTitle = document.createElement('h3');
+    leftTitle.textContent = 'Доступные задачи';
+    leftTitle.style.cssText = 'color: var(--brand-primary); margin: 0 0 20px 0;';
+    leftPanel.appendChild(leftTitle);
 
+    // Create task cards
+    this.allTasks.forEach(function(task) {
+      var card = this.createTaskCard(task);
+      leftPanel.appendChild(card);
+    }.bind(this));
+
+    board.appendChild(leftPanel);
+
+    // Right panel: Sprint plan
+    var rightPanel = document.createElement('div');
+    rightPanel.className = 'sprint-plan-panel';
+    rightPanel.style.cssText = 'border: 1px solid var(--brand-primary); border-radius: 8px; padding: 20px; background: white; display: flex; flex-direction: column;';
+
+    var rightTitle = document.createElement('h3');
+    rightTitle.textContent = 'Ваш план спринта';
+    rightTitle.style.cssText = 'color: var(--brand-primary); margin: 0 0 20px 0;';
+    rightPanel.appendChild(rightTitle);
+
+    var selectedList = document.createElement('div');
+    selectedList.id = 'selected-tasks-list';
+    selectedList.className = 'selected-tasks-list';
+    selectedList.style.cssText = 'flex: 1; min-height: 200px; padding: 15px; background: var(--neutral-50); border-radius: 4px; margin-bottom: 15px; border: 2px dashed var(--neutral-300); overflow-y: auto;';
+
+    var emptyText = document.createElement('p');
+    emptyText.textContent = 'Перетащите или нажмите на задачи';
+    emptyText.style.cssText = 'color: var(--neutral-500); text-align: center; margin: 50px 0;';
+    selectedList.appendChild(emptyText);
+    rightPanel.appendChild(selectedList);
+
+    // Capacity meter
+    var capacityMeter = document.createElement('div');
+    capacityMeter.style.cssText = 'margin-bottom: 15px;';
+
+    var meterLabel = document.createElement('p');
+    meterLabel.textContent = 'Пропускная способность:';
+    meterLabel.style.cssText = 'margin: 0 0 8px 0; color: var(--neutral-700); font-weight: 600;';
+    capacityMeter.appendChild(meterLabel);
+
+    var meterBar = document.createElement('div');
+    meterBar.id = 'capacity-meter';
+    meterBar.style.cssText = 'width: 100%; height: 24px; background: #e0e0e0; border-radius: 4px; overflow: hidden; border: 1px solid var(--neutral-300);';
+
+    var meterFill = document.createElement('div');
+    meterFill.id = 'capacity-fill';
+    meterFill.style.cssText = 'height: 100%; width: 0%; background: linear-gradient(90deg, #4CAF50 0%, #FFC107 50%, #FF5722 100%); transition: width 0.3s ease;';
+    meterBar.appendChild(meterFill);
+    capacityMeter.appendChild(meterBar);
+
+    var meterText = document.createElement('p');
+    meterText.id = 'capacity-text';
+    meterText.textContent = '0 / 40 points';
+    meterText.style.cssText = 'margin: 8px 0 0 0; color: var(--neutral-600); font-size: 14px;';
+    capacityMeter.appendChild(meterText);
+
+    rightPanel.appendChild(capacityMeter);
+
+    // Action buttons
+    var actionButtons = document.createElement('div');
+    actionButtons.style.cssText = 'display: flex; gap: 10px;';
+
+    var completeBtn = document.createElement('button');
+    completeBtn.id = 'complete-sprint-btn';
+    completeBtn.textContent = 'Завершить спринт';
+    completeBtn.className = 'btn btn-primary';
+    completeBtn.disabled = true;
+    completeBtn.style.cssText = 'flex: 1; padding: 10px 20px; background: var(--brand-primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; opacity: 0.5;';
+    completeBtn.onclick = function() {
+      GameContent.completeGame();
+    };
+    actionButtons.appendChild(completeBtn);
+
+    var resetBtn = document.createElement('button');
+    resetBtn.textContent = '🔄 Сбросить';
+    resetBtn.style.cssText = 'padding: 10px 20px; background: transparent; color: var(--brand-primary); border: 1px solid var(--brand-primary); border-radius: 6px; font-weight: 600; cursor: pointer;';
+    resetBtn.onclick = function() {
+      GameContent.resetGame();
+    };
+    actionButtons.appendChild(resetBtn);
+
+    rightPanel.appendChild(actionButtons);
+
+    board.appendChild(rightPanel);
+
+    // Add board to game area
     gameArea.appendChild(board);
-    console.log("[GameContent] Game board initialized");
+
+    // Update UI
+    this.updateCapacityMeter();
   },
+
+  /**
+   * Create a task card element
+   */
+  createTaskCard: function(task) {
+    var card = document.createElement('div');
+    card.className = 'task-card';
+    card.setAttribute('data-task-id', task.id);
+    card.setAttribute('data-points', task.points);
+    card.style.cssText = 'padding: 15px; margin-bottom: 15px; border-radius: 8px; background: white; border: 1px solid var(--neutral-200); cursor: grab; transition: all 0.2s ease; user-select: none;';
+
+    // Color based on priority
+    var priorityColor = this.getPriorityColor(task.priority);
+    card.style.borderLeft = '4px solid ' + priorityColor;
+
+    // Title
+    var title = document.createElement('div');
+    title.textContent = task.title;
+    title.style.cssText = 'font-weight: 600; color: var(--neutral-900); margin-bottom: 8px;';
+    card.appendChild(title);
+
+    // Points
+    var points = document.createElement('div');
+    points.textContent = task.points + ' points';
+    points.style.cssText = 'color: var(--brand-primary); font-weight: 600; margin-bottom: 8px;';
+    card.appendChild(points);
+
+    // Priority badge
+    var priorityBadge = document.createElement('span');
+    priorityBadge.className = 'priority-badge';
+    priorityBadge.textContent = task.priority.toUpperCase();
+    priorityBadge.style.cssText = 'display: inline-block; padding: 4px 8px; background: ' + priorityColor + '; color: white; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px;';
+    card.appendChild(priorityBadge);
+
+    // Category
+    var category = document.createElement('span');
+    category.textContent = task.category;
+    category.style.cssText = 'color: var(--neutral-600); font-size: 12px;';
+    card.appendChild(category);
+
+    // Hover effect
+    card.onmouseover = function() {
+      card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+      card.style.cursor = 'grab';
+    };
+    card.onmouseout = function() {
+      card.style.boxShadow = 'none';
+    };
+
+    // Click handler
+    card.onclick = function(e) {
+      // Only add if not already in sprint
+      if (GameContent.gameState.selectedTasks.indexOf(task.id) === -1) {
+        GameContent.selectTask(task.id);
+      }
+      e.stopPropagation();
+    };
+
+    return card;
+  },
+
+  /**
+   * Get color for priority level
+   */
+  getPriorityColor: function(priority) {
+    switch(priority) {
+      case 'critical': return '#F44336';  // Red
+      case 'important': return '#FF9800'; // Orange
+      case 'medium': return '#2196F3';    // Blue
+      case 'low': return '#9E9E9E';       // Gray
+      default: return '#9E9E9E';
+    }
+  },
+
+  // ============================================
+  // GAME INTERACTIONS
+  // ============================================
+
+  /**
+   * Select a task and add to sprint plan
+   */
+  selectTask: function(taskId) {
+    console.log("[GameContent] Selecting task: " + taskId);
+
+    // Find task
+    var task = this.findTaskById(taskId);
+    if (!task) {
+      console.error("[GameContent] Task not found: " + taskId);
+      return;
+    }
+
+    // Check if already selected
+    if (this.gameState.selectedTasks.indexOf(taskId) !== -1) {
+      console.warn("[GameContent] Task already selected: " + taskId);
+      return;
+    }
+
+    // Check capacity
+    if (this.gameState.usedCapacity + task.points > this.gameState.totalCapacity) {
+      alert('❌ Невозможно добавить эту задачу - превышена пропускная способность!');
+      return;
+    }
+
+    // Add to selected
+    this.gameState.selectedTasks.push(taskId);
+    this.gameState.usedCapacity += task.points;
+
+    // Update UI
+    this.updateSelectedTasksList();
+    this.updateCapacityMeter();
+    this.updateCompleteButton();
+
+    console.log("[GameContent] Task selected. Used capacity: " + this.gameState.usedCapacity);
+  },
+
+  /**
+   * Remove task from sprint plan
+   */
+  removeTask: function(taskId) {
+    console.log("[GameContent] Removing task: " + taskId);
+
+    var index = this.gameState.selectedTasks.indexOf(taskId);
+    if (index === -1) {
+      return;
+    }
+
+    var task = this.findTaskById(taskId);
+    if (task) {
+      this.gameState.usedCapacity -= task.points;
+    }
+
+    this.gameState.selectedTasks.splice(index, 1);
+
+    // Update UI
+    this.updateSelectedTasksList();
+    this.updateCapacityMeter();
+    this.updateCompleteButton();
+
+    console.log("[GameContent] Task removed. Used capacity: " + this.gameState.usedCapacity);
+  },
+
+  /**
+   * Find task by ID
+   */
+  findTaskById: function(taskId) {
+    for (var i = 0; i < this.allTasks.length; i++) {
+      if (this.allTasks[i].id === taskId) {
+        return this.allTasks[i];
+      }
+    }
+    return null;
+  },
+
+  // ============================================
+  // UI UPDATES
+  // ============================================
+
+  /**
+   * Update the selected tasks list display
+   */
+  updateSelectedTasksList: function() {
+    var listContainer = document.getElementById('selected-tasks-list');
+    if (!listContainer) return;
+
+    // Clear
+    listContainer.innerHTML = '';
+
+    if (this.gameState.selectedTasks.length === 0) {
+      var emptyText = document.createElement('p');
+      emptyText.textContent = 'Перетащите или нажмите на задачи';
+      emptyText.style.cssText = 'color: var(--neutral-500); text-align: center; margin: 50px 0;';
+      listContainer.appendChild(emptyText);
+      return;
+    }
+
+    // Add selected tasks
+    this.gameState.selectedTasks.forEach(function(taskId) {
+      var task = this.findTaskById(taskId);
+      if (!task) return;
+
+      var item = document.createElement('div');
+      item.className = 'selected-task-item';
+      item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: white; border-radius: 4px; border: 1px solid var(--neutral-200);';
+
+      var textDiv = document.createElement('div');
+      textDiv.style.cssText = 'flex: 1;';
+
+      var taskName = document.createElement('div');
+      taskName.textContent = task.title;
+      taskName.style.cssText = 'font-weight: 600; color: var(--neutral-900);';
+      textDiv.appendChild(taskName);
+
+      var pointsText = document.createElement('div');
+      pointsText.textContent = task.points + ' points';
+      pointsText.style.cssText = 'font-size: 12px; color: var(--brand-primary);';
+      textDiv.appendChild(pointsText);
+
+      item.appendChild(textDiv);
+
+      var removeBtn = document.createElement('button');
+      removeBtn.textContent = '✕';
+      removeBtn.style.cssText = 'background: transparent; border: none; color: #F44336; cursor: pointer; font-size: 18px; padding: 0 5px;';
+      removeBtn.onclick = function() {
+        GameContent.removeTask(taskId);
+      };
+
+      item.appendChild(removeBtn);
+      listContainer.appendChild(item);
+    }.bind(this));
+  },
+
+  /**
+   * Update capacity meter
+   */
+  updateCapacityMeter: function() {
+    var meterFill = document.getElementById('capacity-fill');
+    var meterText = document.getElementById('capacity-text');
+
+    if (meterFill && meterText) {
+      var percentage = (this.gameState.usedCapacity / this.gameState.totalCapacity) * 100;
+      meterFill.style.width = percentage + '%';
+      meterText.textContent = this.gameState.usedCapacity + ' / ' + this.gameState.totalCapacity + ' points';
+    }
+  },
+
+  /**
+   * Update complete button state
+   */
+  updateCompleteButton: function() {
+    var btn = document.getElementById('complete-sprint-btn');
+    if (!btn) return;
+
+    // Enable if at least 2 tasks selected and not overcapacity
+    if (this.gameState.selectedTasks.length >= 2 &&
+        this.gameState.usedCapacity <= this.gameState.totalCapacity) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    } else {
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
+    }
+  },
+
+  // ============================================
+  // GAME COMPLETION & SCORING
+  // ============================================
+
+  /**
+   * Complete the game and calculate score
+   */
+  completeGame: function() {
+    console.log("[GameContent] Completing game");
+    this.gameState.currentPhase = 'review';
+    this.gameState.endTime = Date.now();
+
+    // Validate selection
+    var validation = this.validateSelection();
+    if (!validation.isValid) {
+      alert('Ошибка: ' + validation.errors.join(', '));
+      return;
+    }
+
+    // Calculate score
+    this.gameState.score = this.calculateScore();
+
+    // Generate feedback
+    this.gameState.feedback = this.generateFeedback(this.gameState.score);
+
+    // Show results
+    this.showResults();
+
+    // Log to SCORM
+    this.logToSCORM();
+  },
+
+  /**
+   * Validate selected tasks
+   */
+  validateSelection: function() {
+    var result = {
+      isValid: true,
+      errors: []
+    };
+
+    // Check minimum selections
+    if (this.gameState.selectedTasks.length < 2) {
+      result.errors.push("Выберите минимум 2 задачи");
+      result.isValid = false;
+    }
+
+    // Check capacity
+    if (this.gameState.usedCapacity > this.gameState.totalCapacity) {
+      result.errors.push("Превышена пропускная способность");
+      result.isValid = false;
+    }
+
+    return result;
+  },
+
+  /**
+   * Calculate score based on criteria
+   */
+  calculateScore: function() {
+    var score = 0;
+    var maxScore = 100;
+    var criteriaScore = maxScore / 4;  // 25% each
+
+    // Criterion 1: Include critical tasks (25%)
+    var hasCritical = this.hasCriticalTasks();
+    if (hasCritical) {
+      score += criteriaScore;
+      console.log("[GameContent] +25% for critical tasks");
+    }
+
+    // Criterion 2: Include tech debt tasks (25%)
+    var hasTechDebt = this.hasTechDebtTasks();
+    if (hasTechDebt) {
+      score += criteriaScore;
+      console.log("[GameContent] +25% for tech debt");
+    }
+
+    // Criterion 3: Good balance (25%)
+    var hasBalance = this.hasGoodBalance();
+    if (hasBalance) {
+      score += criteriaScore;
+      console.log("[GameContent] +25% for good balance");
+    }
+
+    // Criterion 4: Not overcapacity (25%)
+    var notOvercapacity = this.gameState.usedCapacity <= this.gameState.totalCapacity;
+    if (notOvercapacity) {
+      score += criteriaScore;
+      console.log("[GameContent] +25% for not overcapacity");
+    }
+
+    return Math.round(score);
+  },
+
+  /**
+   * Check if critical tasks are included
+   */
+  hasCriticalTasks: function() {
+    var criticalTasks = this.allTasks.filter(function(t) {
+      return t.priority === 'critical';
+    });
+
+    for (var i = 0; i < criticalTasks.length; i++) {
+      if (this.gameState.selectedTasks.indexOf(criticalTasks[i].id) === -1) {
+        return false;  // Missing a critical task
+      }
+    }
+
+    return true;
+  },
+
+  /**
+   * Check if tech debt is included
+   */
+  hasTechDebtTasks: function() {
+    for (var i = 0; i < this.gameState.selectedTasks.length; i++) {
+      var task = this.findTaskById(this.gameState.selectedTasks[i]);
+      if (task && task.category === 'technical_debt') {
+        return true;
+      }
+    }
+    return false;
+  },
+
+  /**
+   * Check if there's good balance between types
+   */
+  hasGoodBalance: function() {
+    var categories = {};
+
+    this.gameState.selectedTasks.forEach(function(taskId) {
+      var task = this.findTaskById(taskId);
+      if (task) {
+        categories[task.category] = (categories[task.category] || 0) + 1;
+      }
+    }.bind(this));
+
+    // Need at least 2 different categories
+    return Object.keys(categories).length >= 2;
+  },
+
+  /**
+   * Generate feedback message
+   */
+  generateFeedback: function(score) {
+    var feedback = "";
+
+    if (score >= 90) {
+      feedback = "🎯 Превосходно! Вы спланировали идеальный спринт. Отлично сбалансировали все критерии.";
+    } else if (score >= 75) {
+      feedback = "✅ Хороший спринт! Вы учли основные приоритеты. Подумайте о балансе между типами задач.";
+    } else if (score >= 50) {
+      feedback = "📌 Приемлемый спринт. Но не забывайте про technical debt и критические задачи.";
+    } else {
+      feedback = "⚠️ Ваш спринт нуждается в пересмотре. Обратите внимание на критические приоритеты.";
+    }
+
+    return feedback;
+  },
+
+  /**
+   * Show results screen
+   */
+  showResults: function() {
+    console.log("[GameContent] Showing results. Score: " + this.gameState.score);
+    this.gameState.currentPhase = 'results';
+
+    var gameArea = document.getElementById('game-area');
+    if (!gameArea) return;
+
+    gameArea.innerHTML = '';
+
+    var resultsContainer = document.createElement('div');
+    resultsContainer.className = 'results-container';
+    resultsContainer.style.cssText = 'text-align: center; padding: 40px 20px;';
+
+    // Title
+    var title = document.createElement('h2');
+    title.textContent = '🎉 СПРИНТ СПЛАНИРОВАН!';
+    title.style.cssText = 'color: var(--brand-primary); margin-bottom: 30px; font-size: 28px;';
+    resultsContainer.appendChild(title);
+
+    // Score display
+    var scoreDiv = document.createElement('div');
+    scoreDiv.style.cssText = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 12px; margin-bottom: 30px;';
+
+    var scoreLabel = document.createElement('div');
+    scoreLabel.textContent = 'ВАША ОЦЕНКА';
+    scoreLabel.style.cssText = 'font-size: 14px; opacity: 0.9; margin-bottom: 10px;';
+    scoreDiv.appendChild(scoreLabel);
+
+    var scoreValue = document.createElement('div');
+    scoreValue.textContent = this.gameState.score + ' / 100';
+    scoreValue.style.cssText = 'font-size: 48px; font-weight: 700; margin-bottom: 10px;';
+    scoreDiv.appendChild(scoreValue);
+
+    var scoreBar = document.createElement('div');
+    scoreBar.style.cssText = 'width: 100%; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; overflow: hidden; margin-bottom: 10px;';
+
+    var scoreBarFill = document.createElement('div');
+    scoreBarFill.style.cssText = 'height: 100%; width: ' + this.gameState.score + '%; background: white; transition: width 1s ease;';
+    scoreBar.appendChild(scoreBarFill);
+    scoreDiv.appendChild(scoreBar);
+
+    resultsContainer.appendChild(scoreDiv);
+
+    // Feedback
+    var feedbackDiv = document.createElement('div');
+    feedbackDiv.style.cssText = 'background: var(--neutral-50); padding: 20px; border-radius: 8px; border-left: 4px solid var(--brand-primary); margin-bottom: 30px;';
+
+    var feedbackText = document.createElement('p');
+    feedbackText.innerHTML = this.gameState.feedback;
+    feedbackText.style.cssText = 'color: var(--neutral-800); font-size: 16px; line-height: 1.6; margin: 0;';
+    feedbackDiv.appendChild(feedbackText);
+
+    resultsContainer.appendChild(feedbackDiv);
+
+    // Analysis
+    var analysisDiv = document.createElement('div');
+    analysisDiv.style.cssText = 'text-align: left; background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px;';
+
+    var analysisTitle = document.createElement('h3');
+    analysisTitle.textContent = 'Анализ вашего выбора:';
+    analysisTitle.style.cssText = 'color: var(--brand-primary); margin: 0 0 15px 0;';
+    analysisDiv.appendChild(analysisTitle);
+
+    var criteria = [
+      { label: 'Критические задачи включены?', check: this.hasCriticalTasks() },
+      { label: 'Технический долг учтён?', check: this.hasTechDebtTasks() },
+      { label: 'Хороший баланс типов?', check: this.hasGoodBalance() },
+      { label: 'Не превышена пропускная способность?', check: this.gameState.usedCapacity <= this.gameState.totalCapacity }
+    ];
+
+    criteria.forEach(function(criterion) {
+      var item = document.createElement('div');
+      item.style.cssText = 'padding: 10px 0; border-bottom: 1px solid var(--neutral-200);';
+
+      var checkbox = criterion.check ? '✅' : '❌';
+      item.textContent = checkbox + ' ' + criterion.label;
+      item.style.color = criterion.check ? '#4CAF50' : '#F44336';
+
+      analysisDiv.appendChild(item);
+    });
+
+    resultsContainer.appendChild(analysisDiv);
+
+    // Selected tasks summary
+    var summaryDiv = document.createElement('div');
+    summaryDiv.style.cssText = 'text-align: left; background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px;';
+
+    var summaryTitle = document.createElement('h3');
+    summaryTitle.textContent = 'Выбранные задачи:';
+    summaryTitle.style.cssText = 'color: var(--brand-primary); margin: 0 0 15px 0;';
+    summaryDiv.appendChild(summaryTitle);
+
+    this.gameState.selectedTasks.forEach(function(taskId) {
+      var task = this.findTaskById(taskId);
+      if (task) {
+        var item = document.createElement('div');
+        item.style.cssText = 'padding: 8px 0; color: var(--neutral-700);';
+        item.textContent = '• ' + task.title + ' (' + task.points + ' points)';
+        summaryDiv.appendChild(item);
+      }
+    }.bind(this));
+
+    resultsContainer.appendChild(summaryDiv);
+
+    // Navigation buttons
+    var navButtons = document.createElement('div');
+    navButtons.style.cssText = 'display: flex; gap: 10px; justify-content: center;';
+
+    var retryBtn = document.createElement('button');
+    retryBtn.textContent = '← Переделать';
+    retryBtn.style.cssText = 'padding: 12px 30px; background: transparent; color: var(--brand-primary); border: 2px solid var(--brand-primary); border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px;';
+    retryBtn.onclick = function() {
+      GameContent.startGame();
+    };
+    navButtons.appendChild(retryBtn);
+
+    var nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Далее →';
+    nextBtn.style.cssText = 'padding: 12px 30px; background: var(--brand-primary); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px;';
+    nextBtn.onclick = function() {
+      // Enable next button in navigation
+      var nextNavBtn = document.querySelector('[data-action="next"]');
+      if (nextNavBtn) {
+        nextNavBtn.disabled = false;
+        nextNavBtn.style.opacity = '1';
+        nextNavBtn.click();
+      }
+    };
+    navButtons.appendChild(nextBtn);
+
+    resultsContainer.appendChild(navButtons);
+
+    gameArea.appendChild(resultsContainer);
+  },
+
+  /**
+   * Log game completion to SCORM
+   */
+  logToSCORM: function() {
+    if (typeof SCORM === 'undefined' || !SCORM.initialized) {
+      console.warn("[GameContent] SCORM not available");
+      return;
+    }
+
+    console.log("[GameContent] Logging to SCORM");
+
+    // Log interaction
+    SCORM.addInteraction(
+      'sprint-planning-3',
+      'choice',
+      this.gameState.selectedTasks.join(','),
+      this.gameState.score >= 75
+    );
+
+    // Set score
+    SCORM.setValue('cmi.core.score.raw', this.gameState.score);
+
+    // Commit
+    SCORM.commit();
+  },
+
+  /**
+   * Reset game state for retry
+   */
+  resetGame: function() {
+    console.log("[GameContent] Resetting game");
+    this.gameState.selectedTasks = [];
+    this.gameState.usedCapacity = 0;
+    this.gameState.score = 0;
+    this.gameState.feedback = '';
+    this.startGame();
+  },
+
+  // ============================================
+  // GAME EVENTS
+  // ============================================
+
+  /**
+   * Bind all game event listeners
+   */
+  bindGameEvents: function() {
+    console.log("[GameContent] Binding game events");
+
+    // Drag and drop would go here (Phase 3)
+    // For now, click-based selection is working
+  },
+
+  // ============================================
+  // UTILITY METHODS
+  // ============================================
 
   /**
    * Get current game status
@@ -167,7 +916,11 @@ var GameContent = {
   getStatus: function() {
     return {
       currentGame: this.currentGame ? this.currentGame.id : null,
-      gameTitle: this.currentGame ? this.currentGame.title : null
+      gameTitle: this.currentGame ? this.currentGame.title : null,
+      phase: this.gameState.currentPhase,
+      score: this.gameState.score,
+      selectedTaskCount: this.gameState.selectedTasks.length,
+      usedCapacity: this.gameState.usedCapacity
     };
   },
 
@@ -178,7 +931,20 @@ var GameContent = {
     console.log("[GameContent] Cleaning up game content");
     this.currentGame = null;
     this.gameContainer = null;
+    this.allTasks = [];
+    this.gameState = {
+      currentPhase: 'intro',
+      selectedTasks: [],
+      usedCapacity: 0,
+      totalCapacity: 40,
+      allTasks: [],
+      score: 0,
+      feedback: '',
+      attempts: 0,
+      startTime: null,
+      endTime: null
+    };
   }
 };
 
-console.log("[GameContent] Module loaded");
+console.log("[GameContent] Game Content module loaded and ready");

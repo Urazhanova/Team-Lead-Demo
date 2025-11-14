@@ -1,0 +1,100 @@
+{
+  "gameId": "sprint-planning-3",
+  "sprint": {
+    "name": "Week 3",
+    "capacity": 40,
+    "description": "Plan the sprint to balance business features, customer requests, and technical debt"
+  },
+  "availableTasks": [
+    {
+      "id": "task_1",
+      "title": "Implement user authentication",
+      "points": 8,
+      "priority": "critical",
+      "category": "feature",
+      "reason": "🔴 CRITICAL: Required for security compliance",
+      "details": "Add JWT authentication with password hashing and email verification. Estimated 5 days work. Blocks several other features."
+    },
+    {
+      "id": "task_2",
+      "title": "Fix database connection pooling",
+      "points": 5,
+      "priority": "important",
+      "category": "bugfix",
+      "reason": "🟡 IMPORTANT: Currently causing timeouts in production",
+      "details": "Optimize connection reuse and add connection monitoring. Estimated 2 days work. Critical for performance."
+    },
+    {
+      "id": "task_3",
+      "title": "Update API documentation",
+      "points": 3,
+      "priority": "medium",
+      "category": "technical_debt",
+      "reason": "⚙️ TECHNICAL: Will save time in future sprints",
+      "details": "Update OpenAPI spec with all endpoints. Estimated 1 day work. Helps onboarding new team members."
+    },
+    {
+      "id": "task_4",
+      "title": "Implement dashboard analytics",
+      "points": 10,
+      "priority": "important",
+      "category": "feature",
+      "reason": "🟡 IMPORTANT: High business value, customer request",
+      "details": "Add real-time analytics widgets with charts and exports. Estimated 4 days work. Big revenue impact."
+    },
+    {
+      "id": "task_5",
+      "title": "Refactor payment module",
+      "points": 6,
+      "priority": "low",
+      "category": "technical_debt",
+      "reason": "⚙️ TECHNICAL: Code quality improvement",
+      "details": "Clean up legacy payment code and add better error handling. Estimated 2-3 days work. Nice to have."
+    },
+    {
+      "id": "task_6",
+      "title": "Create mobile-responsive UI",
+      "points": 7,
+      "priority": "important",
+      "category": "feature",
+      "reason": "🟡 IMPORTANT: 40% of users access on mobile devices",
+      "details": "Adapt main dashboard for mobile. Estimated 3 days work. High user impact."
+    },
+    {
+      "id": "task_7",
+      "title": "Setup automated testing",
+      "points": 4,
+      "priority": "medium",
+      "category": "technical_debt",
+      "reason": "⚙️ TECHNICAL: Will catch bugs earlier and speed up development",
+      "details": "CI/CD pipeline with jest and coverage reporting. Estimated 2 days work. Improves reliability."
+    },
+    {
+      "id": "task_8",
+      "title": "Implement email notifications",
+      "points": 5,
+      "priority": "medium",
+      "category": "feature",
+      "reason": "📌 MEDIUM: Nice-to-have user feature based on feedback",
+      "details": "Email alerts for important events with customizable templates. Estimated 2 days work."
+    },
+    {
+      "id": "task_9",
+      "title": "Optimize image loading",
+      "points": 3,
+      "priority": "low",
+      "category": "technical_debt",
+      "reason": "⚙️ TECHNICAL: Performance improvement, page load time",
+      "details": "Implement lazy loading and image compression. Estimated 1 day work. Minor improvement."
+    },
+    {
+      "id": "task_10",
+      "title": "Setup error monitoring (Sentry)",
+      "points": 4,
+      "priority": "important",
+      "category": "technical_debt",
+      "reason": "🟡 IMPORTANT: Critical for production stability and bug detection",
+      "details": "Integrate Sentry for error tracking and alerting. Estimated 1-2 days work. Reduces production incidents."
+    }
+  ]
+}
