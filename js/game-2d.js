@@ -1033,7 +1033,6 @@ const GameLesson2D = (() => {
                     const npc = gameState.npcs[key];
                     return `
                         <div class="game-2d-npc-card">
-                            ${npc.image ? `<div class="game-2d-npc-card-image" style="background-image: url(${npc.image});"></div>` : ''}
                             <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
                             <div class="game-2d-npc-card-role">${npc.role}</div>
                             <div class="game-2d-npc-card-hint">
