@@ -1119,23 +1119,23 @@
 
 .game-2d-joystick {
   display: grid;
-  grid-template-columns: repeat(3, 30px);
-  grid-template-rows: repeat(3, 30px);
-  gap: 2px;
-  margin-bottom: 6px;
+  grid-template-columns: repeat(3, 18px);
+  grid-template-rows: repeat(3, 18px);
+  gap: 1px;
+  margin-bottom: 3px;
   justify-content: center;
 }
 
 .game-2d-move-btn {
   background: rgba(78, 204, 163, 0.7);
   border: 1px solid var(--success);
-  border-radius: 4px;
+  border-radius: 2px;
   color: var(--neutral-white);
-  font-size: 14px;
+  font-size: 10px;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.15s ease;
-  padding: 4px;
+  padding: 2px;
 }
 
 .game-2d-move-btn:active,
@@ -1180,11 +1180,11 @@
 .game-2d-action-btn {
   background: rgba(255, 217, 61, 0.7);
   border: 1px solid var(--brand-accent);
-  border-radius: 4px;
+  border-radius: 2px;
   color: var(--neutral-900);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: bold;
-  padding: 4px 6px;
+  padding: 2px 4px;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
@@ -1234,20 +1234,7 @@
 }
 
 @media (max-width: 480px) {
-  .game-2d-joystick {
-    grid-template-columns: repeat(3, 35px);
-    grid-template-rows: repeat(3, 35px);
-  }
-
-  .game-2d-move-btn {
-    font-size: 14px;
-    padding: 4px;
-  }
-
-  .game-2d-action-btn {
-    font-size: 12px;
-    padding: 6px;
-  }
+  /* Keep mobile controls small even on small screens */
 }
 
 /* Dark mode support (already dark by default, but explicit support) */
