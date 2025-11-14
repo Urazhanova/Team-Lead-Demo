@@ -11,6 +11,7 @@ const GameData = {
         alex: {
             name: 'Алекс',
             emoji: '👤',
+            image: 'assets/images/characters/alex/neutral.png',
             color: '#ff6b6b',
             role: 'Team Lead',
             description: 'Ты'
@@ -18,6 +19,7 @@ const GameData = {
         katya: {
             name: 'Катя',
             emoji: '👩‍💻',
+            image: 'assets/images/characters/Katya/Katya.png',
             color: '#fd79a8',
             role: 'Junior Developer',
             x: 600,
@@ -26,6 +28,7 @@ const GameData = {
         denis: {
             name: 'Денис',
             emoji: '👨‍💻',
+            image: 'assets/images/characters/Denis/denis.png',
             color: '#4facfe',
             role: 'Middle Developer',
             x: 200,
@@ -34,6 +37,7 @@ const GameData = {
         maria: {
             name: 'Мария',
             emoji: '👩‍💻',
+            image: 'assets/images/characters/Mariya/mariya.png',
             color: '#a29bfe',
             role: 'Senior Developer',
             x: 600,
@@ -42,6 +46,7 @@ const GameData = {
         lena: {
             name: 'Лена',
             emoji: '👩‍🎨',
+            image: 'assets/images/characters/lena/neutral.png',
             color: '#4ecca3',
             role: 'Designer',
             x: 350,
@@ -50,6 +55,7 @@ const GameData = {
         igor: {
             name: 'Игорь',
             emoji: '👨‍💼',
+            image: 'assets/images/characters/Igor/Igor.png',
             color: '#ffd93d',
             role: 'QA Engineer',
             x: 450,

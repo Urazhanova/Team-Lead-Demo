@@ -22,6 +22,9 @@ const GameLesson2D = (() => {
         currentZone: null,
         lastZoneMessage: null,
 
+        // Character images cache
+        characterImages: {},
+
         // Game progress
         completedScenarios: [],
         crisisChoices: {},
@@ -78,11 +81,32 @@ const GameLesson2D = (() => {
             }
         });
 
+        // Load character images
+        loadCharacterImages();
+
         // Setup event listeners
         setupEventListeners();
 
         // Start game loop
         gameLoop();
+    }
+
+    function loadCharacterImages() {
+        // Load images for all NPCs
+        Object.keys(GameData.npcs).forEach(key => {
+            const npc = GameData.npcs[key];
+            if (npc.image) {
+                const img = new Image();
+                img.onload = () => {
+                    gameState.characterImages[npc.image] = img;
+                    console.log(`[Game2D] Loaded image: ${npc.image}`);
+                };
+                img.onerror = () => {
+                    console.warn(`[Game2D] Failed to load image: ${npc.image}`);
+                };
+                img.src = npc.image;
+            }
+        });
     }
 
     function createGameHTML() {
@@ -383,28 +407,44 @@ const GameLesson2D = (() => {
     function drawCharacter(char) {
         const ctx = gameState.ctx;
 
-        // Shadow
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        ctx.beginPath();
-        ctx.ellipse(char.x + char.size/2, char.y + char.size + 5, char.size/2, char.size/4, 0, 0, Math.PI * 2);
-        ctx.fill();
+        // Check if character has an image
+        if (char.image && gameState.characterImages && gameState.characterImages[char.image]) {
+            const img = gameState.characterImages[char.image];
+            // Draw image (scaled to character size)
+            ctx.save();
+            ctx.globalAlpha = 0.95;
+            ctx.drawImage(img, char.x, char.y, char.size, char.size);
+            ctx.restore();
 
-        // Body
-        ctx.fillStyle = char.color;
-        ctx.beginPath();
-        ctx.arc(char.x + char.size/2, char.y + char.size/2, char.size/2, 0, Math.PI * 2);
-        ctx.fill();
+            // Draw border around image
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(char.x, char.y, char.size, char.size);
+        } else {
+            // Fallback: Draw colored circle with emoji
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(char.x + char.size/2, char.y + char.size + 5, char.size/2, char.size/4, 0, 0, Math.PI * 2);
+            ctx.fill();
 
-        // Border
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.lineWidth = 3;
-        ctx.stroke();
+            // Body
+            ctx.fillStyle = char.color;
+            ctx.beginPath();
+            ctx.arc(char.x + char.size/2, char.y + char.size/2, char.size/2, 0, Math.PI * 2);
+            ctx.fill();
 
-        // Emoji
-        ctx.font = `${char.size * 0.6}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(char.emoji, char.x + char.size/2, char.y + char.size/2);
+            // Border
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Emoji
+            ctx.font = `${char.size * 0.6}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(char.emoji, char.x + char.size/2, char.y + char.size/2);
+        }
     }
 
     // ============================================
@@ -568,8 +608,10 @@ const GameLesson2D = (() => {
             ${nearbyNPCs.length > 0
                 ? nearbyNPCs.map(key => {
                     const npc = gameState.npcs[key];
+                    const hasImage = npc.image ? 'style="background-image: url(' + npc.image + '); background-size: cover; background-position: center;"' : '';
                     return `
                         <div class="game-2d-npc-card">
+                            ${npc.image ? `<div style="width: 100%; height: 80px; margin: -8px -8px 8px -8px; background-image: url(${npc.image}); background-size: cover; background-position: center; border-radius: 8px 8px 0 0;"></div>` : ''}
                             <div class="game-2d-npc-card-name">${npc.emoji} ${npc.name}</div>
                             <div class="game-2d-npc-card-role">${npc.role}</div>
                             <div class="game-2d-npc-card-hint">
