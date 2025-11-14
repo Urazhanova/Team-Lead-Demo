@@ -32,6 +32,7 @@ const GameLesson2D = (() => {
         totalXP: 0,
         totalSkills: {},
         achievements: [],
+        theoriesRead: [],            // Track read theory blocks
 
         // Crisis state
         crisisTime: 60,             // minutes left
@@ -152,6 +153,13 @@ const GameLesson2D = (() => {
             <!-- Menu Modal -->
             <div id="menu-modal-2d" class="game-2d-modal-overlay">
                 <div id="menu-content" class="game-2d-modal-content"></div>
+            </div>
+
+            <!-- Theory Modal -->
+            <div id="theory-modal-2d" class="game-2d-modal-overlay">
+                <div class="game-2d-modal-content">
+                    <div id="theory-content"></div>
+                </div>
             </div>
         `;
 
@@ -310,6 +318,93 @@ const GameLesson2D = (() => {
             time: Date.now(),
             duration: 2000
         };
+    }
+
+    // ============================================
+    // THEORY BLOCKS SYSTEM
+    // ============================================
+
+    function getUnlockedTheoryBlocks() {
+        const unlocked = [];
+        Object.keys(GameData.theoryBlocks).forEach(blockId => {
+            const block = GameData.theoryBlocks[blockId];
+            if (isTheoryBlockUnlocked(blockId)) {
+                unlocked.push(blockId);
+            }
+        });
+        return unlocked;
+    }
+
+    function isTheoryBlockUnlocked(blockId) {
+        const block = GameData.theoryBlocks[blockId];
+        if (block.unlockedAt === 'start') return true;
+
+        // Check unlock conditions
+        if (block.unlockedAt === 'after_theory1') {
+            return gameState.theoriesRead && gameState.theoriesRead.includes('theory1');
+        }
+        if (block.unlockedAt === 'after_case1') {
+            return gameState.completedScenarios && gameState.completedScenarios.includes('case1');
+        }
+        if (block.unlockedAt === 'after_case2') {
+            return gameState.completedScenarios && gameState.completedScenarios.includes('case2');
+        }
+        if (block.unlockedAt === 'after_case3') {
+            return gameState.completedScenarios && gameState.completedScenarios.includes('case3');
+        }
+
+        return false;
+    }
+
+    function showTheoryModal(blockId) {
+        const block = GameData.theoryBlocks[blockId];
+        if (!block) return;
+
+        const modal = document.getElementById('theory-modal-2d');
+        if (!modal) {
+            console.warn('Theory modal not found!');
+            return;
+        }
+
+        const theoryContent = document.getElementById('theory-content');
+        const lines = block.content.split('\n');
+        const htmlContent = lines.map(line => {
+            if (!line.trim()) return '<br>';
+            return `<div class="game-2d-theory-line">${escapeHtml(line)}</div>`;
+        }).join('');
+
+        theoryContent.innerHTML = `
+            <div class="game-2d-theory-header">
+                <h2>${block.title}</h2>
+                <p class="game-2d-theory-reward">+${block.reward} XP</p>
+            </div>
+            <div class="game-2d-theory-content">
+                ${htmlContent}
+            </div>
+            <div class="game-2d-theory-footer">
+                <button class="game-2d-button game-2d-button-primary" onclick="GameLesson2D.closeTheoryModal()">
+                    Закрыть
+                </button>
+            </div>
+        `;
+
+        modal.classList.add('active');
+        document.getElementById('gameCanvas2D').style.display = 'none';
+
+        // Mark theory as read
+        if (!gameState.theoriesRead) {
+            gameState.theoriesRead = [];
+        }
+        if (!gameState.theoriesRead.includes(blockId)) {
+            gameState.theoriesRead.push(blockId);
+            gameState.totalXP += block.reward;
+        }
+    }
+
+    function closeTheoryModal() {
+        const modal = document.getElementById('theory-modal-2d');
+        modal.classList.remove('active');
+        document.getElementById('gameCanvas2D').style.display = 'block';
     }
 
     // ============================================
@@ -623,11 +718,30 @@ const GameLesson2D = (() => {
             }
 
             <div class="game-2d-panel-title game-2d-mt-lg">
+                💡 ОБУЧЕНИЕ
+            </div>
+            ${getUnlockedTheoryBlocks().map(blockId => {
+                const block = GameData.theoryBlocks[blockId];
+                const isRead = gameState.theoriesRead && gameState.theoriesRead.includes(blockId);
+                return `
+                    <div class="game-2d-theory-button-item">
+                        <button class="game-2d-theory-button ${isRead ? 'game-2d-theory-read' : ''}"
+                                onclick="GameLesson2D.showTheoryModal('${blockId}')">
+                            <span class="game-2d-theory-icon">${block.icon}</span>
+                            <span class="game-2d-theory-title">${block.title}</span>
+                            ${isRead ? '<span class="game-2d-theory-status">✓ прочитано</span>' : '<span class="game-2d-theory-status">+${block.reward} XP</span>'}
+                        </button>
+                    </div>
+                `;
+            }).join('')}
+
+            <div class="game-2d-panel-title game-2d-mt-lg">
                 📊 СТАТИСТИКА
             </div>
             <div class="game-2d-text-small">
                 <div>XP: <span id="xp-stat">${gameState.totalXP}</span></div>
                 <div class="game-2d-mt-sm">Сценариев пройдено: <span id="scenarios-stat">${gameState.completedScenarios.length}</span></div>
+                <div class="game-2d-mt-sm">Блоков прочитано: <span id="theory-stat">${(gameState.theoriesRead && gameState.theoriesRead.length) || 0}</span>/5</div>
             </div>
         `;
 
@@ -1114,6 +1228,18 @@ const GameLesson2D = (() => {
                 completedScenarios: gameState.completedScenarios.length,
                 achievements: gameState.achievements
             };
+        },
+
+        showTheoryModal: function(blockId) {
+            showTheoryModal(blockId);
+        },
+
+        closeTheoryModal: function() {
+            closeTheoryModal();
+        },
+
+        getUnlockedTheoryBlocks: function() {
+            return getUnlockedTheoryBlocks();
         }
     };
 })();
