@@ -184,8 +184,8 @@ const GameData = {
         denis: {
             name: 'Денис',
             role: 'Middle Developer',
-            defaultZone: 'theory_zone',
-            startX: 180,
+            defaultZone: 'hallway',
+            startX: 320,
             startY: 450,
             canMove: false,
             canInteract: true,
