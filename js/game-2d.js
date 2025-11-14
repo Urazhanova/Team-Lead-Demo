@@ -321,6 +321,16 @@ const GameLesson2D = (() => {
     }
 
     // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ============================================
     // THEORY BLOCKS SYSTEM
     // ============================================
 
@@ -357,16 +367,28 @@ const GameLesson2D = (() => {
     }
 
     function showTheoryModal(blockId) {
-        const block = GameData.theoryBlocks[blockId];
-        if (!block) return;
+        console.log('[Game2D] showTheoryModal called with blockId:', blockId);
 
-        const modal = document.getElementById('theory-modal-2d');
-        if (!modal) {
-            console.warn('Theory modal not found!');
+        const block = GameData.theoryBlocks[blockId];
+        if (!block) {
+            console.error('[Game2D] Block not found:', blockId);
             return;
         }
 
+        const modal = document.getElementById('theory-modal-2d');
+        if (!modal) {
+            console.error('[Game2D] Theory modal element not found in DOM!');
+            return;
+        }
+
+        console.log('[Game2D] Modal found, preparing content...');
+
         const theoryContent = document.getElementById('theory-content');
+        if (!theoryContent) {
+            console.error('[Game2D] Theory content element not found!');
+            return;
+        }
+
         const lines = block.content.split('\n');
         const htmlContent = lines.map(line => {
             if (!line.trim()) return '<br>';
@@ -388,6 +410,7 @@ const GameLesson2D = (() => {
             </div>
         `;
 
+        console.log('[Game2D] Activating modal...');
         modal.classList.add('active');
         document.getElementById('gameCanvas2D').style.display = 'none';
 
