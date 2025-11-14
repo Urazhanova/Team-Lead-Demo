@@ -18,6 +18,10 @@ const GameLesson2D = (() => {
         ctx: null,
         keys: {},
 
+        // Zone system
+        currentZone: null,
+        lastZoneMessage: null,
+
         // Game progress
         completedScenarios: [],
         crisisChoices: {},
@@ -62,10 +66,11 @@ const GameLesson2D = (() => {
         Object.keys(GameData.npcs).forEach(key => {
             if (key !== 'alex') {
                 const npcData = GameData.npcs[key];
+                const behaviorData = GameData.npcBehavior[key] || {};
                 gameState.npcs[key] = {
                     ...npcData,
-                    x: npcData.x || 400,
-                    y: npcData.y || 300,
+                    x: behaviorData.startX || 400,
+                    y: behaviorData.startY || 300,
                     size: 40,
                     interactionDistance: 70,
                     canInteract: false
@@ -237,6 +242,91 @@ const GameLesson2D = (() => {
 
         // Update UI
         updateSidePanel();
+
+        // Check zone entry/exit
+        checkZoneEntry();
+    }
+
+    function drawZones() {
+        const ctx = gameState.ctx;
+
+        // Draw zone boundaries and labels from GameData
+        Object.keys(GameData.zones).forEach(zoneId => {
+            const zone = GameData.zones[zoneId];
+
+            // Draw zone rectangle with color
+            ctx.strokeStyle = zone.borderColor || '#4ecca3';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([8, 4]);
+            ctx.strokeRect(zone.x, zone.y, zone.width, zone.height);
+            ctx.setLineDash([]);
+
+            // Highlight if player is in zone
+            if (gameState.currentZone === zoneId) {
+                ctx.fillStyle = zone.borderColor || '#4ecca3';
+                ctx.globalAlpha = 0.1;
+                ctx.fillRect(zone.x, zone.y, zone.width, zone.height);
+                ctx.globalAlpha = 1;
+            }
+
+            // Draw zone label
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.font = 'bold 13px Arial';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(zone.label, zone.x + 8, zone.y + 8);
+        });
+    }
+
+    function checkZoneEntry() {
+        const player = gameState.player;
+        let newZone = null;
+
+        // Check which zone player is in
+        Object.keys(GameData.zones).forEach(zoneId => {
+            const zone = GameData.zones[zoneId];
+            const playerCenterX = player.x + player.size / 2;
+            const playerCenterY = player.y + player.size / 2;
+
+            // Check if player center is in zone
+            if (playerCenterX >= zone.x && playerCenterX <= zone.x + zone.width &&
+                playerCenterY >= zone.y && playerCenterY <= zone.y + zone.height) {
+                newZone = zoneId;
+            }
+        });
+
+        // Zone changed
+        if (newZone !== gameState.currentZone) {
+            const oldZone = gameState.currentZone;
+            gameState.currentZone = newZone;
+
+            // Handle zone exit
+            if (oldZone) {
+                console.log(`Exited zone: ${oldZone}`);
+            }
+
+            // Handle zone entry
+            if (newZone) {
+                console.log(`Entered zone: ${newZone}`);
+                handleZoneEntry(newZone);
+            }
+        }
+    }
+
+    function handleZoneEntry(zoneId) {
+        const zone = GameData.zones[zoneId];
+
+        // Only trigger for interactive zones
+        if (!zone.interactive) {
+            return;
+        }
+
+        // Add visual feedback
+        gameState.lastZoneMessage = {
+            text: `Вы вошли в ${zone.label}`,
+            time: Date.now(),
+            duration: 2000
+        };
     }
 
     function drawGame() {
@@ -262,14 +352,8 @@ const GameLesson2D = (() => {
             ctx.stroke();
         }
 
-        // Draw zone labels
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-        ctx.font = 'bold 12px Arial';
-        ctx.fillText('💻 РАБОЧАЯ ЗОНА', 500, 100);
-        ctx.fillText('☕ КУХНЯ', 150, 450);
-        ctx.fillText('🚪 ПЕРЕГОВОРНАЯ', 520, 500);
-        ctx.fillText('🎨 ДИЗАЙН', 300, 300);
-        ctx.fillText('📋 ОФИС', 100, 250);
+        // Draw zones
+        drawZones();
 
         // Draw NPCs
         Object.keys(gameState.npcs).forEach(key => {

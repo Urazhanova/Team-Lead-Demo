@@ -58,6 +58,187 @@ const GameData = {
     },
 
     // ============================================
+    // ZONES - ЗОНЫ ОФИСА
+    // ============================================
+    zones: {
+        meeting_room: {
+            id: 'meeting_room',
+            label: '🚪 Переговорная',
+            description: 'Место для планирования и встреч',
+            x: 50,
+            y: 50,
+            width: 300,
+            height: 250,
+            color: 'rgba(78, 204, 163, 0.1)',
+            borderColor: '#4ecca3',
+            purpose: 'Проведение планирования, Planning Poker, собрания команды',
+            interactive: false
+        },
+
+        task_board: {
+            id: 'task_board',
+            label: '📋 Доска задач',
+            description: 'Визуализация бэклога',
+            x: 400,
+            y: 80,
+            width: 150,
+            height: 200,
+            color: 'rgba(255, 217, 61, 0.1)',
+            borderColor: '#ffd93d',
+            purpose: 'Просмотр и приоритизация задач',
+            interactive: true,
+            interactionType: 'object'
+        },
+
+        work_area: {
+            id: 'work_area',
+            label: '💻 Рабочая зона',
+            description: 'Рабочие места команды',
+            x: 450,
+            y: 350,
+            width: 300,
+            height: 200,
+            color: 'rgba(79, 172, 254, 0.1)',
+            borderColor: '#4facfe',
+            purpose: 'Рабочие столы Марии, Дениса, Кати',
+            interactive: false
+        },
+
+        theory_zone: {
+            id: 'theory_zone',
+            label: '💡 Зона обучения',
+            description: 'Место для изучения теории',
+            x: 100,
+            y: 400,
+            width: 200,
+            height: 150,
+            color: 'rgba(162, 155, 254, 0.1)',
+            borderColor: '#a29bfe',
+            purpose: 'Показ теоретических блоков',
+            interactive: true,
+            interactionType: 'trigger'
+        },
+
+        alex_office: {
+            id: 'alex_office',
+            label: '🏢 Кабинет Алекса',
+            description: 'Место для принятия решений',
+            x: 650,
+            y: 50,
+            width: 120,
+            height: 120,
+            color: 'rgba(255, 107, 107, 0.1)',
+            borderColor: '#ff6b6b',
+            purpose: 'Опциональное место для размышлений',
+            interactive: true,
+            interactionType: 'trigger'
+        }
+    },
+
+    // ============================================
+    // WALLS - ПРЕПЯТСТВИЯ И СТЕНЫ
+    // ============================================
+    walls: [
+        // ВНЕШНИЕ СТЕНЫ
+        { x: 0, y: 0, width: 800, height: 20, type: 'wall', name: 'top_wall' },
+        { x: 0, y: 580, width: 800, height: 20, type: 'wall', name: 'bottom_wall' },
+        { x: 0, y: 0, width: 20, height: 600, type: 'wall', name: 'left_wall' },
+        { x: 780, y: 0, width: 20, height: 600, type: 'wall', name: 'right_wall' },
+
+        // СТОЛЫ В ПЕРЕГОВОРНОЙ
+        { x: 100, y: 150, width: 200, height: 15, type: 'desk', name: 'meeting_table' },
+
+        // СТОЛЫ В РАБОЧЕЙ ЗОНЕ
+        { x: 480, y: 400, width: 100, height: 15, type: 'desk', name: 'maria_desk' },
+        { x: 600, y: 400, width: 100, height: 15, type: 'desk', name: 'denis_desk' },
+        { x: 530, y: 480, width: 100, height: 15, type: 'desk', name: 'katya_desk' }
+    ],
+
+    // ============================================
+    // NPC BEHAVIOR - ПОВЕДЕНИЕ ПЕРСОНАЖЕЙ
+    // ============================================
+    npcBehavior: {
+        katya: {
+            name: 'Катя',
+            role: 'Junior Developer',
+            defaultZone: 'work_area',
+            startX: 560,
+            startY: 480,
+            canMove: false,
+            canInteract: true,
+            state: 'working',
+            stats: {
+                satisfaction: 0,
+                motivation: 0,
+                skills: 0,
+                trust: 0
+            }
+        },
+
+        denis: {
+            name: 'Денис',
+            role: 'Middle Developer',
+            defaultZone: 'work_area',
+            startX: 630,
+            startY: 400,
+            canMove: false,
+            canInteract: true,
+            state: 'working',
+            stats: {
+                satisfaction: 0,
+                stress: 0,
+                growth: 0
+            }
+        },
+
+        maria: {
+            name: 'Мария',
+            role: 'Senior Developer',
+            defaultZone: 'work_area',
+            startX: 510,
+            startY: 400,
+            canMove: false,
+            canInteract: true,
+            state: 'working',
+            stats: {
+                satisfaction: 0,
+                loyalty: 0,
+                leadership_xp: 0
+            }
+        },
+
+        lena: {
+            name: 'Лена',
+            role: 'Designer',
+            defaultZone: 'work_area',
+            startX: 350,
+            startY: 250,
+            canMove: false,
+            canInteract: true,
+            state: 'working',
+            stats: {
+                satisfaction: 0,
+                confidence: 0
+            }
+        },
+
+        igor: {
+            name: 'Игорь',
+            role: 'QA Engineer',
+            defaultZone: 'work_area',
+            startX: 450,
+            startY: 500,
+            canMove: false,
+            canInteract: true,
+            state: 'working',
+            stats: {
+                satisfaction: 0,
+                morale: 0
+            }
+        }
+    },
+
+    // ============================================
     // СЦЕНАРИИ И ДИАЛОГИ
     // ============================================
     scenarios: {
