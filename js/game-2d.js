@@ -179,7 +179,7 @@ const GameLesson2D = (() => {
                 showMenu();
             }
 
-            if (e.key.toLowerCase() === 'e') {
+            if (e.key === 'Enter') {
                 e.preventDefault();
                 handleInteraction();
             }
@@ -866,7 +866,7 @@ const GameLesson2D = (() => {
 
             <div class="game-2d-controls-info">
                 <div>⌨️ Управление: WASD или стрелки</div>
-                <div>💬 Взаимодействие: E</div>
+                <div>💬 Взаимодействие: ENTER</div>
                 <div>📋 Меню: SPACE</div>
             </div>
         `;
