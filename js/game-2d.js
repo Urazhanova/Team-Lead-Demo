@@ -1835,7 +1835,7 @@ const GameLesson2D = (() => {
 
             let html = `
                 <h2 class="game-2d-dialogue-header game-2d-text-center">
-                    🎉 ПОЗДРАВЛЯЕМ!
+                    🎉 ОТЛИЧНО! ТЕСТ ПРОЙДЕН!
                 </h2>
 
                 <div class="game-2d-feedback-box game-2d-text-center">
@@ -1848,14 +1848,17 @@ const GameLesson2D = (() => {
                 </div>
 
                 <div class="game-2d-stats-box">
-                    <div class="game-2d-stats-title">🎁 ФИНАЛЬНЫЕ НАГРАДЫ:</div>
+                    <div class="game-2d-stats-title">🎁 НАГРАДА:</div>
                     <div>⭐ +${quizBonus} XP (бонус за тест)</div>
-                    <div>💫 Итого XP за урок: ${gameState.totalXP}</div>
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2);">
+                        💫 <strong>Итого XP за урок: ${gameState.totalXP}</strong>
+                    </div>
                 </div>
 
                 <button onclick="GameLesson2D.finishLesson()"
-                        class="game-2d-button">
-                    ✓ ЗАВЕРШИТЬ УРОК
+                        class="game-2d-button"
+                        style="margin-top: auto;">
+                    → Посмотреть итоговые результаты
                 </button>
             `;
 
@@ -1863,16 +1866,105 @@ const GameLesson2D = (() => {
         },
 
         finishLesson: function() {
+            // Show lesson completion screen instead of just reloading
+            this.showLessonCompletionScreen();
+        },
+
+        showLessonCompletionScreen: function() {
+            const modal = document.getElementById('dialogue-modal-2d');
+            const content = document.getElementById('dialogue-content');
+
+            // Build skills display HTML
+            let skillsHTML = '';
+            const skillsToShow = {
+                'Управление людьми': gameState.totalSkills['Управление людьми'] || 0,
+                'Управление проектами': gameState.totalSkills['Управление проектами'] || 0,
+                'Коммуникация': gameState.totalSkills['Коммуникация'] || 0,
+                'Эмоциональный интеллект': gameState.totalSkills['Эмоциональный интеллект'] || 0,
+                'Лидерство': gameState.totalSkills['Лидерство'] || 0
+            };
+
+            Object.entries(skillsToShow).forEach(([skillName, level]) => {
+                const percentage = Math.min((level / 10) * 100, 100);
+                skillsHTML += `
+                    <div class="game-2d-completion-skill">
+                        <div class="game-2d-completion-skill-name">${skillName}</div>
+                        <div class="game-2d-completion-skill-bar">
+                            <div class="game-2d-completion-skill-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="game-2d-completion-skill-level">${level}/10</div>
+                    </div>
+                `;
+            });
+
+            // Build achievements display HTML
+            let achievementsHTML = '';
+            const achievementNames = {
+                'wise_leader': '🎯 Мудрый Лидер',
+                'delegation_master': '👥 Мастер Делегирования',
+                'sbi_master': '💬 Мастер Обратной Связи',
+                'prioritization_master': '📊 Мастер Приоритизации',
+                'planning_poker_master': '🃏 Мастер Planning Poker',
+                'task_distribution_master': '📋 Мастер Распределения Задач'
+            };
+
+            if (gameState.achievements.length > 0) {
+                gameState.achievements.forEach(achievement => {
+                    const name = achievementNames[achievement] || achievement;
+                    achievementsHTML += `<div class="game-2d-completion-achievement">${name}</div>`;
+                });
+            } else {
+                achievementsHTML = '<div class="game-2d-completion-no-achievements">Продолжай развиваться, чтобы разблокировать достижения!</div>';
+            }
+
+            let html = `
+                <div class="game-2d-completion-screen">
+                    <div class="game-2d-completion-header">
+                        <h1>🏆 Навыки Алекса</h1>
+                    </div>
+
+                    <div class="game-2d-completion-content">
+                        <div class="game-2d-completion-left">
+                            <div class="game-2d-completion-skills">
+                                ${skillsHTML}
+                            </div>
+
+                            <div class="game-2d-completion-achievements">
+                                <h2>Достижения:</h2>
+                                ${achievementsHTML}
+                            </div>
+
+                            <div class="game-2d-completion-xp">
+                                <div>⭐ Всего XP: <strong>${gameState.totalXP}</strong></div>
+                            </div>
+                        </div>
+
+                        <div class="game-2d-completion-right">
+                            <img src="${GameData.npcs.alex.image}" alt="Alex" class="game-2d-completion-character">
+                        </div>
+                    </div>
+
+                    <button onclick="GameLesson2D.exitLesson()"
+                            class="game-2d-button game-2d-completion-button">
+                        ✓ ЗАВЕРШИТЬ УРОК
+                    </button>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            modal.classList.add('active');
+        },
+
+        exitLesson: function() {
             // Log to SCORM
             if (window.scormAPI) {
                 window.scormAPI.setValue('cmi.core.score.raw', gameState.totalXP);
                 window.scormAPI.setValue('cmi.core.lesson_status', 'completed');
             }
 
-            // Go back to main screen
+            // Close and reload
             const modal = document.getElementById('dialogue-modal-2d');
             modal.classList.remove('active');
-            alert(`✅ Урок пройден!\n\nВы получили: ${gameState.totalXP} XP\n\nВозвращаемся к меню...`);
             window.location.reload();
         },
 
