@@ -29,6 +29,7 @@ const GameLesson2D = (() => {
         completedScenarios: [],
         crisisChoices: {},
         quizAnswers: [],
+        currentQuizQuestion: 0,      // Track current quiz question
         totalXP: 0,
         totalSkills: {},
         achievements: [],
@@ -1709,52 +1710,57 @@ const GameLesson2D = (() => {
             const content = document.getElementById('dialogue-content');
 
             const questions = GameData.quiz.questions;
-            let currentQuestion = 0;
 
-            const showQuestion = () => {
-                const q = questions[currentQuestion];
+            // Reset quiz if starting fresh
+            if (gameState.quizAnswers.length === 0) {
+                gameState.currentQuizQuestion = 0;
+            }
 
-                let html = `
-                    <h2 class="game-2d-dialogue-header">
-                        Вопрос ${currentQuestion + 1}/${questions.length}
-                    </h2>
+            const currentQuestion = gameState.currentQuizQuestion;
 
-                    <div class="game-2d-context">
-                        ${q.question}
+            if (currentQuestion >= questions.length) {
+                this.showFinalResults();
+                return;
+            }
+
+            const q = questions[currentQuestion];
+
+            let html = `
+                <h2 class="game-2d-dialogue-header">
+                    Вопрос ${currentQuestion + 1}/${questions.length}
+                </h2>
+
+                <div class="game-2d-context">
+                    ${q.question}
+                </div>
+            `;
+
+            q.options.forEach((option, index) => {
+                html += `
+                    <div class="game-2d-choice-option game-2d-mb-sm"
+                         onclick="GameLesson2D.selectQuizAnswer('${q.id}', '${option.id}', ${option.correct})">
+                        ${String.fromCharCode(65 + index)}. ${option.text}
                     </div>
                 `;
+            });
 
-                q.options.forEach((option, index) => {
-                    html += `
-                        <div class="game-2d-choice-option game-2d-mb-sm"
-                             onclick="GameLesson2D.selectQuizAnswer('${q.id}', '${option.id}', ${option.correct}, ${currentQuestion}, ${questions.length})">
-                            ${String.fromCharCode(65 + index)}. ${option.text}
-                        </div>
-                    `;
-                });
-
-                content.innerHTML = html;
-            };
-
-            showQuestion();
+            content.innerHTML = html;
         },
 
-        selectQuizAnswer: function(questionId, optionId, isCorrect, currentQuestion, totalQuestions) {
+        selectQuizAnswer: function(questionId, optionId, isCorrect) {
             gameState.quizAnswers.push({
                 questionId: questionId,
                 selectedOption: optionId,
                 isCorrect: isCorrect
             });
 
-            if (currentQuestion + 1 < totalQuestions) {
-                // Show correct/incorrect and continue
-                setTimeout(() => {
-                    this.startQuiz();
-                }, 500);
-            } else {
-                // Show final results
-                this.showFinalResults();
-            }
+            // Move to next question
+            gameState.currentQuizQuestion += 1;
+
+            // Continue to next question or show results
+            setTimeout(() => {
+                this.startQuiz();
+            }, 500);
         },
 
         showFinalResults: function() {
