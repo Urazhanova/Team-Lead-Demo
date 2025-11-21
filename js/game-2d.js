@@ -38,7 +38,9 @@ const GameLesson2D = (() => {
         // Crisis state
         crisisTime: 60,             // minutes left
         crisisTimeSpent: 0,
-        criticalProblemsHandled: 0
+        criticalProblemsHandled: 0,
+        currentCrisisProblem: 0,    // Index of current problem being solved
+        solvedProblems: []          // IDs of solved problems
     };
 
     // ============================================
@@ -1503,73 +1505,57 @@ const GameLesson2D = (() => {
 
         startCrisis: function() {
             this.closeMenu();
+            // Reset crisis state
+            gameState.currentCrisisProblem = 0;
+            gameState.solvedProblems = [];
+            gameState.crisisTime = 60;
+            gameState.crisisTimeSpent = 0;
+            gameState.crisisChoices = {};
+            // Show first problem
             this.showCrisisScenario();
         },
 
         showCrisisScenario: function() {
+            const problems = GameData.crisisCase.problems;
+            const problemIndex = gameState.currentCrisisProblem;
+
+            // All problems solved - show results
+            if (problemIndex >= problems.length) {
+                this.showCrisisResults();
+                return;
+            }
+
+            const problem = problems[problemIndex];
             const modal = document.getElementById('dialogue-modal-2d');
             const content = document.getElementById('dialogue-content');
+
+            // Build progress bar
+            const progressEmoji = ['⬜', '⬜', '⬜', '⬜', '⬜', '⬜'];
+            for (let i = 0; i < problemIndex; i++) {
+                progressEmoji[i] = '✅';
+            }
+            progressEmoji[problemIndex] = '🔵';
 
             let html = `
                 <h2 class="game-2d-crisis-header">
                     🚨 КРИЗИС: ПЯТНИЦА В 17:00
                 </h2>
 
-                <div class="game-2d-crisis-box">
-                    <div class="game-2d-crisis-box-title">
-                        ⏰ На тебя одновременно свалилось 6 проблем
+                <div style="background: rgba(78, 204, 163, 0.15); padding: 12px; border-radius: 8px; margin-bottom: 16px; border-left: 4px solid #4ecca3;">
+                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 12px; margin-bottom: 8px;">
+                        Проблема ${problemIndex + 1} из 6
                     </div>
-                    <div>
-                        Только 60 минут до твоей личной встречи.
-                        Как ты будешь расставлять приоритеты?
+                    <div style="font-size: 16px; letter-spacing: 4px;">
+                        ${progressEmoji.join('')}
+                    </div>
+                    <div style="color: rgba(255, 255, 255, 0.7); font-size: 12px; margin-top: 8px;">
+                        ⏱️ Осталось: ${gameState.crisisTime} мин | Потрачено: ${gameState.crisisTimeSpent} мин
                     </div>
                 </div>
 
-                <button onclick="GameLesson2D.handleCrisisProblem(0)"
-                        class="game-2d-crisis-button game-2d-mb-md">
-                    ① ДЕНИС ЗАСТРЯЛ - Помощь?
-                </button>
-
-                <button onclick="GameLesson2D.handleCrisisProblem(1)"
-                        class="game-2d-crisis-button game-2d-mb-md">
-                    ② ИГОРЬ: БАГ В БОЕВОМ - Исправлять?
-                </button>
-
-                <button onclick="GameLesson2D.handleCrisisProblem(2)"
-                        class="game-2d-crisis-button game-2d-mb-md">
-                    ③ CEO: ПРЕЗЕНТАЦИЯ - Делать сам?
-                </button>
-
-                <button onclick="GameLesson2D.handleCrisisProblem(3)"
-                        class="game-2d-crisis-button game-2d-mb-md">
-                    ④ ПРОДАКТ: ПЕРЕДЕЛКА - Согласиться?
-                </button>
-
-                <button onclick="GameLesson2D.handleCrisisProblem(4)"
-                        class="game-2d-crisis-button game-2d-mb-md">
-                    ⑤ МАРИЯ: УХОДИТ - Отпустить?
-                </button>
-
-                <button onclick="GameLesson2D.handleCrisisProblem(5)"
-                        class="game-2d-crisis-button game-2d-mb-md">
-                    ⑥ ЛИЧНАЯ ВСТРЕЧА - Идти или остаться?
-                </button>
-            `;
-
-            content.innerHTML = html;
-            modal.classList.add('active');
-            gameState.currentScene = 'crisis';
-        },
-
-        handleCrisisProblem: function(problemIndex) {
-            const problems = GameData.crisisCase.problems;
-            const problem = problems[problemIndex];
-
-            const modal = document.getElementById('dialogue-modal-2d');
-            const content = document.getElementById('dialogue-content');
-
-            let html = `
-                <h2 class="game-2d-crisis-header">${problem.title}</h2>
+                <h3 class="game-2d-crisis-header" style="font-size: 18px; margin-bottom: 12px;">
+                    ${problem.title}
+                </h3>
 
                 <div class="game-2d-crisis-box">
                     <strong>${problem.from}</strong> (${problem.time})<br>
@@ -1578,11 +1564,13 @@ const GameLesson2D = (() => {
             `;
 
             problem.choices.forEach((choice, index) => {
+                const isRecommended = choice.recommended ? ' ⭐' : '';
                 html += `
                     <div class="game-2d-choice-option game-2d-mb-sm"
-                         onclick="GameLesson2D.selectCrisisChoice(${problemIndex}, '${choice.id}')">
+                         onclick="GameLesson2D.selectCrisisChoice(${problemIndex}, '${choice.id}')"
+                         style="cursor: pointer; ${choice.recommended ? 'border-color: #ffd93d; background: rgba(255, 217, 61, 0.1);' : ''}">
                         <div class="game-2d-choice-title">
-                            ${String.fromCharCode(65 + index)}. ${choice.label}
+                            ${String.fromCharCode(65 + index)}. ${choice.label}${isRecommended}
                         </div>
                         <div class="game-2d-text-tiny">
                             ⏱️ ${choice.time_cost} мин
@@ -1592,6 +1580,8 @@ const GameLesson2D = (() => {
             });
 
             content.innerHTML = html;
+            modal.classList.add('active');
+            gameState.currentScene = 'crisis';
         },
 
         selectCrisisChoice: function(problemIndex, choiceId) {
@@ -1603,6 +1593,7 @@ const GameLesson2D = (() => {
             // Save choice
             const problemId = problem.id;
             gameState.crisisChoices[problemId] = choiceId;
+            gameState.solvedProblems.push(problemId);
 
             // Apply time
             gameState.crisisTimeSpent += choice.time_cost;
@@ -1613,12 +1604,16 @@ const GameLesson2D = (() => {
                 gameState.criticalProblemsHandled++;
             }
 
-            // Show consequence
+            // Show consequence briefly, then move to next problem
             const modal = document.getElementById('dialogue-modal-2d');
             const content = document.getElementById('dialogue-content');
 
+            const isRecommended = choice.recommended ? '✅' : '⚠️';
+
             let html = `
-                <h2 class="game-2d-dialogue-header game-2d-text-center">✓ Выбор сделан</h2>
+                <h2 class="game-2d-dialogue-header game-2d-text-center">
+                    ${isRecommended} Выбор сделан
+                </h2>
 
                 <div class="game-2d-feedback-box">
                     <strong>${choice.label}</strong>
@@ -1629,18 +1624,25 @@ const GameLesson2D = (() => {
                     Потратил: ${choice.time_cost} мин | Осталось: ${gameState.crisisTime} мин
                 </div>
 
+                <div style="background: rgba(78, 204, 163, 0.15); padding: 12px; border-radius: 8px; margin-top: 16px; border-left: 4px solid #4ecca3;">
+                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 13px;">
+                        ${gameState.solvedProblems.length}/6 проблем решено
+                    </div>
+                </div>
+
                 <button onclick="GameLesson2D.showCrisisScenario()"
-                        class="game-2d-button">
-                    Следующая проблема
+                        class="game-2d-button game-2d-mt-md">
+                    ${gameState.solvedProblems.length < 6 ? '➡️ Следующая проблема' : '🎯 Показать результаты'}
                 </button>
             `;
 
             content.innerHTML = html;
 
-            // After all 6 problems, show results
-            if (Object.keys(gameState.crisisChoices).length === 6) {
-                setTimeout(() => this.showCrisisResults(), 1500);
-            }
+            // Auto-advance to next problem after 2 seconds
+            setTimeout(() => {
+                gameState.currentCrisisProblem++;
+                this.showCrisisScenario();
+            }, 2000);
         },
 
         showCrisisResults: function() {
