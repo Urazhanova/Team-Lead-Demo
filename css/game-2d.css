@@ -1222,7 +1222,7 @@
 /* ========== MOBILE CONTROLS ========== */
 
 .game-2d-mobile-controls {
-  display: flex;
+  display: none;
   flex-direction: column;
   position: absolute;
   bottom: 10px;
@@ -1381,26 +1381,29 @@
   }
 
   .game-2d-mobile-controls {
+    display: flex;
     bottom: 5px;
     right: 5px;
-    padding: 4px;
+    padding: 6px;
   }
 
   .game-2d-joystick {
-    grid-template-columns: 16px 16px 16px;
-    grid-template-rows: 16px 16px 16px;
-    gap: 1px;
+    grid-template-columns: 24px 24px 24px;
+    grid-template-rows: 24px 24px 24px;
+    gap: 2px;
   }
 
   .game-2d-move-btn {
-    width: 16px;
-    height: 16px;
-    font-size: 8px;
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+    font-weight: bold;
   }
 
   .game-2d-action-btn {
-    font-size: 8px;
-    padding: 1px 2px;
+    font-size: 10px;
+    padding: 4px 8px;
+    min-height: 32px;
   }
 }
 
@@ -1425,29 +1428,31 @@
   }
 
   .game-2d-mobile-controls {
-    bottom: 3px;
-    right: 3px;
+    display: flex;
+    bottom: 8px;
+    right: 8px;
+    padding: 6px;
   }
 
   .game-2d-joystick {
-    grid-template-columns: 14px 14px 14px;
-    grid-template-rows: 14px 14px 14px;
-    gap: 1px;
-    margin-bottom: 2px;
+    grid-template-columns: 21px 21px 21px;
+    grid-template-rows: 21px 21px 21px;
+    gap: 2px;
+    margin-bottom: 3px;
   }
 
   .game-2d-move-btn {
-    width: 14px;
-    height: 14px;
-    font-size: 7px;
+    width: 21px;
+    height: 21px;
+    font-size: 10px;
+    font-weight: bold;
   }
 
   .game-2d-action-btn {
-    font-size: 7px;
-    padding: 1px 2px;
+    font-size: 9px;
+    padding: 3px 6px;
+    min-height: 28px;
   }
-
-  /* Keep mobile controls small even on small screens */
 }
 
 /* Dark mode support (already dark by default, but explicit support) */
