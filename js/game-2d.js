@@ -1564,13 +1564,12 @@ const GameLesson2D = (() => {
             `;
 
             problem.choices.forEach((choice, index) => {
-                const isRecommended = choice.recommended ? ' ⭐' : '';
                 html += `
                     <div class="game-2d-choice-option game-2d-mb-sm"
                          onclick="GameLesson2D.selectCrisisChoice(${problemIndex}, '${choice.id}')"
-                         style="cursor: pointer; ${choice.recommended ? 'border-color: #ffd93d; background: rgba(255, 217, 61, 0.1);' : ''}">
+                         style="cursor: pointer;">
                         <div class="game-2d-choice-title">
-                            ${String.fromCharCode(65 + index)}. ${choice.label}${isRecommended}
+                            ${String.fromCharCode(65 + index)}. ${choice.label}
                         </div>
                         <div class="game-2d-text-tiny">
                             ⏱️ ${choice.time_cost} мин
