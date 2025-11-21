@@ -33,6 +33,7 @@ const GameLesson2D = (() => {
         totalSkills: {},
         achievements: [],
         theoriesRead: [],            // Track read theory blocks
+        crisisTriggered: false,       // Track if final crisis was triggered
 
         // Crisis state
         crisisTime: 60,             // minutes left
@@ -989,6 +990,12 @@ const GameLesson2D = (() => {
         const modal = document.getElementById('menu-modal-2d');
         const content = document.getElementById('menu-content');
 
+        // Check if all main scenarios are completed
+        const mainScenarios = ['help_denis', 'feedback_katya', 'team_planning', 'task_distribution', 'planning_poker'];
+        const allCompleted = mainScenarios.every(scenarioId =>
+            gameState.completedScenarios.includes(scenarioId)
+        );
+
         let html = `
             <h2 class="game-2d-dialogue-header game-2d-text-center">МЕНЮ</h2>
 
@@ -1001,12 +1008,29 @@ const GameLesson2D = (() => {
                     class="game-2d-menu-button game-2d-menu-button-secondary">
                 Выбрать сценарий
             </button>
+        `;
 
-            <button onclick="GameLesson2D.startCrisis()"
-                    class="game-2d-menu-button game-2d-menu-button-danger">
-                Финальный кризис (🚨)
-            </button>
+        // Show crisis button with status
+        if (allCompleted) {
+            html += `
+                <button onclick="GameLesson2D.startCrisis()"
+                        class="game-2d-menu-button game-2d-menu-button-danger"
+                        style="font-size: 16px; font-weight: bold;">
+                    🚨 ФИНАЛЬНЫЙ КРИЗИС (ГОТОВ!)
+                </button>
+            `;
+        } else {
+            const completed = gameState.completedScenarios.length;
+            html += `
+                <button disabled
+                        class="game-2d-menu-button game-2d-menu-button-muted"
+                        style="opacity: 0.6; cursor: not-allowed;">
+                    🚨 Финальный кризис (${completed}/5 сценариев)
+                </button>
+            `;
+        }
 
+        html += `
             <button onclick="GameLesson2D.closeMenu()"
                     class="game-2d-menu-button game-2d-menu-button-muted">
                 Закрыть
@@ -1171,6 +1195,77 @@ const GameLesson2D = (() => {
             if (!gameState.completedScenarios.includes(scenarioId)) {
                 gameState.completedScenarios.push(scenarioId);
             }
+
+            // Check if all main scenarios are completed and trigger final crisis
+            this.checkAndTriggerFinalCrisis();
+        },
+
+        checkAndTriggerFinalCrisis: function() {
+            // List of main scenarios that must be completed
+            const mainScenarios = ['help_denis', 'feedback_katya', 'team_planning', 'task_distribution', 'planning_poker'];
+
+            // Check if all main scenarios are completed
+            const allCompleted = mainScenarios.every(scenarioId =>
+                gameState.completedScenarios.includes(scenarioId)
+            );
+
+            if (allCompleted && !gameState.crisisTriggered) {
+                gameState.crisisTriggered = true;
+                console.log('[Game2D] All main scenarios completed! Ready for final crisis.');
+
+                // Show notification about final crisis
+                this.showFinalCrisisNotification();
+            }
+        },
+
+        showFinalCrisisNotification: function() {
+            const modal = document.getElementById('dialogue-modal-2d');
+            const content = document.getElementById('dialogue-content');
+
+            let html = `
+                <h2 class="game-2d-crisis-header" style="font-size: 24px; margin-bottom: 20px;">
+                    🚨 ФИНАЛЬНОЕ ИСПЫТАНИЕ 🚨
+                </h2>
+
+                <div class="game-2d-context" style="background: rgba(255, 107, 107, 0.15); border-left-color: #ff6b6b; margin-bottom: 20px;">
+                    <div class="game-2d-context-title">⚠️ ВНИМАНИЕ</div>
+                    <div style="color: rgba(255, 255, 255, 0.9);">
+                        Ты прошёл все сценарии и блоки! Теперь пришло время <strong>финального кризиса</strong>.
+                    </div>
+                </div>
+
+                <div class="game-2d-warning-box" style="margin-bottom: 20px;">
+                    <div class="game-2d-warning-title">📍 Что дальше?</div>
+                    <div style="color: rgba(255, 255, 255, 0.85); font-size: 14px; line-height: 1.6;">
+                        На тебя одновременно свалилось <strong>6 критичных проблем</strong> в пятницу в 17:00.<br><br>
+                        <strong>У тебя есть 60 минут</strong> чтобы справиться со всеми ними.<br><br>
+                        Твои решения определят судьбу спринта и команды.
+                    </div>
+                </div>
+
+                <div class="game-2d-feedback-box" style="background: rgba(78, 204, 163, 0.15); margin-bottom: 20px;">
+                    <div class="game-2d-feedback-title">💡 Совет:</div>
+                    <div style="color: rgba(255, 255, 255, 0.8); font-size: 13px;">
+                        Вспомни всё что ты узнал в предыдущих сценариях. <br>
+                        Правильное приоритизирование и делегирование - ключ к успеху!
+                    </div>
+                </div>
+
+                <button onclick="GameLesson2D.startCrisis()"
+                        class="game-2d-button game-2d-button-danger"
+                        style="margin-top: 20px; font-size: 16px; padding: 12px 24px;">
+                    🚨 НАЧАТЬ КРИЗИС
+                </button>
+
+                <button onclick="GameLesson2D.resumeGame()"
+                        class="game-2d-button game-2d-button-secondary"
+                        style="margin-top: 12px;">
+                    Продолжить исследование карты
+                </button>
+            `;
+
+            content.innerHTML = html;
+            modal.classList.add('active');
         },
 
         showConsequence: function(choice, scenario) {
