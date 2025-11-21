@@ -1874,84 +1874,113 @@ const GameLesson2D = (() => {
             const modal = document.getElementById('dialogue-modal-2d');
             const content = document.getElementById('dialogue-content');
 
-            // Build skills display HTML
+            // Build skills display HTML - same format as celebration screens
             let skillsHTML = '';
-            const skillsToShow = {
-                'Управление людьми': gameState.totalSkills['Управление людьми'] || 0,
-                'Управление проектами': gameState.totalSkills['Управление проектами'] || 0,
-                'Коммуникация': gameState.totalSkills['Коммуникация'] || 0,
-                'Эмоциональный интеллект': gameState.totalSkills['Эмоциональный интеллект'] || 0,
-                'Лидерство': gameState.totalSkills['Лидерство'] || 0
-            };
+            const skillsToShow = [
+                { name: 'Управление людьми', value: gameState.totalSkills['Управление людьми'] || 0 },
+                { name: 'Управление проектами', value: gameState.totalSkills['Управление проектами'] || 0 },
+                { name: 'Коммуникация', value: gameState.totalSkills['Коммуникация'] || 0 },
+                { name: 'Эмоциональный интеллект', value: gameState.totalSkills['Эмоциональный интеллект'] || 0 },
+                { name: 'Лидерство', value: gameState.totalSkills['Лидерство'] || 0 }
+            ];
 
-            Object.entries(skillsToShow).forEach(([skillName, level]) => {
-                const percentage = Math.min((level / 10) * 100, 100);
+            skillsToShow.forEach(skill => {
+                const percentage = Math.min((skill.value / 10) * 100, 100);
                 skillsHTML += `
-                    <div class="game-2d-completion-skill">
-                        <div class="game-2d-completion-skill-name">${skillName}</div>
-                        <div class="game-2d-completion-skill-bar">
-                            <div class="game-2d-completion-skill-fill" style="width: ${percentage}%"></div>
+                    <div class="skill-progress">
+                        <span class="skill-label">${skill.name}</span>
+                        <div class="skill-bar">
+                            <div class="skill-bar-fill" style="width: ${percentage}%"></div>
                         </div>
-                        <div class="game-2d-completion-skill-level">${level}/10</div>
+                        <span class="skill-score">${skill.value}/10</span>
                     </div>
                 `;
             });
 
             // Build achievements display HTML
             let achievementsHTML = '';
-            const achievementNames = {
-                'wise_leader': '🎯 Мудрый Лидер',
-                'delegation_master': '👥 Мастер Делегирования',
-                'sbi_master': '💬 Мастер Обратной Связи',
-                'prioritization_master': '📊 Мастер Приоритизации',
-                'planning_poker_master': '🃏 Мастер Planning Poker',
-                'task_distribution_master': '📋 Мастер Распределения Задач'
+            const achievementIcons = {
+                'wise_leader': '🎯',
+                'delegation_master': '👥',
+                'sbi_master': '💬',
+                'prioritization_master': '📊',
+                'planning_poker_master': '🃏',
+                'task_distribution_master': '📋'
             };
 
-            if (gameState.achievements.length > 0) {
+            const achievementNames = {
+                'wise_leader': 'Мудрый Лидер',
+                'delegation_master': 'Мастер Делегирования',
+                'sbi_master': 'Мастер Обратной Связи',
+                'prioritization_master': 'Мастер Приоритизации',
+                'planning_poker_master': 'Мастер Planning Poker',
+                'task_distribution_master': 'Мастер Распределения Задач'
+            };
+
+            const achievementDescriptions = {
+                'wise_leader': 'Ты научился управлять кризисом мудро',
+                'delegation_master': 'Превосходно делегируешь задачи',
+                'sbi_master': 'Даёшь качественную обратную связь',
+                'prioritization_master': 'Правильно приоритизируешь работу',
+                'planning_poker_master': 'Владеешь техникой Planning Poker',
+                'task_distribution_master': 'Эффективно распределяешь задачи'
+            };
+
+            if (gameState.achievements && gameState.achievements.length > 0) {
                 gameState.achievements.forEach(achievement => {
+                    const icon = achievementIcons[achievement] || '🏆';
                     const name = achievementNames[achievement] || achievement;
-                    achievementsHTML += `<div class="game-2d-completion-achievement">${name}</div>`;
+                    const description = achievementDescriptions[achievement] || 'Достижение разблокировано';
+
+                    achievementsHTML += `
+                        <div style="padding: 12px; background: rgba(76, 175, 80, 0.1); border-radius: 6px; margin-bottom: 12px; border-left: 4px solid #4CAF50;">
+                            <div style="display: flex; align-items: flex-start; gap: 8px;">
+                                <span style="font-size: 20px; min-width: 24px; text-align: center;">${icon}</span>
+                                <div>
+                                    <strong style="color: var(--brand-primary); display: block; margin-bottom: 2px; font-size: 14px;">${name}</strong>
+                                    <small style="color: var(--neutral-700); font-size: 12px;">${description}</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                 });
-            } else {
-                achievementsHTML = '<div class="game-2d-completion-no-achievements">Продолжай развиваться, чтобы разблокировать достижения!</div>';
             }
 
+            // Build HTML same style as celebration screens
             let html = `
-                <div class="game-2d-completion-screen">
-                    <div class="game-2d-completion-header">
-                        <h1>🏆 Навыки Алекса</h1>
+                <div class="content-left">
+                    <h2>🏆 Навыки Алекса</h2>
+
+                    <div style="margin-bottom: var(--space-xl);">
+                        ${skillsHTML}
                     </div>
 
-                    <div class="game-2d-completion-content">
-                        <div class="game-2d-completion-left">
-                            <div class="game-2d-completion-skills">
-                                ${skillsHTML}
-                            </div>
-
-                            <div class="game-2d-completion-achievements">
-                                <h2>Достижения:</h2>
-                                ${achievementsHTML}
-                            </div>
-
-                            <div class="game-2d-completion-xp">
-                                <div>⭐ Всего XP: <strong>${gameState.totalXP}</strong></div>
-                            </div>
-                        </div>
-
-                        <div class="game-2d-completion-right">
-                            <img src="${GameData.npcs.alex.image}" alt="Alex" class="game-2d-completion-character">
-                        </div>
+                    <div style="margin-top: var(--space-xl);">
+                        <h4 style="margin: 0 0 var(--space-md) 0; color: var(--brand-primary); font-size: 16px; font-weight: 600;">Достижения:</h4>
+                        ${achievementsHTML || '<div style="color: var(--neutral-700); font-size: 13px;">Продолжай развиваться, чтобы разблокировать достижения!</div>'}
                     </div>
 
-                    <button onclick="GameLesson2D.exitLesson()"
-                            class="game-2d-button game-2d-completion-button">
-                        ✓ ЗАВЕРШИТЬ УРОК
-                    </button>
+                    <div style="margin-top: var(--space-xl);">
+                        <button onclick="GameLesson2D.exitLesson()"
+                                class="btn btn-primary"
+                                style="width: 100%; padding: 12px 20px; font-size: 16px; font-weight: 600;">
+                            ✓ ЗАВЕРШИТЬ УРОК
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-right" style="display: flex; align-items: flex-start; justify-content: center;">
+                    <img src="${GameData.npcs.alex.image}" alt="Alex" class="character-image" loading="lazy">
                 </div>
             `;
 
-            content.innerHTML = html;
+            // Create card wrapper
+            const card = document.createElement('div');
+            card.className = 'card card-content';
+            card.innerHTML = html;
+
+            content.innerHTML = '';
+            content.appendChild(card);
             modal.classList.add('active');
         },
 
