@@ -159,7 +159,7 @@ const GameLesson2D = (() => {
 
         // Handle window resize on mobile
         if (isMobile) {
-            window.addEventListener('resize', () => {
+            const resizeHandler = () => {
                 const newWrapperWidth = wrapper.clientWidth;
                 const newWrapperHeight = wrapper.clientHeight;
 
@@ -170,7 +170,9 @@ const GameLesson2D = (() => {
                     canvas.style.width = newDisplayWidth + 'px';
                     canvas.style.height = newDisplayHeight + 'px';
                 }
-            });
+            };
+            window.addEventListener('resize', resizeHandler);
+            gameState.eventListeners.push({ target: window, event: 'resize', handler: resizeHandler });
         }
     }
 
@@ -381,9 +383,20 @@ const GameLesson2D = (() => {
         // Remove event listeners
         if (gameState.eventListeners && gameState.eventListeners.length > 0) {
             gameState.eventListeners.forEach(({ target, event, handler }) => {
-                target.removeEventListener(event, handler);
+                try {
+                    target.removeEventListener(event, handler);
+                } catch (e) {
+                    console.warn('[Game2D] Error removing event listener:', e);
+                }
             });
             gameState.eventListeners = [];
+        }
+
+        // Remove game container from DOM if it still exists
+        const gameContainer = document.getElementById('game-2d-container');
+        if (gameContainer) {
+            gameContainer.remove();
+            console.log('[Game2D] Removed game-2d-container from DOM');
         }
 
         // Clear game state

@@ -79,9 +79,11 @@ var Navigation = {
         return;
       }
 
-      // Clear any existing screens
+      // Clear any existing screens and reset styles
       mainContent.innerHTML = "";
-      console.log("[Navigation] Cleared mainContent");
+      mainContent.className = "";
+      mainContent.style.cssText = "";
+      console.log("[Navigation] Cleared mainContent with full cleanup");
 
       // Check if this is a game-type lesson
       if (self.currentLesson.type === "game") {
