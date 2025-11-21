@@ -1122,7 +1122,7 @@ const GameData = {
                 choices: [
                     {
                         id: 'help_myself',
-                        label: '⏱️ Помочь самому (30 минут)',
+                        label: 'Помочь самому (30 минут)',
                         time_cost: 30,
                         consequence: {
                             dialogue: [

@@ -1010,27 +1010,13 @@ const GameLesson2D = (() => {
                     class="game-2d-menu-button game-2d-menu-button-secondary">
                 Выбрать сценарий
             </button>
-        `;
 
-        // Show crisis button with status
-        if (allCompleted) {
-            html += `
-                <button onclick="GameLesson2D.startCrisis()"
-                        class="game-2d-menu-button game-2d-menu-button-danger"
-                        style="font-size: 16px; font-weight: bold;">
-                    🚨 ФИНАЛЬНЫЙ КРИЗИС (ГОТОВ!)
-                </button>
-            `;
-        } else {
-            const completed = gameState.completedScenarios.length;
-            html += `
-                <button disabled
-                        class="game-2d-menu-button game-2d-menu-button-muted"
-                        style="opacity: 0.6; cursor: not-allowed;">
-                    🚨 Финальный кризис (${completed}/5 сценариев)
-                </button>
-            `;
-        }
+            <button onclick="GameLesson2D.startQuiz()"
+                    class="game-2d-menu-button game-2d-menu-button-success"
+                    style="font-size: 16px; font-weight: bold;">
+                ✅ Начать тест
+            </button>
+        `;
 
         html += `
             <button onclick="GameLesson2D.closeMenu()"
@@ -1213,10 +1199,10 @@ const GameLesson2D = (() => {
 
             if (allCompleted && !gameState.crisisTriggered) {
                 gameState.crisisTriggered = true;
-                console.log('[Game2D] All main scenarios completed! Ready for final crisis.');
+                console.log('[Game2D] All main scenarios completed! Starting quiz immediately.');
 
-                // Show notification about final crisis
-                this.showFinalCrisisNotification();
+                // Skip crisis and go directly to quiz
+                this.startQuiz();
             }
         },
 
