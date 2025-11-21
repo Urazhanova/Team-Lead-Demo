@@ -41,7 +41,11 @@ const GameLesson2D = (() => {
         crisisTimeSpent: 0,
         criticalProblemsHandled: 0,
         currentCrisisProblem: 0,    // Index of current problem being solved
-        solvedProblems: []          // IDs of solved problems
+        solvedProblems: [],          // IDs of solved problems
+
+        // Game loop tracking
+        gameLoopId: null,           // requestAnimationFrame ID for cleanup
+        eventListeners: []          // Track event listeners for cleanup
     };
 
     // ============================================
@@ -257,7 +261,8 @@ const GameLesson2D = (() => {
     // ============================================
 
     function setupEventListeners() {
-        document.addEventListener('keydown', (e) => {
+        // Keyboard handlers
+        const keydownHandler = (e) => {
             gameState.keys[e.key.toLowerCase()] = true;
 
             if (e.key.toLowerCase() === ' ') {
@@ -269,11 +274,20 @@ const GameLesson2D = (() => {
                 e.preventDefault();
                 handleInteraction();
             }
-        });
+        };
 
-        document.addEventListener('keyup', (e) => {
+        const keyupHandler = (e) => {
             gameState.keys[e.key.toLowerCase()] = false;
-        });
+        };
+
+        document.addEventListener('keydown', keydownHandler);
+        document.addEventListener('keyup', keyupHandler);
+
+        // Track these listeners for cleanup
+        gameState.eventListeners.push(
+            { target: document, event: 'keydown', handler: keydownHandler },
+            { target: document, event: 'keyup', handler: keyupHandler }
+        );
 
         // Mobile Controls - Movement Buttons
         const moveButtons = document.querySelectorAll('.game-2d-move-btn');
@@ -352,7 +366,31 @@ const GameLesson2D = (() => {
             drawGame();
         }
 
-        requestAnimationFrame(gameLoop);
+        gameState.gameLoopId = requestAnimationFrame(gameLoop);
+    }
+
+    function cleanupGame() {
+        console.log('[Game2D] Cleaning up game...');
+
+        // Cancel game loop
+        if (gameState.gameLoopId) {
+            cancelAnimationFrame(gameState.gameLoopId);
+            gameState.gameLoopId = null;
+        }
+
+        // Remove event listeners
+        if (gameState.eventListeners && gameState.eventListeners.length > 0) {
+            gameState.eventListeners.forEach(({ target, event, handler }) => {
+                target.removeEventListener(event, handler);
+            });
+            gameState.eventListeners = [];
+        }
+
+        // Clear game state
+        gameState.currentScene = 'intro';
+        gameState.keys = {};
+        gameState.canvas = null;
+        gameState.ctx = null;
     }
 
     function updateGameState() {
@@ -1141,8 +1179,15 @@ const GameLesson2D = (() => {
 
     return {
         render: function(lesson, container) {
+            // Cleanup any existing game state first
+            cleanupGame();
+
             initGame(lesson, container);
             gameState.currentScene = 'game';
+        },
+
+        cleanup: function() {
+            cleanupGame();
         },
 
         showChoices: function(scenarioId) {

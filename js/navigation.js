@@ -47,6 +47,11 @@ var Navigation = {
   loadLessonScreens: function(lessonId) {
     console.log("[Navigation] loadLessonScreens(" + lessonId + ") called");
 
+    // Cleanup any active game module before loading a new lesson
+    if (typeof GameLesson2D !== "undefined" && GameLesson2D.cleanup) {
+      GameLesson2D.cleanup();
+    }
+
     if (typeof Data === "undefined") {
       console.error("[Navigation] Data module not available");
       return;
