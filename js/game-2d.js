@@ -56,6 +56,9 @@ const GameLesson2D = (() => {
         gameState.canvas = document.getElementById('gameCanvas2D');
         gameState.ctx = gameState.canvas.getContext('2d');
 
+        // Optimize canvas for mobile devices
+        optimizeCanvasForMobile();
+
         // Setup player
         gameState.player = {
             x: 710,
@@ -101,6 +104,66 @@ const GameLesson2D = (() => {
 
         // Start game loop
         gameLoop();
+    }
+
+    function optimizeCanvasForMobile() {
+        const canvas = gameState.canvas;
+        const wrapper = canvas.parentElement;
+
+        // Check if mobile device (touch support or small viewport)
+        const isMobile = window.innerWidth <= 768 || (window.matchMedia('(hover: none)').matches);
+
+        if (isMobile) {
+            console.log('[Game2D] Detected mobile device, optimizing canvas');
+
+            // Get wrapper dimensions
+            const wrapperWidth = wrapper.clientWidth;
+            const wrapperHeight = wrapper.clientHeight;
+
+            // Calculate scaling to fit within wrapper while maintaining aspect ratio
+            const canvasAspect = canvas.width / canvas.height;
+            const wrapperAspect = wrapperWidth / wrapperHeight;
+
+            let displayWidth = wrapperWidth;
+            let displayHeight = wrapperHeight;
+
+            if (canvasAspect > wrapperAspect) {
+                // Canvas is wider, fit to wrapper width
+                displayHeight = displayWidth / canvasAspect;
+            } else {
+                // Canvas is taller, fit to wrapper height
+                displayWidth = displayHeight * canvasAspect;
+            }
+
+            // Apply display size
+            canvas.style.width = displayWidth + 'px';
+            canvas.style.height = displayHeight + 'px';
+            canvas.style.margin = 'auto';
+
+            // Update canvas internal resolution for better quality
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = canvas.width * dpr;
+            canvas.height = canvas.height * dpr;
+            gameState.ctx.scale(dpr, dpr);
+
+            console.log(`[Game2D] Canvas optimized: ${displayWidth}x${displayHeight}px (device pixel ratio: ${dpr})`);
+        }
+
+        // Handle window resize on mobile
+        if (isMobile) {
+            window.addEventListener('resize', () => {
+                const newWrapperWidth = wrapper.clientWidth;
+                const newWrapperHeight = wrapper.clientHeight;
+
+                if (newWrapperWidth > 0 && newWrapperHeight > 0) {
+                    const newDisplayWidth = newWrapperWidth;
+                    const newDisplayHeight = newWrapperHeight;
+
+                    canvas.style.width = newDisplayWidth + 'px';
+                    canvas.style.height = newDisplayHeight + 'px';
+                }
+            });
+        }
     }
 
     function loadCharacterImages() {

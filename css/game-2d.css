@@ -1335,28 +1335,118 @@
 @media (max-width: 768px) {
   #game-2d-container {
     grid-template-rows: 50px 1fr auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .game-2d-main {
+    display: flex;
     flex-direction: column;
+    gap: 0;
+    flex: 1;
+    overflow: hidden;
   }
 
   .game-2d-canvas-wrapper {
     width: 100%;
     flex: 1;
+    min-height: 300px;
+    position: relative;
+  }
+
+  #gameCanvas2D {
+    max-width: 100%;
+    max-height: 100%;
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    object-fit: contain;
   }
 
   #side-panel {
     width: 100%;
     height: auto;
-    max-height: 200px;
+    max-height: 150px;
     overflow-y: auto;
     border-left: none;
     border-top: 1px solid rgba(78, 204, 163, 0.2);
+    padding: var(--space-md);
+  }
+
+  .game-2d-day-badge {
+    top: 55px;
+    left: 10px;
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .game-2d-mobile-controls {
+    bottom: 5px;
+    right: 5px;
+    padding: 4px;
+  }
+
+  .game-2d-joystick {
+    grid-template-columns: 16px 16px 16px;
+    grid-template-rows: 16px 16px 16px;
+    gap: 1px;
+  }
+
+  .game-2d-move-btn {
+    width: 16px;
+    height: 16px;
+    font-size: 8px;
+  }
+
+  .game-2d-action-btn {
+    font-size: 8px;
+    padding: 1px 2px;
   }
 }
 
 @media (max-width: 480px) {
+  #game-2d-container {
+    grid-template-rows: 45px 1fr 50px;
+  }
+
+  .game-2d-canvas-wrapper {
+    min-height: 250px;
+  }
+
+  #side-panel {
+    max-height: 120px;
+    padding: var(--space-sm);
+  }
+
+  .game-2d-day-badge {
+    top: 50px;
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+
+  .game-2d-mobile-controls {
+    bottom: 3px;
+    right: 3px;
+  }
+
+  .game-2d-joystick {
+    grid-template-columns: 14px 14px 14px;
+    grid-template-rows: 14px 14px 14px;
+    gap: 1px;
+    margin-bottom: 2px;
+  }
+
+  .game-2d-move-btn {
+    width: 14px;
+    height: 14px;
+    font-size: 7px;
+  }
+
+  .game-2d-action-btn {
+    font-size: 7px;
+    padding: 1px 2px;
+  }
+
   /* Keep mobile controls small even on small screens */
 }
 
