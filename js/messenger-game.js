@@ -84,8 +84,11 @@ var MessengerGame = {
 
     loadScenarios: function () {
         var self = this;
-        // Load full game scenarios directly - skip demo phase
-        fetch('data/full-game-scenarios.json?v=' + new Date().getTime())
+        // First show day briefing
+        this.showDayBriefing();
+
+        // Then load messenger-scenarios.json for the initial demo
+        fetch('data/messenger-scenarios.json?v=' + new Date().getTime())
             .then(function (response) {
                 if (!response.ok) {
                     throw new Error("HTTP error " + response.status);
@@ -93,22 +96,19 @@ var MessengerGame = {
                 return response.json();
             })
             .then(function (data) {
-                if (!data || !data.config || !data.contacts || !data.scenarios) {
-                    throw new Error("Invalid full game data structure");
+                if (!data || !data.scenarios) {
+                    throw new Error("Invalid messenger scenarios structure");
                 }
-                // Load full game data directly
+                // Store messenger scenarios for demo
+                self.messengerScenarios = data.scenarios;
+                self.messengerContacts = data.contacts;
+                // Store config for initial state
                 self.config = data.config;
-                self.contacts = data.contacts;
-                self.scenarios = data.scenarios;
-
-                // Initialize state with full game config
                 self.initializeState();
-
-                // Show day briefing immediately
-                self.showDayBriefing();
+                // Demo messages will be shown after user clicks [НАЧАТЬ ДЕНЬ] button
             })
             .catch(function (err) {
-                console.error("[MessengerGame] Error loading game scenarios:", err);
+                console.error("[MessengerGame] Error loading messenger scenarios:", err);
                 if (self.container) {
                     self.container.innerHTML = '<div class="error">Error loading game data: ' + err.message + '</div>';
                 }
@@ -633,7 +633,7 @@ var MessengerGame = {
     },
 
     /**
-     * Continue from Good Start modal - show day briefing
+     * Continue from Good Start modal - load full game scenarios
      */
     continueFromGoodStart: function () {
         console.log("[MessengerGame] Continuing from Good Start...");
@@ -644,8 +644,8 @@ var MessengerGame = {
             modal.remove();
         }
 
-        // Show day briefing instead
-        this.showDayBriefing();
+        // Load full game scenarios
+        this.loadFullGameScenarios();
     },
 
     /**
@@ -677,7 +677,7 @@ var MessengerGame = {
     },
 
     /**
-     * Start the actual game after briefing
+     * Start the demo after briefing is closed
      */
     startDayGame: function () {
         // Remove briefing modal
@@ -686,8 +686,8 @@ var MessengerGame = {
             modal.remove();
         }
 
-        // Start the game (scenarios already loaded)
-        this.startGame();
+        // Now show initial demo messages (they are loaded and ready)
+        this.showInitialMessages();
     },
 
     renderBriefing: function () {
