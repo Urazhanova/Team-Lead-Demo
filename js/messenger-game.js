@@ -149,6 +149,10 @@ var MessengerGame = {
                     if (!self.state.messages[contact.id]) {
                         self.state.messages[contact.id] = [];
                     }
+                    // Initialize unread tracking for new contacts
+                    if (typeof self.state.unread[contact.id] === 'undefined') {
+                        self.state.unread[contact.id] = false;
+                    }
                 }, self);
 
                 // Start the game
