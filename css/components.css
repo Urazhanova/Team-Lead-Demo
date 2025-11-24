@@ -3536,6 +3536,12 @@ textarea {
   padding: 12px;
   margin-bottom: 16px;
   border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.choice-context:hover {
+  background: #e8ecff;
 }
 
 .choice-context .context-label {

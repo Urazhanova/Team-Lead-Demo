@@ -757,6 +757,51 @@ var MessengerGame = {
 
         this.renderContactList();
         this.renderChatWindow(contactId);
+
+        // Schedule choice reveal for messages that have a scenario (after 1 second of opening)
+        this.scheduleChoicesReveal(contactId);
+    },
+
+    /**
+     * Schedule reveal of choices 1 second after chat is opened
+     */
+    scheduleChoicesReveal: function (contactId) {
+        var self = this;
+        var messages = this.state.messages[contactId] || [];
+
+        // Find scenario messages that haven't revealed choices yet
+        messages.forEach(function (msg, index) {
+            // Skip if already revealed or no scenario
+            if (msg.choicesRevealed || !msg.scenarioId) return;
+
+            // Schedule reveal for 1 second after this message is viewed
+            setTimeout(function () {
+                // Only reveal if still viewing same contact
+                if (self.state.activeContactId === contactId) {
+                    msg.choicesRevealed = true;
+                    // Re-render to show choices
+                    self.renderChatWindow(contactId);
+                }
+            }, 1000);
+        });
+    },
+
+    /**
+     * Toggle context visibility (expand/collapse)
+     */
+    toggleContext: function (contextId) {
+        var contextEl = document.getElementById(contextId);
+        if (!contextEl) return;
+
+        var textEl = contextEl.querySelector('.context-text');
+        var labelEl = contextEl.querySelector('.context-label');
+
+        if (!textEl || !labelEl) return;
+
+        // Toggle display
+        var isVisible = textEl.style.display !== 'none';
+        textEl.style.display = isVisible ? 'none' : 'block';
+        labelEl.textContent = isVisible ? '💡 КОНТЕКСТ (нажми чтобы открыть)' : '💡 КОНТЕКСТ (нажми чтобы закрыть)';
     },
 
     backToContacts: function () {
@@ -843,17 +888,17 @@ var MessengerGame = {
             }
         }
 
-        // Find active scenario for this contact (REQUEST type that hasn't been answered)
-        var activeScenario = this.scenarios.find(s =>
-            s.contactId === contactId &&
-            this.isTimeTriggered(s.triggerTime) &&
-            s.choices && s.choices.length > 0 &&
-            !s.isLunchTime && // Don't show choices for lunch here
-            !this.state.choicesMade.some(choiceId => {
-                // Check if a choice from this scenario was already made
-                return s.choices.some(c => c.id === choiceId);
-            })
-        );
+        // Find the message with a scenario in this contact (most recent)
+        var scenarioMessage = null;
+        var activeScenario = null;
+        var messages = this.state.messages[contactId] || [];
+        for (var i = messages.length - 1; i >= 0; i--) {
+            if (messages[i].scenarioId && messages[i].choicesRevealed === true) {
+                scenarioMessage = messages[i];
+                activeScenario = this.scenarios.find(s => s.id === messages[i].scenarioId);
+                break;
+            }
+        }
 
         // If there's an escalation with new choices, show those instead
         if (escalationChoices && escalationChoices.length > 0 && this.state.gameStarted) {
@@ -886,13 +931,14 @@ var MessengerGame = {
 
             inputArea.innerHTML = choicesHtml;
         } else if (activeScenario && this.state.gameStarted) {
-            // Show context if available
+            // Show context if available (clickable to expand/collapse)
             var contextHtml = '';
             if (activeScenario.context) {
+                var contextId = 'context-' + activeScenario.id;
                 contextHtml = `
-                    <div class="choice-context">
-                        <div class="context-label">💡 КОНТЕКСТ:</div>
-                        <div class="context-text">${activeScenario.context}</div>
+                    <div class="choice-context" id="${contextId}" onclick="window.messengerGame.toggleContext('${contextId}')">
+                        <div class="context-label">💡 КОНТЕКСТ (нажми чтобы открыть)</div>
+                        <div class="context-text" style="display: none;">${activeScenario.context}</div>
                     </div>
                 `;
             }
@@ -1057,7 +1103,9 @@ var MessengerGame = {
                         sender: scenario.contactId,
                         text: scenario.text,
                         timestamp: scenario.triggerTime,
-                        isUrgent: scenario.type === 'ALERT'
+                        isUrgent: scenario.type === 'ALERT',
+                        scenarioId: scenario.id,  // Mark this message as having a scenario/choices
+                        choicesRevealed: false    // Choices not revealed yet (will appear after 1 sec)
                     });
                 }
 
@@ -1257,7 +1305,9 @@ var MessengerGame = {
                     sender: scenario.contactId,
                     text: scenario.text,
                     timestamp: scenario.triggerTime,
-                    isUrgent: scenario.type === 'ALERT'
+                    isUrgent: scenario.type === 'ALERT',
+                    scenarioId: scenario.id,  // Mark this message as having a scenario/choices
+                    choicesRevealed: false    // Choices not revealed yet (will appear after 1 sec)
                 });
             }
 
