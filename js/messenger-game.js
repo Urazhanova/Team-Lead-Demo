@@ -373,6 +373,9 @@ var MessengerGame = {
     makeEscalationChoice: function (escalationMessage, choice) {
         console.log("[MessengerGame] Escalation choice made: " + choice.id);
 
+        // Remember old T_Game for time gap processing
+        var oldGameTimeMinutes = this.state.gameTimeMinutes;
+
         // Apply resource costs (with meal skip penalty if applicable)
         var energyCost = choice.energyCost;
         var timeCost = choice.timeCost;
@@ -407,6 +410,15 @@ var MessengerGame = {
         // Track the choice
         if (!this.state.choicesMade) this.state.choicesMade = [];
         this.state.choicesMade.push(choice.id);
+
+        // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
+        this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
+
+        // Also check triggers after gap processing
+        var self = this;
+        setTimeout(function () {
+            self.checkTriggers();
+        }, 100);
 
         // Update stats
         this.updateStats();
