@@ -461,47 +461,98 @@ var MessengerGame = {
         }
     },
 
+    /**
+     * Player makes a choice - update game state and process time jump
+     */
     makeChoice: function (scenario, choice) {
-        // Apply costs
+        console.log("[MessengerGame] Choice made: " + choice.id);
+
+        // Remember old T_Game for time gap processing
+        var oldGameTime = this.state.gameTime;
+        var oldGameTimeMinutes = this.state.gameTimeMinutes;
+
+        // Apply resource costs
         this.state.energy = Math.max(0, this.state.energy - choice.energyCost);
         this.state.stress = Math.min(100, this.state.stress + (choice.stressImpact || 0));
+
+        // Advance T_Game by timeCost
         this.advanceTime(choice.timeCost);
 
-        // Add player message
+        // Add player's choice message
         this.addMessage(scenario.contactId, {
             sender: 'player',
             text: choice.text,
-            timestamp: this.state.currentTime
+            timestamp: this.state.gameTime // Use new T_Game
         });
 
-        // Show typing indicator then add response
-        this.showTyping(scenario.contactId, true);
+        // Mark scenario as completed
+        this.state.completedScenarios.push(scenario.id);
+        if (!this.state.choicesMade) this.state.choicesMade = [];
+        this.state.choicesMade.push(choice.id);
 
-        setTimeout(function () {
-            this.showTyping(scenario.contactId, false);
-            this.addMessage(scenario.contactId, {
-                sender: scenario.contactId,
-                text: choice.response,
-                timestamp: this.state.currentTime
-            });
+        // Add choice response message
+        this.addMessage(scenario.contactId, {
+            sender: scenario.contactId,
+            text: choice.response,
+            timestamp: this.state.gameTime // Use new T_Game
+        });
 
-            // Mark scenario as completed
-            this.state.completedScenarios.push(scenario.id);
-            if (!this.state.choicesMade) this.state.choicesMade = [];
-            this.state.choicesMade.push(choice.id);
+        // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
+        this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
 
-            // Check for next triggers
-            this.checkTriggers();
-
-            // Update UI
-            this.updateStats();
-            this.renderChatWindow(scenario.contactId);
-
-        }.bind(this), 1500);
-
-        // Update UI immediately (for energy/time changes)
+        // Update UI
         this.updateStats();
         this.renderChatWindow(scenario.contactId);
+    },
+
+    /**
+     * Process time gap: when T_Game jumps, load all events that should have happened in between
+     * @param oldTimeMinutes - old T_Game in minutes from 00:00
+     * @param newTimeMinutes - new T_Game in minutes from 00:00
+     */
+    processTimeGap: function (oldTimeMinutes, newTimeMinutes) {
+        console.log("[MessengerGame] Processing time gap: " +
+                    this.minutesToTime(oldTimeMinutes) + " -> " + this.minutesToTime(newTimeMinutes));
+
+        // Find all scenarios that should trigger between old and new game time
+        var eventsToProcess = this.scenarios.filter(function (scenario) {
+            // Skip if already completed
+            if (this.state.completedScenarios.includes(scenario.id)) return false;
+
+            // Check if trigger time falls in the gap
+            var triggerMins = this.timeToMinutes(scenario.triggerTime);
+            return triggerMins > oldTimeMinutes && triggerMins <= newTimeMinutes;
+        }, this);
+
+        // Sort events by time
+        eventsToProcess.sort(function (a, b) {
+            return this.timeToMinutes(a.triggerTime) - this.timeToMinutes(b.triggerTime);
+        }.bind(this));
+
+        console.log("[MessengerGame] Found " + eventsToProcess.length + " events in time gap");
+
+        // Load and display events with 5 second intervals
+        eventsToProcess.forEach(function (scenario, index) {
+            setTimeout(function () {
+                // Initialize message history if needed
+                if (!this.state.messages[scenario.contactId]) {
+                    this.state.messages[scenario.contactId] = [];
+                }
+
+                // Add scenario messages
+                scenario.messages.forEach(function (msg) {
+                    this.addMessage(scenario.contactId, {
+                        sender: msg.sender,
+                        text: msg.text,
+                        timestamp: scenario.triggerTime
+                    });
+                }, this);
+
+                // Mark as completed
+                this.state.completedScenarios.push(scenario.id);
+
+            }.bind(this), index * 5000); // 5 second intervals
+        }, this);
     },
 
     showTyping: function (contactId, show) {
@@ -582,7 +633,7 @@ var MessengerGame = {
         // This ensures all messages have arrived before checking if they're all viewed
         if (this.state.lastMessageAddedTime === null ||
             this.state.lastMessageAddedTime === undefined ||
-            (this.state.elapsedRealTime - this.state.lastMessageAddedTime) < 2) {
+            (this.state.realTimeElapsed - this.state.lastMessageAddedTime) < 2) {
             return false;
         }
 
