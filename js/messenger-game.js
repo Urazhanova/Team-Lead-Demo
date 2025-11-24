@@ -1303,16 +1303,24 @@ var MessengerGame = {
      * Load all messages for scenarios that match trigger conditions
      */
     checkTriggers: function () {
+        console.log("[MessengerGame] checkTriggers() called. Current T_Game: " + this.state.gameTime);
+
         this.scenarios.forEach(function (scenario) {
             // Skip if choice was already made (scenario is answered)
             if (this.state.choicesMade.some(choiceId => {
                 // Check if this choice belongs to this scenario
                 var choiceScenario = this.scenarios.find(s => s.choices && s.choices.find(c => c.id === choiceId));
                 return choiceScenario && choiceScenario.id === scenario.id;
-            })) return;
+            })) {
+                console.log("[MessengerGame] Skipping " + scenario.id + " - already completed");
+                return;
+            }
 
             // Check if T_Game has reached the trigger time
-            if (!this.isTimeTriggered(scenario.triggerTime)) return;
+            if (!this.isTimeTriggered(scenario.triggerTime)) {
+                console.log("[MessengerGame] Skipping " + scenario.id + " - trigger time " + scenario.triggerTime + " not reached (current: " + this.state.gameTime + ")");
+                return;
+            }
 
             // Skip lunch time scenarios (they're handled separately)
             if (scenario.isLunchTime) return;
@@ -1329,6 +1337,7 @@ var MessengerGame = {
 
             if (!messageExists) {
                 // Add initial message from the scenario
+                console.log("[MessengerGame] Loading scenario: " + scenario.id + " from " + scenario.contactId + " at " + scenario.triggerTime);
                 this.addMessage(scenario.contactId, {
                     sender: scenario.contactId,
                     text: scenario.text,
@@ -1340,6 +1349,8 @@ var MessengerGame = {
 
                 // Schedule choices reveal for 1 second after message
                 this.scheduleChoicesReveal(scenario.contactId);
+            } else {
+                console.log("[MessengerGame] Skipping " + scenario.id + " - message already exists");
             }
 
         }, this);
