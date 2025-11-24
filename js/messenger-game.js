@@ -382,9 +382,10 @@ var MessengerGame = {
         // Advance T_Game
         this.advanceTime(timeCost);
 
-        // Add player's confirmation message from Alex (the choice/decision)
         var contactId = this.state.activeContactId;
-        this.addMessage('alex', {
+
+        // Add player's confirmation message from Alex (the choice/decision)
+        this.addMessage(contactId, {
             sender: 'alex',
             text: choice.description,
             timestamp: this.state.gameTime
@@ -837,11 +838,12 @@ var MessengerGame = {
         // Render Messages (Slack style: Avatar left, content right)
         var messagesHtml = messages.map((msg) => {
             // Determine avatar and name
-            var avatar = msg.sender === 'player' ? 'assets/images/characters/alex/alex_avatar.svg' : contact.avatar;
-            var name = msg.sender === 'player' ? 'Alex' : (msg.sender === 'System' ? 'System' : contact.name);
+            var isPlayerMessage = msg.sender === 'player' || msg.sender === 'alex';
+            var avatar = isPlayerMessage ? 'assets/images/characters/alex/alex_avatar.svg' : contact.avatar;
+            var name = isPlayerMessage ? 'Alex' : (msg.sender === 'System' ? 'System' : contact.name);
 
             // If it's a channel, resolve the specific sender
-            if (contact.isChannel && msg.sender !== 'player') {
+            if (contact.isChannel && !isPlayerMessage) {
                 if (msg.sender === 'System') {
                     name = 'System';
                     avatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><circle cx='20' cy='20' r='20' fill='%23616061'/><text x='50%' y='50%' dy='.35em' text-anchor='middle' fill='white' font-size='20'>S</text></svg>";
@@ -1011,7 +1013,7 @@ var MessengerGame = {
         this.advanceTime(timeCost);
 
         // Add player's confirmation message from Alex (the choice/decision)
-        this.addMessage('alex', {
+        this.addMessage(scenario.contactId, {
             sender: 'alex',
             text: choice.description,
             timestamp: this.state.gameTime
