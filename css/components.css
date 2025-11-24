@@ -3473,3 +3473,57 @@ textarea {
     padding: 0 5px;
   }
 }
+
+/* Good Start Modal */
+.good-start-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease;
+}
+
+.good-start-content {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.good-start-content h2 {
+  color: #2bac76;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.good-start-content p {
+  color: #1d1c1d;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 5px 0;
+}
+
+.good-start-content .continue-btn {
+  margin-top: 30px;
+  background: #3F0E40;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.good-start-content .continue-btn:hover {
+  background: #5c1f5d;
+}

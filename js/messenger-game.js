@@ -474,16 +474,20 @@ var MessengerGame = {
         // Start time is 09:00:00
         var startHour = 9;
         var startMinute = 0;
-        var currentGameSeconds = 0; // Seconds past 9:00
+
+        // Initialize game seconds if not already set (allows resuming)
+        if (typeof this.state.gameSeconds === 'undefined') {
+            this.state.gameSeconds = 0; // Seconds past 9:00
+        }
 
         this.state.elapsedRealTime = 0; // Track real seconds
 
         this.timerInterval = setInterval(function () {
-            currentGameSeconds += 4; // 4x speed
+            this.state.gameSeconds += 4; // 4x speed
             this.state.elapsedRealTime += 1; // 1 real second
 
             // Calculate new time
-            var totalMinutes = startMinute + Math.floor(currentGameSeconds / 60);
+            var totalMinutes = startMinute + Math.floor(this.state.gameSeconds / 60);
             var hours = startHour + Math.floor(totalMinutes / 60);
             var minutes = totalMinutes % 60;
 
@@ -491,6 +495,7 @@ var MessengerGame = {
             this.state.currentTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
             this.updateStats();
             this.checkTriggers();
+            this.checkGoodStartCondition();
 
             // Check end condition (09:20)
             if (hours === 9 && minutes >= 20) {
@@ -498,6 +503,50 @@ var MessengerGame = {
             }
 
         }.bind(this), 1000); // Update every real second
+    },
+
+    checkGoodStartCondition: function () {
+        if (this.state.goodStartShown) return;
+
+        var timeLimitReached = this.state.elapsedRealTime >= 30; // Changed to 30s
+        var allReadDelayReached = this.state.allMessagesReadTime !== null &&
+            (this.state.elapsedRealTime >= this.state.allMessagesReadTime + 2);
+
+        if (timeLimitReached || allReadDelayReached) {
+            this.showGoodStartScreen();
+        }
+    },
+
+    showGoodStartScreen: function () {
+        this.state.goodStartShown = true;
+
+        // Jump time to 09:10 (10 minutes * 60 seconds = 600 seconds)
+        this.state.gameSeconds = 600;
+        this.state.currentTime = '09:10';
+        this.updateStats();
+
+        // Create modal
+        var modal = document.createElement('div');
+        modal.className = 'good-start-modal';
+        modal.innerHTML = `
+            <div class="good-start-content">
+                <h2>ХОРОШЕЕ НАЧАЛО!</h2>
+                <p>Команда вышла на связь.</p>
+                <p>Все начали работу.</p>
+                <br>
+                <p>Но день только начинается...</p>
+                <p>Скоро придут первые вопросы.</p>
+                <br>
+                <p>Готов отвечать и принимать решения?</p>
+                <button class="continue-btn" onclick="window.messengerGame.closeGoodStartScreen()">ПРОДОЛЖИТЬ</button>
+            </div>
+        `;
+        this.container.appendChild(modal);
+    },
+
+    closeGoodStartScreen: function () {
+        var modal = this.container.querySelector('.good-start-modal');
+        if (modal) modal.remove();
     },
 
     checkTriggers: function () {
