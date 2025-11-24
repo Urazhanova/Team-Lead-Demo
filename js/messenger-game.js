@@ -382,8 +382,15 @@ var MessengerGame = {
         // Advance T_Game
         this.advanceTime(timeCost);
 
-        // Add response message from the contact (no need to show the choice text)
+        // Add player's confirmation message from Alex (the choice/decision)
         var contactId = this.state.activeContactId;
+        this.addMessage('alex', {
+            sender: 'alex',
+            text: choice.description,
+            timestamp: this.state.gameTime
+        });
+
+        // Add response message from the contact
         this.addMessage(contactId, {
             sender: contactId,
             text: choice.response,
@@ -1003,7 +1010,14 @@ var MessengerGame = {
         // Advance T_Game by timeCost (with penalty applied if mealSkipped)
         this.advanceTime(timeCost);
 
-        // Add response message from the contact (no need to show the choice text)
+        // Add player's confirmation message from Alex (the choice/decision)
+        this.addMessage('alex', {
+            sender: 'alex',
+            text: choice.description,
+            timestamp: this.state.gameTime
+        });
+
+        // Add response message from the contact
         this.addMessage(scenario.contactId, {
             sender: scenario.contactId,
             text: choice.response,
