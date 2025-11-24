@@ -126,6 +126,7 @@ var MessengerGame = {
         this.state.allMessagesReadTime = null;
         this.state.goodStartShown = false;
         this.state.lastMessageAddedTime = null;
+        this.state.mealSkipped = false;                     // Track if meal was skipped for penalty
 
         // Initialize message history for each contact
         this.contacts.forEach(function (contact) {
@@ -198,9 +199,102 @@ var MessengerGame = {
         this.state.lunchShown = true;
         console.log("[MessengerGame] Lunch time! T_Game=" + this.state.gameTime);
 
-        // TODO: Implement lunch modal with choices A/B/C
-        // For now, just log it
-        console.log("[MessengerGame] TODO: Show lunch break modal with energy/time tradeoffs");
+        if (!this.container) return;
+
+        // Create modal overlay
+        var modalHtml = `
+            <div class="lunch-modal">
+                <div class="lunch-content">
+                    <h2>🍽️ ВРЕМЯ ОБЕДА</h2>
+                    <p>Наступил полдень. Пора позаботиться о себе.</p>
+                    <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Выбери, что хочешь сделать:</p>
+
+                    <div class="lunch-choices">
+                        <button class="lunch-btn lunch-full" onclick="window.messengerGame.makeLunchChoice('full')">
+                            <div class="lunch-title">[A] ПОЛНЫЙ ОБЕД</div>
+                            <div class="lunch-description">Хорошая еда, отдых на 30 минут</div>
+                            <div class="lunch-impact">
+                                <span class="lunch-time">⏱️ +30 мин</span>
+                                <span class="lunch-energy positive">⚡ +25%</span>
+                            </div>
+                        </button>
+
+                        <button class="lunch-btn lunch-quick" onclick="window.messengerGame.makeLunchChoice('quick')">
+                            <div class="lunch-title">[B] БЫСТРЫЙ ПЕРЕКУС</div>
+                            <div class="lunch-description">Кофе и бутерброд на 15 минут</div>
+                            <div class="lunch-impact">
+                                <span class="lunch-time">⏱️ +15 мин</span>
+                                <span class="lunch-energy positive">⚡ +15%</span>
+                            </div>
+                        </button>
+
+                        <button class="lunch-btn lunch-skip" onclick="window.messengerGame.makeLunchChoice('skip')">
+                            <div class="lunch-title">[C] ПРОПУСТИТЬ</div>
+                            <div class="lunch-description">Остаться в работе (штраф к эффективности)</div>
+                            <div class="lunch-impact">
+                                <span class="lunch-time">⏱️ +5 мин</span>
+                                <span class="lunch-energy negative">⚡ -10%</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add modal to container
+        var modalEl = document.createElement('div');
+        modalEl.innerHTML = modalHtml;
+        this.container.appendChild(modalEl.firstElementChild);
+    },
+
+    /**
+     * Handle lunch choice selection
+     */
+    makeLunchChoice: function (choice) {
+        console.log("[MessengerGame] Lunch choice: " + choice);
+
+        var timeBonus = 0;
+        var energyBonus = 0;
+        var willHavePenalty = false;
+
+        switch (choice) {
+            case 'full':
+                timeBonus = 30;
+                energyBonus = 25;
+                break;
+            case 'quick':
+                timeBonus = 15;
+                energyBonus = 15;
+                break;
+            case 'skip':
+                timeBonus = 5;
+                energyBonus = -10;
+                willHavePenalty = true;
+                break;
+        }
+
+        // Apply lunch effects
+        this.advanceTime(timeBonus);
+        this.state.energy = Math.min(100, this.state.energy + energyBonus);
+
+        // Set penalty flag if meal was skipped
+        if (willHavePenalty) {
+            this.state.mealSkipped = true;
+            console.log("[MessengerGame] Meal skipped - penalty applied to future choices (+50% time cost, +50% energy cost)");
+        }
+
+        // Update stats
+        this.updateStats();
+
+        // Remove modal
+        var modal = this.container.querySelector('.lunch-modal');
+        if (modal) {
+            modal.remove();
+        }
+
+        // Resume game
+        this.renderChatWindow(this.state.activeContactId);
+        this.renderContactList();
     },
 
     renderBriefing: function () {
@@ -498,12 +592,22 @@ var MessengerGame = {
         var oldGameTime = this.state.gameTime;
         var oldGameTimeMinutes = this.state.gameTimeMinutes;
 
-        // Apply resource costs
-        this.state.energy = Math.max(0, this.state.energy - choice.energyCost);
+        // Apply resource costs (with meal skip penalty if applicable)
+        var energyCost = choice.energyCost;
+        var timeCost = choice.timeCost;
+
+        if (this.state.mealSkipped) {
+            // Meal skip penalty: +50% time and +50% energy cost
+            timeCost = Math.ceil(timeCost * 1.5);
+            energyCost = Math.ceil(energyCost * 1.5);
+            console.log("[MessengerGame] Meal skip penalty applied: " + choice.timeCost + " -> " + timeCost + " min, " + choice.energyCost + " -> " + energyCost + "%");
+        }
+
+        this.state.energy = Math.max(0, this.state.energy - energyCost);
         this.state.stress = Math.min(100, this.state.stress + (choice.stressImpact || 0));
 
-        // Advance T_Game by timeCost
-        this.advanceTime(choice.timeCost);
+        // Advance T_Game by timeCost (with penalty applied if mealSkipped)
+        this.advanceTime(timeCost);
 
         // Add player's choice message
         this.addMessage(scenario.contactId, {
