@@ -84,7 +84,43 @@ var MessengerGame = {
 
     loadScenarios: function () {
         var self = this;
-        // Load full game scenarios (NOT messenger-scenarios.json)
+        // First load messenger-scenarios.json for the initial demo
+        fetch('data/messenger-scenarios.json?v=' + new Date().getTime())
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("HTTP error " + response.status);
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                if (!data || !data.scenarios) {
+                    throw new Error("Invalid messenger scenarios structure");
+                }
+                // Store messenger scenarios for demo
+                self.messengerScenarios = data.scenarios;
+                self.messengerContacts = data.contacts;
+                // Store config for initial state
+                self.config = data.config;
+                self.initializeState();
+                // Show initial demo messages
+                self.showInitialMessages();
+            })
+            .catch(function (err) {
+                console.error("[MessengerGame] Error loading messenger scenarios:", err);
+                if (self.container) {
+                    self.container.innerHTML = '<div class="error">Error loading game data: ' + err.message + '</div>';
+                }
+            });
+    },
+
+    /**
+     * Load full game scenarios after Good Start is clicked
+     */
+    loadFullGameScenarios: function () {
+        var self = this;
+        // Save demo messages before replacing contacts
+        var savedMessages = this.state.messages;
+
         fetch('data/full-game-scenarios.json?v=' + new Date().getTime())
             .then(function (response) {
                 if (!response.ok) {
@@ -94,29 +130,48 @@ var MessengerGame = {
             })
             .then(function (data) {
                 if (!data || !data.config || !data.contacts || !data.scenarios) {
-                    throw new Error("Invalid game data structure");
+                    throw new Error("Invalid full game data structure");
                 }
+                // Replace config/contacts/scenarios with full game data
                 self.config = data.config;
                 self.contacts = data.contacts;
                 self.scenarios = data.scenarios;
-                self.initializeState();
-                self.renderBriefing(); // Show briefing first
+
+                // Reset time to 09:10 for full game
+                self.state.gameTime = self.config.startTime; // "09:10"
+                self.state.gameTimeMinutes = self.timeToMinutes(self.config.startTime);
+
+                // IMPORTANT: Keep saved demo messages!
+                self.state.messages = savedMessages;
+
+                // Initialize message history for full game contacts (that don't have demo messages)
+                self.contacts.forEach(function (contact) {
+                    if (!self.state.messages[contact.id]) {
+                        self.state.messages[contact.id] = [];
+                    }
+                }, self);
+
+                // Start the game
+                self.startGame();
             })
             .catch(function (err) {
-                console.error("[MessengerGame] Error loading scenarios:", err);
+                console.error("[MessengerGame] Error loading full game scenarios:", err);
                 if (self.container) {
-                    self.container.innerHTML = '<div class="error">Error loading game data: ' + err.message + '</div>';
+                    self.container.innerHTML = '<div class="error">Error loading full game: ' + err.message + '</div>';
                 }
             });
     },
 
     initializeState: function () {
-        // Initialize T_Game (game time in HH:MM format)
-        this.state.gameTime = this.config.startTime; // "09:10"
-        this.state.gameTimeMinutes = this.timeToMinutes(this.config.startTime); // 550
+        // Use messenger config for initial state, will be replaced with full game config later
+        var configToUse = this.config || { startTime: "09:00", initialEnergy: 100, initialStress: 0 };
 
-        this.state.energy = this.config.initialEnergy;      // 100%
-        this.state.stress = this.config.initialStress;      // 0%
+        // Initialize T_Game (game time in HH:MM format)
+        this.state.gameTime = configToUse.startTime;
+        this.state.gameTimeMinutes = this.timeToMinutes(configToUse.startTime);
+
+        this.state.energy = configToUse.initialEnergy;      // 100%
+        this.state.stress = configToUse.initialStress;      // 0%
         this.state.messages = {};
         this.state.completedScenarios = [];
         this.state.choicesMade = [];
@@ -449,6 +504,107 @@ var MessengerGame = {
         this.container.innerHTML = screenHtml;
     },
 
+    /**
+     * Show initial demo messages (from messenger-scenarios.json)
+     */
+    showInitialMessages: function () {
+        if (!this.container) return;
+
+        // Set contacts and scenarios to messenger versions for demo phase
+        this.contacts = this.messengerContacts || [];
+        this.scenarios = []; // No game scenarios during demo (we'll load them after Good Start)
+
+        this.render(); // Render main messenger layout
+        this.state.activeContactId = null; // Start without a selected contact
+
+        // Display initial messages with delays
+        if (this.messengerScenarios && this.messengerScenarios.length > 0) {
+            var self = this;
+            var allMessagesDisplayed = false;
+
+            // Sort by triggerRealTime
+            var sortedScenarios = this.messengerScenarios.slice().sort(function (a, b) {
+                return (a.triggerRealTime || 0) - (b.triggerRealTime || 0);
+            });
+
+            sortedScenarios.forEach(function (scenario, index) {
+                setTimeout(function () {
+                    // Add message to contact
+                    var contactId = scenario.contactId;
+                    if (!self.state.messages[contactId]) {
+                        self.state.messages[contactId] = [];
+                    }
+
+                    // Add each message from scenario
+                    if (scenario.messages && scenario.messages.length > 0) {
+                        scenario.messages.forEach(function (msg) {
+                            self.state.messages[contactId].push({
+                                sender: msg.sender,
+                                text: msg.text,
+                                timestamp: scenario.triggerTime || "09:00"
+                            });
+                        });
+                    }
+
+                    // Mark contact as having unread messages
+                    if (!self.state.unread) self.state.unread = {};
+                    self.state.unread[contactId] = true;
+
+                    // Update UI
+                    self.renderContactList();
+
+                    // After last message, show Good Start modal
+                    if (index === sortedScenarios.length - 1 && !allMessagesDisplayed) {
+                        allMessagesDisplayed = true;
+                        setTimeout(function () {
+                            self.showGoodStartModal();
+                        }, 2000); // Wait 2 more seconds then show Good Start
+                    }
+
+                }, (scenario.triggerRealTime || 2) * 1000); // Convert to milliseconds
+            });
+        }
+    },
+
+    /**
+     * Show Good Start modal with continue button
+     */
+    showGoodStartModal: function () {
+        if (!this.container) return;
+
+        var modalHtml = `
+            <div class="good-start-modal">
+                <div class="good-start-content">
+                    <h2>✅ ХОРОШЕЕ НАЧАЛО!</h2>
+                    <p>Команда онлайн и в курсе плана дня.</p>
+                    <p>Отличное начало рабочего дня!</p>
+                    <p style="font-size: 14px; color: #999; margin-top: 15px;">Теперь начинается реальная игра...</p>
+                    <button class="continue-btn" onclick="window.messengerGame.continueFromGoodStart()">НАЧАТЬ ИГРУ</button>
+                </div>
+            </div>
+        `;
+
+        var modalEl = document.createElement('div');
+        modalEl.innerHTML = modalHtml;
+        this.container.appendChild(modalEl.firstElementChild);
+    },
+
+    /**
+     * Continue from Good Start modal - load full game scenarios
+     */
+    continueFromGoodStart: function () {
+        console.log("[MessengerGame] Continuing from Good Start...");
+
+        // Remove Good Start modal
+        var modal = this.container.querySelector('.good-start-modal');
+        if (modal) {
+            modal.remove();
+        }
+
+        // Load full game scenarios
+        this.loadFullGameScenarios();
+    },
+
     renderBriefing: function () {
         if (!this.container) return;
 
@@ -574,8 +730,8 @@ var MessengerGame = {
     },
 
     openChat: function (contactId) {
-        // Prevent switching if blocked by urgent scenario elsewhere
-        if (this.isBlocked() && !this.isContactUrgent(contactId)) {
+        // Only check for blocked scenarios during actual game (not during demo)
+        if (this.state.gameStarted && this.isBlocked() && !this.isContactUrgent(contactId)) {
             alert("⚠️ You must respond to the urgent message first!");
             return;
         }
@@ -588,7 +744,7 @@ var MessengerGame = {
 
         // Check if all contacts with messages are now viewed
         if (this.state.allMessagesReadTime === null && this.getAllContactsWithMessagesViewed()) {
-            this.state.allMessagesReadTime = this.state.elapsedRealTime;
+            this.state.allMessagesReadTime = this.state.realTimeElapsed;
         }
 
         // Mobile: Show chat view
