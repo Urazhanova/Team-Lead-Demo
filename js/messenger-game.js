@@ -188,6 +188,8 @@ var MessengerGame = {
         this.state.mealSkipped = false;                     // Track if meal was skipped for penalty
         this.state.pendingEscalations = [];                 // Track scenarios awaiting escalation
         this.state.gameEnded = false;                       // Flag to prevent multiple game over checks
+        this.state.nextScenarioIndex = 0;                   // Index of next scenario to load (R_Time based)
+        this.state.scenarioLoadInterval = null;             // Reference to interval for cleanup
 
         // Initialize message history for each contact
         this.contacts.forEach(function (contact) {
@@ -208,8 +210,11 @@ var MessengerGame = {
         console.log("[MessengerGame] Game started at T_Game=" + this.state.gameTime);
 
         this.render();
-        this.checkTriggers(); // Load initial events at 09:10
-        this.startRealTimeTracking(); // Start R_Time counter
+
+        // Load first scenario immediately (R_Time = 0 sec)
+        this.loadNextScenarioByRealTime();
+
+        this.startRealTimeTracking(); // Start R_Time counter (subsequent scenarios every 5 sec)
     },
 
     /**
@@ -226,6 +231,13 @@ var MessengerGame = {
             this.checkLunchCondition();
 
         }.bind(this), 1000); // Update every 1 real second
+
+        // Start loading scenarios every 5 real seconds (independent of T_Game)
+        if (this.state.scenarioLoadInterval) clearInterval(this.state.scenarioLoadInterval);
+
+        this.state.scenarioLoadInterval = setInterval(function () {
+            this.loadNextScenarioByRealTime();
+        }.bind(this), 5000); // Every 5 real seconds
     },
 
     /**
@@ -401,12 +413,6 @@ var MessengerGame = {
         // Track the choice
         if (!this.state.choicesMade) this.state.choicesMade = [];
         this.state.choicesMade.push(choice.id);
-
-        // Check triggers to load any new scenarios that should appear at this time
-        var self = this;
-        setTimeout(function () {
-            self.checkTriggers();
-        }, 100);
 
         // Update stats
         this.updateStats();
@@ -1049,14 +1055,10 @@ var MessengerGame = {
             });
         }
 
-        // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
-        this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
-
-        // Also check triggers immediately (in case no gap events or to handle existing scenarios)
-        var self = this;
-        setTimeout(function () {
-            self.checkTriggers();
-        }, 100);
+        // Mark scenario as completed (no need for processTimeGap - scenarios load automatically every 5 sec)
+        if (!this.state.completedScenarios.includes(scenario.id)) {
+            this.state.completedScenarios.push(scenario.id);
+        }
 
         // Update UI
         this.updateStats();
@@ -1376,6 +1378,61 @@ var MessengerGame = {
         }
 
         this.renderContactList();
+    },
+
+    /**
+     * Load next scenario based on R_Time (real time)
+     * Called every 5 seconds to automatically add scenarios
+     */
+    loadNextScenarioByRealTime: function () {
+        // Check if we've loaded all scenarios
+        if (this.state.nextScenarioIndex >= this.scenarios.length) {
+            // Stop loading - all scenarios have been shown
+            if (this.state.scenarioLoadInterval) {
+                clearInterval(this.state.scenarioLoadInterval);
+                this.state.scenarioLoadInterval = null;
+            }
+            return;
+        }
+
+        // Get next scenario
+        var scenario = this.scenarios[this.state.nextScenarioIndex];
+
+        // Skip if already completed or lunch time scenarios
+        if (this.state.completedScenarios.includes(scenario.id) || scenario.isLunchTime) {
+            this.state.nextScenarioIndex++;
+            return;
+        }
+
+        console.log("[MessengerGame] Loading scenario (R_Time): " + scenario.id + " from " + scenario.contactId);
+
+        // Initialize message history if needed
+        if (!this.state.messages[scenario.contactId]) {
+            this.state.messages[scenario.contactId] = [];
+        }
+
+        // Check if message already exists (avoid duplicates)
+        var messageExists = this.state.messages[scenario.contactId].some(msg =>
+            msg.sender === scenario.contactId && msg.text === scenario.text
+        );
+
+        if (!messageExists) {
+            // Add scenario message
+            this.addMessage(scenario.contactId, {
+                sender: scenario.contactId,
+                text: scenario.text,
+                timestamp: scenario.triggerTime || this.state.gameTime,
+                isUrgent: scenario.type === 'ALERT',
+                scenarioId: scenario.id,
+                choicesRevealed: false  // Choices appear after 1 second
+            });
+
+            // Schedule choices reveal for 1 second after message
+            this.scheduleChoicesReveal(scenario.contactId);
+        }
+
+        // Move to next scenario
+        this.state.nextScenarioIndex++;
     },
 
     finishGame: function () {
