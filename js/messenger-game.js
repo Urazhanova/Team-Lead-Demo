@@ -903,7 +903,8 @@ var MessengerGame = {
                 var energyColor = choice.energyCost < 0 ? 'negative' : 'positive';
                 var choiceHtml = `
                     <button class="choice-btn" onclick="window.messengerGame.makeEscalationChoice(window.escalationMessage, window.escalationChoice${index})">
-                        <div class="choice-label">${optionLabels[index]}</div>
+                        <div class="choice-label">${optionLabels[index]} ${choice.text}</div>
+                        <div class="choice-description">${choice.description || ''}</div>
                         <div class="choice-cost">
                             <span class="cost-time">⏱️ +${choice.timeCost} мин</span>
                             <span class="cost-energy ${energyColor}">⚡ ${choice.energyCost > 0 ? '+' : ''}${choice.energyCost}%</span>
@@ -949,7 +950,8 @@ var MessengerGame = {
                 var energyColor = choice.energyCost < 0 ? 'negative' : 'positive';
                 var choiceHtml = `
                     <button class="choice-btn" onclick="window.messengerGame.makeChoice(window.activeScenario, window.activeChoice${index})">
-                        <div class="choice-label">${optionLabels[index]}</div>
+                        <div class="choice-label">${optionLabels[index]} ${choice.text}</div>
+                        <div class="choice-description">${choice.description || ''}</div>
                         <div class="choice-cost">
                             <span class="cost-time">⏱️ +${choice.timeCost} мин</span>
                             <span class="cost-energy ${energyColor}">⚡ ${choice.energyCost > 0 ? '+' : ''}${choice.energyCost}%</span>
