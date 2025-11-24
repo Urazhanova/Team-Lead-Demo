@@ -402,6 +402,12 @@ var MessengerGame = {
         if (!this.state.choicesMade) this.state.choicesMade = [];
         this.state.choicesMade.push(choice.id);
 
+        // Check triggers to load any new scenarios that should appear at this time
+        var self = this;
+        setTimeout(function () {
+            self.checkTriggers();
+        }, 100);
+
         // Update stats
         this.updateStats();
 
@@ -1045,6 +1051,12 @@ var MessengerGame = {
 
         // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
         this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
+
+        // Also check triggers immediately (in case no gap events or to handle existing scenarios)
+        var self = this;
+        setTimeout(function () {
+            self.checkTriggers();
+        }, 100);
 
         // Update UI
         this.updateStats();
