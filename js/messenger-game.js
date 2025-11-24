@@ -417,6 +417,9 @@ var MessengerGame = {
         // Check triggers to load scenarios that should be active at new T_Game
         this.checkTriggers();
 
+        // Ensure seamless progression: if no scenarios loaded, auto-advance to next trigger time
+        this.ensureSeamlessProgression();
+
         // Update stats
         this.updateStats();
 
@@ -1055,6 +1058,13 @@ var MessengerGame = {
         if (!this.state.choicesMade) this.state.choicesMade = [];
         this.state.choicesMade.push(choice.id);
 
+        // Mark this scenario as completed
+        if (!this.state.completedScenarios) this.state.completedScenarios = [];
+        if (!this.state.completedScenarios.includes(scenario.id)) {
+            this.state.completedScenarios.push(scenario.id);
+            console.log("[MessengerGame] Scenario completed: " + scenario.id);
+        }
+
         // Track escalation if this choice has one
         if (choice.escalation) {
             console.log("[MessengerGame] Escalation tracked for: " + choice.escalation.id + " at " + choice.escalation.triggerTime);
@@ -1074,6 +1084,9 @@ var MessengerGame = {
         // Check triggers to load scenarios that should be active at new T_Game
         // (this includes scenarios beyond the gap that are now triggered)
         this.checkTriggers();
+
+        // Ensure seamless progression: if no scenarios loaded, auto-advance to next trigger time
+        this.ensureSeamlessProgression();
 
         // Update UI
         this.updateStats();
@@ -1149,6 +1162,76 @@ var MessengerGame = {
 
         // After all events are loaded, check for escalations
         this.checkTriggers();
+    },
+
+    /**
+     * Ensure seamless progression: if no new scenarios appeared after a choice,
+     * automatically advance T_Game to the next scenario's trigger time
+     */
+    ensureSeamlessProgression: function () {
+        // Check if any contact has a message added in this game time
+        var hasNewMessagesAtCurrentTime = false;
+        for (var contactId in this.state.messages) {
+            var messages = this.state.messages[contactId];
+            if (messages.length > 0) {
+                var lastMsg = messages[messages.length - 1];
+                // Check if last message has scenario (choice options)
+                if (lastMsg.scenarioId || lastMsg.isEscalation) {
+                    var lastMsgTime = this.timeToMinutes(lastMsg.timestamp);
+                    var currentTime = this.state.gameTimeMinutes;
+                    if (lastMsgTime === currentTime) {
+                        hasNewMessagesAtCurrentTime = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // If no new scenarios at current time, find next trigger and auto-advance
+        if (!hasNewMessagesAtCurrentTime) {
+            var nextTriggerTime = this.findNextScenarioTrigger();
+            if (nextTriggerTime !== null && nextTriggerTime > this.state.gameTimeMinutes) {
+                console.log("[MessengerGame] No scenarios at current time. Auto-advancing from " +
+                            this.state.gameTime + " to " + this.minutesToTime(nextTriggerTime));
+
+                var oldGameTimeMinutes = this.state.gameTimeMinutes;
+                this.state.gameTime = this.minutesToTime(nextTriggerTime);
+                this.state.gameTimeMinutes = nextTriggerTime;
+
+                // Load scenarios at the new time
+                this.processTimeGap(oldGameTimeMinutes, nextTriggerTime);
+                this.checkTriggers();
+            }
+        }
+    },
+
+    /**
+     * Find the next scenario trigger time that hasn't been completed yet
+     * @returns minutes from 00:00, or null if no upcoming scenarios
+     */
+    findNextScenarioTrigger: function () {
+        var upcomingTimes = [];
+
+        this.scenarios.forEach(function (scenario) {
+            // Skip if already completed or lunch time
+            if (this.state.completedScenarios.includes(scenario.id) || scenario.isLunchTime) return;
+
+            // Get trigger time in minutes
+            var triggerMins = this.timeToMinutes(scenario.triggerTime);
+
+            // Only consider scenarios after current time
+            if (triggerMins > this.state.gameTimeMinutes) {
+                upcomingTimes.push(triggerMins);
+            }
+        }, this);
+
+        // Return the earliest upcoming trigger time, or null
+        if (upcomingTimes.length > 0) {
+            upcomingTimes.sort(function (a, b) { return a - b; });
+            return upcomingTimes[0];
+        }
+
+        return null;
     },
 
     showTyping: function (contactId, show) {
