@@ -414,11 +414,8 @@ var MessengerGame = {
         // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
         this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
 
-        // Also check triggers after gap processing
-        var self = this;
-        setTimeout(function () {
-            self.checkTriggers();
-        }, 100);
+        // Check triggers to load scenarios that should be active at new T_Game
+        this.checkTriggers();
 
         // Update stats
         this.updateStats();
@@ -1074,11 +1071,9 @@ var MessengerGame = {
         // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
         this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
 
-        // Also check triggers after gap processing
-        var self = this;
-        setTimeout(function () {
-            self.checkTriggers();
-        }, 100);
+        // Check triggers to load scenarios that should be active at new T_Game
+        // (this includes scenarios beyond the gap that are now triggered)
+        this.checkTriggers();
 
         // Update UI
         this.updateStats();
