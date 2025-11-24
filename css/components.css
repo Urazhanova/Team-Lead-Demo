@@ -2985,15 +2985,31 @@ textarea {
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  font-size: 16px;
 }
 
 .stat-bar-container {
-  width: 40px;
-  height: 6px;
+  width: 80px;
+  height: 12px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  border-radius: 6px;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.stat-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 5px;
+}
+
+.energy-fill {
+  background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.stress-fill {
+  background: linear-gradient(90deg, #ef4444, #f87171);
 }
 
 /* Contact List */
