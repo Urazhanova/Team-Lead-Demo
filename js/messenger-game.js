@@ -1,23 +1,33 @@
 /**
  * MessengerGame - Lesson 4
  * Simulates a workplace messenger interface
+ *
+ * TIME SYSTEM:
+ * - T_Game: Game time (09:10 - 18:00) in HH:MM format
+ * - T_Game changes only when player makes a choice (+timeCost minutes)
+ * - R_Time: Real time elapsed (in seconds) - tracks actual time for conditions
  */
 var MessengerGame = {
     config: null,
     contacts: [],
     scenarios: [],
     state: {
-        currentTime: "09:00",
-        energy: 100,
-        stress: 0,
-        activeContactId: null,
-        messages: {}, // Map of contactId -> array of messages
-        completedScenarios: [],
-        choicesMade: [], // Track specific choices made
-        unreadCount: 0,
-        allMessagesReadTime: null // Track when all messages were read
+        gameTime: "09:10",           // T_Game: current game time (HH:MM)
+        gameTimeMinutes: 550,         // T_Game in minutes (09:10 = 550 min from 00:00)
+        energy: 100,                  // Current energy level
+        stress: 0,                    // Current stress level
+        activeContactId: null,        // Currently open chat
+        messages: {},                 // Map of contactId -> array of messages
+        completedScenarios: [],       // IDs of completed scenarios
+        choicesMade: [],              // Track specific choices made
+        unreadCount: 0,               // Count of unread messages
+        realTimeElapsed: 0,           // R_Time: real seconds elapsed from game start
+        allMessagesReadTime: null,    // R_Time when all messages were read
+        goodStartShown: false,        // Whether good start screen was shown
+        lastMessageAddedTime: null    // R_Time when last message was added
     },
     container: null,
+    realTimeInterval: null,           // Interval for tracking real time
 
     init: function (container, lessonData) {
         console.log("[MessengerGame] Initializing...", container);
@@ -29,9 +39,53 @@ var MessengerGame = {
         this.loadScenarios();
     },
 
+    // ========== TIME UTILITIES ==========
+
+    /**
+     * Convert HH:MM format to minutes from 00:00
+     * Example: "09:10" -> 550 minutes
+     */
+    timeToMinutes: function (timeStr) {
+        var parts = timeStr.split(':');
+        var hours = parseInt(parts[0], 10);
+        var minutes = parseInt(parts[1], 10);
+        return hours * 60 + minutes;
+    },
+
+    /**
+     * Convert minutes from 00:00 to HH:MM format
+     * Example: 550 -> "09:10"
+     */
+    minutesToTime: function (totalMinutes) {
+        var hours = Math.floor(totalMinutes / 60);
+        var mins = totalMinutes % 60;
+        return String(hours).padStart(2, '0') + ':' + String(mins).padStart(2, '0');
+    },
+
+    /**
+     * Check if first time is >= second time (in HH:MM format)
+     */
+    isTimeReached: function (currentTime, triggerTime) {
+        var currentMins = this.timeToMinutes(currentTime);
+        var triggerMins = this.timeToMinutes(triggerTime);
+        return currentMins >= triggerMins;
+    },
+
+    /**
+     * Add minutes to game time
+     * Example: addMinutesToTime("09:10", 30) -> "09:40"
+     */
+    addMinutesToTime: function (timeStr, minutes) {
+        var totalMins = this.timeToMinutes(timeStr) + minutes;
+        return this.minutesToTime(totalMins);
+    },
+
+    // ========== END TIME UTILITIES ==========
+
     loadScenarios: function () {
         var self = this;
-        fetch('data/messenger-scenarios.json?v=' + new Date().getTime())
+        // Load full game scenarios (NOT messenger-scenarios.json)
+        fetch('data/full-game-scenarios.json?v=' + new Date().getTime())
             .then(function (response) {
                 if (!response.ok) {
                     throw new Error("HTTP error " + response.status);
@@ -57,14 +111,18 @@ var MessengerGame = {
     },
 
     initializeState: function () {
-        this.state.currentTime = this.config.startTime;
-        this.state.energy = this.config.initialEnergy;
-        this.state.stress = this.config.initialStress;
+        // Initialize T_Game (game time in HH:MM format)
+        this.state.gameTime = this.config.startTime; // "09:10"
+        this.state.gameTimeMinutes = this.timeToMinutes(this.config.startTime); // 550
+
+        this.state.energy = this.config.initialEnergy;      // 100%
+        this.state.stress = this.config.initialStress;      // 0%
         this.state.messages = {};
         this.state.completedScenarios = [];
         this.state.choicesMade = [];
         this.state.activeContactId = null;
         this.state.gameStarted = false;
+        this.state.realTimeElapsed = 0;                     // R_Time starts at 0
         this.state.allMessagesReadTime = null;
         this.state.goodStartShown = false;
         this.state.lastMessageAddedTime = null;
@@ -74,14 +132,75 @@ var MessengerGame = {
             this.state.messages[contact.id] = [];
         }, this);
 
-        // No initial triggers check here, as game starts after briefing
+        // Initialize unread tracking
+        this.state.unread = {};
+        this.contacts.forEach(function (contact) {
+            this.state.unread[contact.id] = false;
+        }, this);
+
+        // No initial triggers check here, as game starts after Good Start screen
     },
 
     startGame: function () {
         this.state.gameStarted = true;
+        console.log("[MessengerGame] Game started at T_Game=" + this.state.gameTime);
+
         this.render();
-        this.startGameLoop();
-        this.checkTriggers();
+        this.checkTriggers(); // Load initial events at 09:10
+        this.startRealTimeTracking(); // Start R_Time counter
+    },
+
+    /**
+     * Track real time (R_Time) for conditions and events
+     * This runs independently from T_Game
+     */
+    startRealTimeTracking: function () {
+        if (this.realTimeInterval) clearInterval(this.realTimeInterval);
+
+        this.realTimeInterval = setInterval(function () {
+            this.state.realTimeElapsed += 1; // 1 real second
+
+            // Check for lunch break condition (10 real minutes elapsed OR all messages read + 2 sec)
+            this.checkLunchCondition();
+
+        }.bind(this), 1000); // Update every 1 real second
+    },
+
+    /**
+     * Check if lunch break should trigger
+     * Condition: 10 real minutes elapsed OR all messages read + 2 seconds
+     */
+    checkLunchCondition: function () {
+        if (this.state.gameTime !== "12:00") return; // Lunch only at 12:00 game time
+
+        var readyForLunch = false;
+
+        // Condition 1: 10 real minutes elapsed
+        if (this.state.realTimeElapsed >= 600) { // 600 seconds = 10 minutes
+            readyForLunch = true;
+        }
+
+        // Condition 2: All messages read + 2 seconds
+        if (this.state.allMessagesReadTime !== null &&
+            this.state.realTimeElapsed >= this.state.allMessagesReadTime + 2) {
+            readyForLunch = true;
+        }
+
+        if (readyForLunch && !this.state.lunchShown) {
+            this.showLunchModal();
+        }
+    },
+
+    /**
+     * Show lunch break modal with choices
+     */
+    showLunchModal: function () {
+        this.state.lunchShown = true;
+        console.log("[MessengerGame] Lunch time! T_Game=" + this.state.gameTime);
+
+        // TODO: Implement lunch modal with choices A/B/C
+        // For now, just log it
+        console.log("[MessengerGame] TODO: Show lunch break modal with energy/time tradeoffs");
     },
 
     renderBriefing: function () {
@@ -402,8 +521,8 @@ var MessengerGame = {
         }
         this.state.messages[contactId].push(message);
 
-        // Track when last message was added
-        this.state.lastMessageAddedTime = this.state.elapsedRealTime;
+        // Track when last message was added (R_Time)
+        this.state.lastMessageAddedTime = this.state.realTimeElapsed;
 
         // Set unread if not active
         if (this.state.activeContactId !== contactId) {
@@ -480,8 +599,12 @@ var MessengerGame = {
         return true;
     },
 
+    /**
+     * Check if trigger time has been reached in game time
+     * Uses new T_Game system (gameTime as HH:MM)
+     */
     isTimeTriggered: function (triggerTime) {
-        return triggerTime <= this.state.currentTime;
+        return this.isTimeReached(this.state.gameTime, triggerTime);
     },
 
     isBlocked: function () {
@@ -502,14 +625,15 @@ var MessengerGame = {
         );
     },
 
+    /**
+     * Advance game time (T_Game) by minutes
+     * This is called when player makes a choice
+     */
     advanceTime: function (minutes) {
-        var [hours, mins] = this.state.currentTime.split(':').map(Number);
-        mins += minutes;
-        while (mins >= 60) {
-            mins -= 60;
-            hours += 1;
-        }
-        this.state.currentTime = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+        var newTime = this.addMinutesToTime(this.state.gameTime, minutes);
+        this.state.gameTime = newTime;
+        this.state.gameTimeMinutes = this.timeToMinutes(newTime);
+        console.log("[MessengerGame] Time advanced: " + this.state.gameTime);
         this.updateStats();
     },
 
@@ -521,133 +645,41 @@ var MessengerGame = {
 
         if (energyBar) energyBar.style.width = this.state.energy + '%';
         if (stressBar) stressBar.style.width = this.state.stress + '%';
-        if (timeEl) timeEl.textContent = this.state.currentTime;
+        if (timeEl) timeEl.textContent = this.state.gameTime; // Use gameTime (T_Game)
     },
 
-    startGameLoop: function () {
-        if (this.timerInterval) clearInterval(this.timerInterval);
+    // OLD startGameLoop removed - replaced with startRealTimeTracking
+    // T_Game now only changes when player makes choices, not with a timer
 
-        // MVP: 1 real minute = 4 game minutes
-        // 1 real second = 4 game seconds
-        // Start time is 09:00:00
-        var startHour = 9;
-        var startMinute = 0;
-
-        // Initialize game seconds if not already set (allows resuming)
-        if (typeof this.state.gameSeconds === 'undefined') {
-            this.state.gameSeconds = 0; // Seconds past 9:00
-        }
-
-        this.state.elapsedRealTime = 0; // Track real seconds
-
-        this.timerInterval = setInterval(function () {
-            this.state.gameSeconds += 4; // 4x speed
-            this.state.elapsedRealTime += 1; // 1 real second
-
-            // Calculate new time
-            var totalMinutes = startMinute + Math.floor(this.state.gameSeconds / 60);
-            var hours = startHour + Math.floor(totalMinutes / 60);
-            var minutes = totalMinutes % 60;
-
-            // Update state
-            this.state.currentTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-            this.updateStats();
-            this.checkTriggers();
-            this.checkGoodStartCondition();
-
-            // Check end condition (09:20)
-            if (hours === 9 && minutes >= 20) {
-                this.finishGame();
-            }
-
-        }.bind(this), 1000); // Update every real second
-    },
-
-    checkGoodStartCondition: function () {
-        if (this.state.goodStartShown) return;
-
-        var timeLimitReached = this.state.elapsedRealTime >= 30; // Changed to 30s
-        var allReadDelayReached = this.state.allMessagesReadTime !== null &&
-            (this.state.elapsedRealTime >= this.state.allMessagesReadTime + 2);
-
-        if (timeLimitReached || allReadDelayReached) {
-            this.showGoodStartScreen();
-        }
-    },
-
-    showGoodStartScreen: function () {
-        this.state.goodStartShown = true;
-
-        // Jump time to 09:10 (10 minutes * 60 seconds = 600 seconds)
-        this.state.gameSeconds = 600;
-        this.state.currentTime = '09:10';
-        this.updateStats();
-
-        // Create modal
-        var modal = document.createElement('div');
-        modal.className = 'good-start-modal';
-        modal.innerHTML = `
-            <div class="good-start-content">
-                <h2>ХОРОШЕЕ НАЧАЛО!</h2>
-                <p>Команда вышла на связь.</p>
-                <p>Все начали работу.</p>
-                <br>
-                <p>Но день только начинается...</p>
-                <p>Скоро придут первые вопросы.</p>
-                <br>
-                <p>Готов отвечать и принимать решения?</p>
-                <button class="continue-btn" onclick="window.messengerGame.closeGoodStartScreen()">ПРОДОЛЖИТЬ</button>
-            </div>
-        `;
-        this.container.appendChild(modal);
-    },
-
-    closeGoodStartScreen: function () {
-        var modal = this.container.querySelector('.good-start-modal');
-        if (modal) modal.remove();
-    },
-
+    /**
+     * Check which scenarios should trigger based on current T_Game
+     * Load all messages for scenarios that match trigger conditions
+     */
     checkTriggers: function () {
-        // Check if any new scenarios should trigger based on time
         this.scenarios.forEach(function (scenario) {
             // Skip if already completed
             if (this.state.completedScenarios.includes(scenario.id)) return;
 
-            var shouldTrigger = false;
+            // Check if T_Game has reached the trigger time
+            if (!this.isTimeTriggered(scenario.triggerTime)) return;
 
-            // Check real-time trigger if available
-            if (scenario.triggerRealTime !== undefined) {
-                if (this.state.elapsedRealTime >= scenario.triggerRealTime) {
-                    shouldTrigger = true;
-                }
-            }
-            // Fallback to game time trigger
-            else if (this.isTimeTriggered(scenario.triggerTime)) {
-                shouldTrigger = true;
-            }
-
-            if (!shouldTrigger) return;
-
-            // Trigger the scenario
+            // Trigger the scenario: add all its messages
             if (!this.state.messages[scenario.contactId]) {
                 this.state.messages[scenario.contactId] = [];
             }
 
-            // Add messages
+            // Add scenario messages with current T_Game timestamp
             scenario.messages.forEach(function (msg) {
                 this.addMessage(scenario.contactId, {
                     sender: msg.sender,
                     text: msg.text,
-                    timestamp: this.state.currentTime,
+                    timestamp: this.state.gameTime, // Use T_Game
                     isUrgent: false
                 });
             }, this);
 
-            // Mark completed
+            // Mark scenario as completed
             this.state.completedScenarios.push(scenario.id);
-
-            // Play sound (optional, placeholder)
-            // console.log("Ding! New message from " + scenario.contactId);
 
         }, this);
 
