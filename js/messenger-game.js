@@ -127,6 +127,7 @@ var MessengerGame = {
         this.state.goodStartShown = false;
         this.state.lastMessageAddedTime = null;
         this.state.mealSkipped = false;                     // Track if meal was skipped for penalty
+        this.state.pendingEscalations = [];                 // Track scenarios awaiting escalation
 
         // Initialize message history for each contact
         this.contacts.forEach(function (contact) {
@@ -294,6 +295,54 @@ var MessengerGame = {
 
         // Resume game
         this.renderChatWindow(this.state.activeContactId);
+        this.renderContactList();
+    },
+
+    /**
+     * Handle escalation choice selection
+     */
+    makeEscalationChoice: function (escalationMessage, choice) {
+        console.log("[MessengerGame] Escalation choice made: " + choice.id);
+
+        // Apply resource costs (with meal skip penalty if applicable)
+        var energyCost = choice.energyCost;
+        var timeCost = choice.timeCost;
+
+        if (this.state.mealSkipped) {
+            // Meal skip penalty: +50% time and +50% energy cost
+            timeCost = Math.ceil(timeCost * 1.5);
+            energyCost = Math.ceil(energyCost * 1.5);
+        }
+
+        this.state.energy = Math.max(0, this.state.energy - energyCost);
+
+        // Advance T_Game
+        this.advanceTime(timeCost);
+
+        // Add player's choice message
+        var contactId = this.state.activeContactId;
+        this.addMessage(contactId, {
+            sender: 'player',
+            text: choice.text,
+            timestamp: this.state.gameTime
+        });
+
+        // Add choice response message
+        this.addMessage(contactId, {
+            sender: contactId,
+            text: choice.response,
+            timestamp: this.state.gameTime
+        });
+
+        // Track the choice
+        if (!this.state.choicesMade) this.state.choicesMade = [];
+        this.state.choicesMade.push(choice.id);
+
+        // Update stats
+        this.updateStats();
+
+        // Re-render chat to show new choices or clear resolved escalation
+        this.renderChatWindow(contactId);
         this.renderContactList();
     },
 
@@ -518,6 +567,19 @@ var MessengerGame = {
         // Render Choices/Actions for Request scenarios
         inputArea.innerHTML = '';
 
+        // Check for escalation messages with choices first
+        var escalationMessage = null;
+        var escalationChoices = null;
+        var messagesForContact = this.state.messages[contactId] || [];
+        for (var i = messagesForContact.length - 1; i >= 0; i--) {
+            var msg = messagesForContact[i];
+            if (msg.isEscalation && msg.newChoices && msg.newChoices.length > 0) {
+                escalationMessage = msg;
+                escalationChoices = msg.newChoices;
+                break;
+            }
+        }
+
         // Find active scenario for this contact (REQUEST type that hasn't been answered)
         var activeScenario = this.scenarios.find(s =>
             s.contactId === contactId &&
@@ -530,7 +592,37 @@ var MessengerGame = {
             })
         );
 
-        if (activeScenario && this.state.gameStarted) {
+        // If there's an escalation with new choices, show those instead
+        if (escalationChoices && escalationChoices.length > 0 && this.state.gameStarted) {
+            var choicesHtml = '<div class="choice-context"><div class="context-label">⚠️ СРОЧНО:</div><div class="context-text">Ситуация развивалась дальше. Вот новые варианты.</div></div>';
+            choicesHtml += '<div class="choices-container">';
+
+            var optionLabels = ['[A]', '[B]', '[C]'];
+            escalationChoices.slice(0, 3).forEach(function (choice, index) {
+                var energyColor = choice.energyCost < 0 ? 'negative' : 'positive';
+                var choiceHtml = `
+                    <button class="choice-btn" onclick="window.messengerGame.makeEscalationChoice(window.escalationMessage, window.escalationChoice${index})">
+                        <div class="choice-label">${optionLabels[index]} ${choice.text}</div>
+                        <div class="choice-description">${choice.description || ''}</div>
+                        <div class="choice-cost">
+                            <span class="cost-time">⏱️ +${choice.timeCost} мин</span>
+                            <span class="cost-energy ${energyColor}">⚡ ${choice.energyCost > 0 ? '+' : ''}${choice.energyCost}%</span>
+                        </div>
+                    </button>
+                `;
+                choicesHtml += choiceHtml;
+
+                // Store choice globally for onclick handler
+                window['escalationChoice' + index] = choice;
+            }, this);
+
+            choicesHtml += '</div>';
+
+            // Store escalation message globally
+            window.escalationMessage = escalationMessage;
+
+            inputArea.innerHTML = choicesHtml;
+        } else if (activeScenario && this.state.gameStarted) {
             // Show context if available
             var contextHtml = '';
             if (activeScenario.context) {
@@ -627,6 +719,19 @@ var MessengerGame = {
         if (!this.state.choicesMade) this.state.choicesMade = [];
         this.state.choicesMade.push(choice.id);
 
+        // Track escalation if this choice has one
+        if (choice.escalation) {
+            console.log("[MessengerGame] Escalation tracked for: " + choice.escalation.id + " at " + choice.escalation.triggerTime);
+            if (!this.state.pendingEscalations) this.state.pendingEscalations = [];
+            this.state.pendingEscalations.push({
+                id: choice.escalation.id,
+                originalChoiceId: choice.id,
+                originalScenarioId: scenario.id,
+                triggerTime: choice.escalation.triggerTime,
+                escalationData: choice.escalation
+            });
+        }
+
         // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
         this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
 
@@ -665,6 +770,7 @@ var MessengerGame = {
         console.log("[MessengerGame] Found " + eventsToProcess.length + " events in time gap");
 
         // Load and display events with 5 second intervals
+        var totalEventsCount = eventsToProcess.length;
         eventsToProcess.forEach(function (scenario, index) {
             setTimeout(function () {
                 // Initialize message history if needed
@@ -690,6 +796,11 @@ var MessengerGame = {
                 // Update UI to show new messages
                 if (this.state.activeContactId === scenario.contactId) {
                     this.renderChatWindow(scenario.contactId);
+                }
+
+                // After all events are loaded, check for escalations
+                if (index === totalEventsCount - 1) {
+                    this.checkTriggers();
                 }
 
             }.bind(this), index * 5000); // 5 second intervals
@@ -883,6 +994,54 @@ var MessengerGame = {
             }
 
         }, this);
+
+        // Check for escalations that should trigger
+        if (this.state.pendingEscalations && this.state.pendingEscalations.length > 0) {
+            this.state.pendingEscalations.forEach(function (escalation, index) {
+                // Only trigger if time has been reached
+                if (!this.isTimeTriggered(escalation.triggerTime)) return;
+
+                // Check if the original choice's response was already given (not cancelled)
+                var originalChoiceMade = this.state.choicesMade.includes(escalation.originalChoiceId);
+                if (!originalChoiceMade) return;
+
+                // Check if another choice from the same scenario was already made (escalation shouldn't trigger)
+                var scenarioResolved = this.state.choicesMade.some(choiceId => {
+                    var choiceScenario = this.scenarios.find(s => s.choices && s.choices.find(c => c.id === choiceId));
+                    return choiceScenario && choiceScenario.id === escalation.originalScenarioId && choiceId !== escalation.originalChoiceId;
+                });
+                if (scenarioResolved) {
+                    // Remove this escalation - scenario was already resolved differently
+                    this.state.pendingEscalations.splice(index, 1);
+                    return;
+                }
+
+                console.log("[MessengerGame] Triggering escalation: " + escalation.id);
+
+                var originalScenario = this.scenarios.find(s => s.id === escalation.originalScenarioId);
+                if (!originalScenario) return;
+
+                // Initialize message history for this contact
+                if (!this.state.messages[originalScenario.contactId]) {
+                    this.state.messages[originalScenario.contactId] = [];
+                }
+
+                // Add escalation message
+                this.addMessage(originalScenario.contactId, {
+                    sender: originalScenario.contactId,
+                    text: escalation.escalationData.text,
+                    timestamp: escalation.triggerTime,
+                    isUrgent: true,
+                    isEscalation: true,
+                    escalationId: escalation.id,
+                    newChoices: escalation.escalationData.newChoices
+                });
+
+                // Remove from pending escalations
+                this.state.pendingEscalations.splice(index, 1);
+
+            }, this);
+        }
 
         this.renderContactList();
     },
