@@ -128,6 +128,7 @@ var MessengerGame = {
         this.state.lastMessageAddedTime = null;
         this.state.mealSkipped = false;                     // Track if meal was skipped for penalty
         this.state.pendingEscalations = [];                 // Track scenarios awaiting escalation
+        this.state.gameEnded = false;                       // Flag to prevent multiple game over checks
 
         // Initialize message history for each contact
         this.contacts.forEach(function (contact) {
@@ -356,21 +357,35 @@ var MessengerGame = {
      * Check if game over conditions are met
      */
     checkGameOver: function () {
+        // Don't check if game is already ended
+        if (this.state.gameEnded) return;
+
         // Condition 1: Energy depleted
         if (this.state.energy <= 0) {
             console.log("[MessengerGame] GAME OVER: Energy depleted!");
+            this.state.gameEnded = true;
             this.showGameOver('loss', 'energy');
             return;
         }
 
-        // Condition 2: Time exceeded (past 18:00)
+        // Condition 2: Time reached 18:00 (end of workday)
+        // If energy is still positive, it's a WIN
         if (this.isTimeReached(this.state.gameTime, "18:00")) {
-            console.log("[MessengerGame] GAME OVER: End of workday exceeded!");
-            this.showGameOver('loss', 'time');
+            console.log("[MessengerGame] Game reached 18:00!");
+
+            if (this.state.energy > 0) {
+                // Player survived the day with energy remaining - WIN!
+                console.log("[MessengerGame] GAME WON: Completed the day successfully!");
+                this.state.gameEnded = true;
+                this.showGameOver('win', null);
+            } else {
+                // Energy was depleted after reaching 18:00 - caught by condition 1 above, but handle just in case
+                console.log("[MessengerGame] GAME OVER: Energy depleted by end of day!");
+                this.state.gameEnded = true;
+                this.showGameOver('loss', 'energy');
+            }
             return;
         }
-
-        // Note: Critical choice scenario (17:45) needs to be defined in JSON with game-ending consequences
     },
 
     /**
