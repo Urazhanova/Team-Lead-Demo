@@ -386,7 +386,7 @@ var MessengerGame = {
             energyCost = Math.ceil(energyCost * 1.5);
         }
 
-        this.state.energy = Math.max(0, this.state.energy - energyCost);
+        this.state.energy = Math.max(0, this.state.energy + energyCost);  // energyCost is negative, so this subtracts
 
         // Advance T_Game
         this.advanceTime(timeCost);
@@ -1026,7 +1026,7 @@ var MessengerGame = {
             console.log("[MessengerGame] Meal skip penalty applied: " + choice.timeCost + " -> " + timeCost + " min, " + choice.energyCost + " -> " + energyCost + "%");
         }
 
-        this.state.energy = Math.max(0, this.state.energy - energyCost);
+        this.state.energy = Math.max(0, this.state.energy + energyCost);  // energyCost is negative, so this subtracts
         this.state.stress = Math.min(100, this.state.stress + (choice.stressImpact || 0));
 
         // Advance T_Game by timeCost (with penalty applied if mealSkipped)
