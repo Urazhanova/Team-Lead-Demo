@@ -382,15 +382,8 @@ var MessengerGame = {
         // Advance T_Game
         this.advanceTime(timeCost);
 
-        // Add player's choice message
+        // Add response message from the contact (no need to show the choice text)
         var contactId = this.state.activeContactId;
-        this.addMessage(contactId, {
-            sender: 'player',
-            text: choice.text,
-            timestamp: this.state.gameTime
-        });
-
-        // Add choice response message
         this.addMessage(contactId, {
             sender: contactId,
             text: choice.response,
@@ -957,8 +950,7 @@ var MessengerGame = {
                 var energyColor = choice.energyCost < 0 ? 'negative' : 'positive';
                 var choiceHtml = `
                     <button class="choice-btn" onclick="window.messengerGame.makeChoice(window.activeScenario, window.activeChoice${index})">
-                        <div class="choice-label">${optionLabels[index]} ${choice.text}</div>
-                        <div class="choice-description">${choice.description || ''}</div>
+                        <div class="choice-label">${optionLabels[index]}</div>
                         <div class="choice-cost">
                             <span class="cost-time">⏱️ +${choice.timeCost} мин</span>
                             <span class="cost-energy ${energyColor}">⚡ ${choice.energyCost > 0 ? '+' : ''}${choice.energyCost}%</span>
@@ -1010,14 +1002,7 @@ var MessengerGame = {
         // Advance T_Game by timeCost (with penalty applied if mealSkipped)
         this.advanceTime(timeCost);
 
-        // Add player's choice message
-        this.addMessage(scenario.contactId, {
-            sender: 'player',
-            text: choice.text,
-            timestamp: this.state.gameTime // Use new T_Game
-        });
-
-        // Add choice response message
+        // Add response message from the contact (no need to show the choice text)
         this.addMessage(scenario.contactId, {
             sender: scenario.contactId,
             text: choice.response,
