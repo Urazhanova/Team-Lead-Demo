@@ -268,6 +268,14 @@ var MessengerGame = {
 
         if (!this.container) return;
 
+        // Add system message about lunch
+        this.addMessage('system', {
+            sender: 'system',
+            text: '🍽️ Наступил час обеда! Как ты проведешь это время?',
+            timestamp: this.state.gameTime,
+            isSystem: true
+        });
+
         // Create modal overlay
         var modalHtml = `
             <div class="lunch-modal">
