@@ -682,19 +682,13 @@ var MessengerGame = {
                         </div>
                         <div class="game-stats">
                             <div class="stat-item" title="Energy">
-                                ⚡ 
+                                ⚡
                                 <div class="stat-bar-container">
                                     <div class="stat-bar-fill energy-fill" id="energy-bar" style="width: ${this.state.energy}%"></div>
                                 </div>
                             </div>
-                            <div class="stat-item" title="Stress">
-                                🤯 
-                                <div class="stat-bar-container">
-                                    <div class="stat-bar-fill stress-fill" id="stress-bar" style="width: ${this.state.stress}%"></div>
-                                </div>
-                            </div>
                             <div class="stat-item" title="Time">
-                                🕒 <span id="time-val">${this.state.currentTime}</span>
+                                🕒 <span id="time-val">${this.state.gameTime}</span>
                             </div>
                         </div>
                     </div>
@@ -943,7 +937,6 @@ var MessengerGame = {
                         <div class="choice-label">${optionLabels[index]} ${choice.text}</div>
                         <div class="choice-description">${choice.description || ''}</div>
                         <div class="choice-cost">
-                            <span class="cost-time">⏱️ +${choice.timeCost} мин</span>
                             <span class="cost-energy ${energyColor}">⚡ ${choice.energyCost > 0 ? '+' : ''}${choice.energyCost}%</span>
                         </div>
                     </button>
@@ -990,7 +983,6 @@ var MessengerGame = {
                         <div class="choice-label">${optionLabels[index]} ${choice.text}</div>
                         <div class="choice-description">${choice.description || ''}</div>
                         <div class="choice-cost">
-                            <span class="cost-time">⏱️ +${choice.timeCost} мин</span>
                             <span class="cost-energy ${energyColor}">⚡ ${choice.energyCost > 0 ? '+' : ''}${choice.energyCost}%</span>
                         </div>
                     </button>
@@ -1370,11 +1362,9 @@ var MessengerGame = {
     updateStats: function () {
         if (!this.container) return;
         var energyBar = this.container.querySelector('#energy-bar');
-        var stressBar = this.container.querySelector('#stress-bar');
         var timeEl = this.container.querySelector('#time-val');
 
         if (energyBar) energyBar.style.width = this.state.energy + '%';
-        if (stressBar) stressBar.style.width = this.state.stress + '%';
         if (timeEl) timeEl.textContent = this.state.gameTime; // Use gameTime (T_Game)
     },
 
