@@ -1,0 +1,129 @@
+{
+    "config": {
+        "startTime": "09:00",
+        "endTime": "09:20",
+        "initialEnergy": 100,
+        "initialStress": 0,
+        "timeMultiplier": 4
+    },
+    "contacts": [
+        {
+            "id": "general",
+            "name": "#general",
+            "role": "General Channel",
+            "avatar": "assets/images/scenes/Gemini_Generated_Image_63nau863nau863na.png",
+            "status": "online",
+            "isChannel": true
+        },
+        {
+            "id": "dev-team",
+            "name": "#dev-team",
+            "role": "Dev Team Channel",
+            "avatar": "assets/images/scenes/Gemini_Generated_Image_7b49we7b49we7b49.png",
+            "status": "online",
+            "isChannel": true
+        },
+        {
+            "id": "denis",
+            "name": "Денис",
+            "role": "Middle Dev",
+            "avatar": "assets/images/characters/Denis/icon.svg",
+            "status": "online"
+        },
+        {
+            "id": "maria",
+            "name": "Мария",
+            "role": "Senior Dev",
+            "avatar": "assets/images/characters/Mariya/icon.svg",
+            "status": "online"
+        },
+        {
+            "id": "igor",
+            "name": "Игорь",
+            "role": "QA Engineer",
+            "avatar": "assets/images/characters/Igor/icon.svg",
+            "status": "online"
+        },
+        {
+            "id": "viktor",
+            "name": "Виктор (CTO)",
+            "role": "Boss",
+            "avatar": "assets/images/scenes/victor.svg",
+            "status": "online"
+        }
+    ],
+    "scenarios": [
+        {
+            "id": "msg_1",
+            "triggerTime": "09:00",
+            "triggerRealTime": 2,
+            "contactId": "general",
+            "messages": [
+                {
+                    "sender": "player",
+                    "text": "🌅 Доброе утро, команда!\nРабочий день начался."
+                }
+            ]
+        },
+        {
+            "id": "msg_2",
+            "triggerTime": "09:00",
+            "triggerRealTime": 4,
+            "contactId": "denis",
+            "messages": [
+                {
+                    "sender": "denis",
+                    "text": "Привет, Алекс! 👋\n\nНачинаю день с работы над API интеграцией.\nЕсли что - напишу! 💻"
+                }
+            ]
+        },
+        {
+            "id": "msg_3",
+            "triggerTime": "09:00",
+            "triggerRealTime": 6,
+            "contactId": "dev-team",
+            "messages": [
+                {
+                    "sender": "igor",
+                    "text": "Доброе! 🔍\n\nСегодня запускаю полный регресс-тест по новой фиче.\nЕсли найду баги - дам знать."
+                }
+            ]
+        },
+        {
+            "id": "msg_4",
+            "triggerTime": "09:00",
+            "triggerRealTime": 8,
+            "contactId": "maria",
+            "messages": [
+                {
+                    "sender": "maria",
+                    "text": "Алекс, привет! 🏠\n\nРаботаю сегодня из дома - сын приболел.\nСвязь есть, все задачи в работе.\nЕсли что - пиши или звони 👍"
+                }
+            ]
+        },
+        {
+            "id": "msg_5",
+            "triggerTime": "09:00",
+            "triggerRealTime": 10,
+            "contactId": "general",
+            "messages": [
+                {
+                    "sender": "lena",
+                    "text": "😱 Ребят, вы видели новости?!\nApple презентовала новый iPhone!\n\n[Ссылка]\n\nКто-то будет брать? 🍎"
+                }
+            ]
+        },
+        {
+            "id": "msg_6",
+            "triggerTime": "09:00",
+            "triggerRealTime": 12,
+            "contactId": "viktor",
+            "messages": [
+                {
+                    "sender": "viktor",
+                    "text": "Алекс, привет!\n\nКак команда? Всё по плану?\nЕсли нужна помощь - дай знать 👍"
+                }
+            ]
+        }
+    ]
+}

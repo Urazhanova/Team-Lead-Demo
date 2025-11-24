@@ -14,7 +14,7 @@ var Navigation = {
   /**
    * Initialize navigation (async)
    */
-  init: function() {
+  init: function () {
     console.log("[Navigation] init() called");
 
     // First check for static screens
@@ -44,7 +44,7 @@ var Navigation = {
   /**
    * Load lesson screens from JSON
    */
-  loadLessonScreens: function(lessonId) {
+  loadLessonScreens: function (lessonId) {
     console.log("[Navigation] loadLessonScreens(" + lessonId + ") called");
 
     if (typeof Data === "undefined") {
@@ -53,7 +53,7 @@ var Navigation = {
     }
 
     var self = this;
-    Data.loadLessonWithScreens(lessonId, function(error, result) {
+    Data.loadLessonWithScreens(lessonId, function (error, result) {
       if (error) {
         console.error("[Navigation] Error loading lesson: " + error.message);
         return;
@@ -95,6 +95,23 @@ var Navigation = {
         return;
       }
 
+      // Check if this is a messenger-type lesson
+      if (self.currentLesson.type === "messenger") {
+        console.log("[Navigation] Messenger-type lesson detected. Using MessengerGame module.");
+        if (typeof MessengerGame === "undefined") {
+          console.error("[Navigation] MessengerGame module not available");
+          return;
+        }
+        // Render game content directly
+        MessengerGame.init(mainContent, self.currentLesson);
+        // Create a single screen wrapper for game content
+        mainContent.classList.add("screen");
+        self.screens = [mainContent];
+        console.log("[Navigation] Messenger screens set. Total: " + self.screens.length);
+        self.initializeNavigation();
+        return;
+      }
+
       // Generate screens from lesson data
       if (typeof ScreenRenderer === "undefined") {
         console.error("[Navigation] ScreenRenderer module not available");
@@ -116,7 +133,7 @@ var Navigation = {
       }
 
       // Insert screens into DOM
-      screenElements.forEach(function(screenEl, idx) {
+      screenElements.forEach(function (screenEl, idx) {
         mainContent.appendChild(screenEl);
         console.log("[Navigation] Inserted screen " + (idx + 1) + " into DOM");
       });
@@ -133,7 +150,7 @@ var Navigation = {
   /**
    * Complete navigation initialization after screens are ready
    */
-  initializeNavigation: function() {
+  initializeNavigation: function () {
     console.log("[Navigation] initializeNavigation() called");
 
     if (this.screens.length === 0) {
@@ -166,7 +183,7 @@ var Navigation = {
   /**
    * Update header with lesson and total counts
    */
-  updateHeaderInfo: function() {
+  updateHeaderInfo: function () {
     var currentLessonNumber = document.getElementById("currentLessonNumber");
     var totalLessonNumber = document.getElementById("totalLessonNumber");
 
@@ -182,9 +199,9 @@ var Navigation = {
   /**
    * Bind navigation button events
    */
-  bindNavigation: function() {
+  bindNavigation: function () {
     var self = this;
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
       var button = e.target.closest("[data-action]");
 
       if (!button) return;
@@ -230,9 +247,9 @@ var Navigation = {
   /**
    * Bind carousel interaction events
    */
-  bindCarouselEvents: function() {
+  bindCarouselEvents: function () {
     // Handle card flip and modal opening
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
       var carouselCard = e.target.closest(".carousel-card");
       if (!carouselCard) return;
 
@@ -258,7 +275,7 @@ var Navigation = {
         cardInner.style.transform = "rotateY(180deg)";
 
         // Open modal with character details after flip animation
-        setTimeout(function() {
+        setTimeout(function () {
           if (typeof Modals !== "undefined" && Modals.showCharacterModal && charId) {
             console.log("[Navigation] Opening character modal for: " + charId);
             Modals.showCharacterModal(charId);
@@ -292,7 +309,7 @@ var Navigation = {
     });
 
     // Handle carousel scroll buttons
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
       var scrollBtn = e.target.closest(".carousel-prev, .carousel-next");
       if (!scrollBtn) return;
 
@@ -321,9 +338,9 @@ var Navigation = {
   /**
    * Bind accordion interaction events
    */
-  bindAccordionEvents: function() {
+  bindAccordionEvents: function () {
     var self = this;
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
       var header = e.target.closest(".accordion-header");
       if (!header) return;
 
@@ -386,7 +403,7 @@ var Navigation = {
   /**
    * Show accordion section modal
    */
-  showAccordionModal: function(sectionData) {
+  showAccordionModal: function (sectionData) {
     // Create modal overlay
     var modal = document.createElement("div");
     modal.className = "modal-overlay";
@@ -458,7 +475,7 @@ var Navigation = {
     console.log("[Navigation] Accordion modal shown for section: " + sectionData.title);
 
     // Close handler
-    var closeHandler = function(e) {
+    var closeHandler = function (e) {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -467,7 +484,7 @@ var Navigation = {
       modal.style.opacity = "0";
       modal.style.pointerEvents = "none";
 
-      setTimeout(function() {
+      setTimeout(function () {
         try {
           if (modal && modal.parentElement) {
             modal.parentElement.removeChild(modal);
@@ -484,7 +501,7 @@ var Navigation = {
     closeTextBtn.onclick = closeHandler;
 
     // Also close on overlay click
-    modal.addEventListener("click", function(e) {
+    modal.addEventListener("click", function (e) {
       if (e.target === modal) {
         closeHandler();
       }
@@ -494,9 +511,9 @@ var Navigation = {
   /**
    * Setup keyboard shortcuts
    */
-  setupKeyboardShortcuts: function() {
+  setupKeyboardShortcuts: function () {
     var self = this;
-    document.addEventListener("keydown", function(e) {
+    document.addEventListener("keydown", function (e) {
       // Arrow Right or Space to go next
       if (e.key === "ArrowRight" || (e.key === " " && e.shiftKey === false)) {
         self.nextScreen();
@@ -520,7 +537,7 @@ var Navigation = {
    * @param {number} index - Screen index
    * @param {boolean} animate - Enable animation
    */
-  showScreen: function(index, animate) {
+  showScreen: function (index, animate) {
     if (typeof animate === 'undefined') animate = true;
 
     // Validate index
@@ -539,7 +556,7 @@ var Navigation = {
 
     // Safety: Reset transition flag after 2 seconds if something goes wrong
     var self = this;
-    setTimeout(function() {
+    setTimeout(function () {
       if (self.isTransitioning) {
         console.warn("[Navigation] Force resetting isTransitioning flag after timeout");
         self.isTransitioning = false;
@@ -563,9 +580,9 @@ var Navigation = {
       // Fade out previous
       previousScreen.style.animation = "fadeIn var(--transition-base) reverse";
 
-      setTimeout(function() {
+      setTimeout(function () {
         // Hide all screens
-        self.screens.forEach(function(screen) {
+        self.screens.forEach(function (screen) {
           screen.classList.add("hidden");
         });
 
@@ -574,7 +591,7 @@ var Navigation = {
 
         // Trigger animation
         currentScreen.style.animation = "none";
-        setTimeout(function() {
+        setTimeout(function () {
           currentScreen.style.animation = "fadeIn var(--transition-base)";
         }, 10);
 
@@ -582,7 +599,7 @@ var Navigation = {
         self.updateUI();
 
         // Re-initialize interactive modules on screen change
-        setTimeout(function() {
+        setTimeout(function () {
           if (typeof DragDrop !== 'undefined') {
             console.log("[Navigation] Re-initializing DragDrop module");
             DragDrop.init();
@@ -597,7 +614,7 @@ var Navigation = {
       }, 150);
     } else {
       // Instant transition (no animation)
-      this.screens.forEach(function(screen) {
+      this.screens.forEach(function (screen) {
         screen.classList.add("hidden");
       });
 
@@ -608,7 +625,7 @@ var Navigation = {
 
       // Re-initialize interactive modules on screen change
       var self = this;
-      setTimeout(function() {
+      setTimeout(function () {
         if (typeof DragDrop !== 'undefined') {
           console.log("[Navigation] Re-initializing DragDrop module");
           DragDrop.init();
@@ -626,7 +643,7 @@ var Navigation = {
   /**
    * Reset transition flag (safety reset)
    */
-  resetTransitionFlag: function() {
+  resetTransitionFlag: function () {
     console.log("[Navigation] Forcefully resetting transition flag");
     this.isTransitioning = false;
   },
@@ -634,21 +651,21 @@ var Navigation = {
   /**
    * Go to next screen
    */
-  nextScreen: function() {
+  nextScreen: function () {
     this.showScreen(this.currentScreenIndex + 1);
   },
 
   /**
    * Go to previous screen
    */
-  prevScreen: function() {
+  prevScreen: function () {
     this.showScreen(this.currentScreenIndex - 1);
   },
 
   /**
    * Update UI elements
    */
-  updateUI: function() {
+  updateUI: function () {
     // Scroll to top of page on screen change
     window.scrollTo(0, 0);
 
@@ -677,12 +694,12 @@ var Navigation = {
   /**
    * Update button enabled/disabled states
    */
-  updateButtonStates: function() {
+  updateButtonStates: function () {
     var prevButtons = document.querySelectorAll("[data-action='prev']");
     var nextButtons = document.querySelectorAll("[data-action='next']");
     var self = this;
 
-    prevButtons.forEach(function(btn) {
+    prevButtons.forEach(function (btn) {
       if (self.currentScreenIndex === 0) {
         btn.disabled = true;
       } else {
@@ -690,7 +707,7 @@ var Navigation = {
       }
     });
 
-    nextButtons.forEach(function(btn) {
+    nextButtons.forEach(function (btn) {
       if (self.currentScreenIndex === self.screens.length - 1) {
         btn.disabled = true;
       } else {
@@ -702,7 +719,7 @@ var Navigation = {
   /**
    * Finish course
    */
-  finishCourse: function() {
+  finishCourse: function () {
     console.log("[Navigation] Course finished");
     if (typeof SCORM !== "undefined") {
       SCORM.setCompleted();
@@ -712,7 +729,7 @@ var Navigation = {
   /**
    * Get current screen data
    */
-  getCurrentScreen: function() {
+  getCurrentScreen: function () {
     return this.screens[this.currentScreenIndex] || null;
   }
 };

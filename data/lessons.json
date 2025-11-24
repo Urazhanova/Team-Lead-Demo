@@ -1824,6 +1824,55 @@
         "perfection": 50,
         "timeBonus": 20
       }
+    },
+    {
+      "id": 4,
+      "title": "Урок 4: Коммуникация в мессенджере",
+      "description": "Симулятор рабочего дня Team Lead в мессенджере. Учись управлять потоком сообщений и решать проблемы удаленно.",
+      "type": "messenger",
+      "estimatedTime": "15-20 минут",
+      "interactiveLevel": "HIGH",
+      "content": {
+        "introText": "Добро пожаловать в симулятор рабочего мессенджера! Твоя задача - пережить рабочий день, отвечая на сообщения коллег. Следи за энергией и временем!"
+      },
+      "skills": [
+        {
+          "name": "Коммуникация",
+          "increment": 2,
+          "description": "Эффективная переписка и решение конфликтов"
+        },
+        {
+          "name": "Управление временем",
+          "increment": 1,
+          "description": "Приоритизация сообщений"
+        },
+        {
+          "name": "Эмоциональный интеллект",
+          "increment": 1,
+          "description": "Понимание эмоций в тексте"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "inbox-zero",
+          "name": "Inbox Zero",
+          "icon": "📥",
+          "description": "Ответил на все сообщения до конца дня",
+          "requirement": "unreadMessages == 0"
+        },
+        {
+          "id": "diplomat",
+          "name": "Дипломат",
+          "icon": "🕊️",
+          "description": "Решил конфликт без потери отношений",
+          "requirement": "conflictResolved && relationshipLevel >= 4"
+        }
+      ],
+      "xpRewards": {
+        "completion": 100,
+        "perfectDay": 50,
+        "speedBonus": 20
+      }
     }
   ]
 }
