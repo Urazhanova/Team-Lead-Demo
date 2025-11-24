@@ -820,7 +820,7 @@
       "id": "system",
       "name": "System",
       "role": "System Messages",
-      "avatar": "assets/images/scenes/system.svg",
+      "avatar": "assets/images/scenes/system-msg.png",
       "status": "online"
     }
   ]
