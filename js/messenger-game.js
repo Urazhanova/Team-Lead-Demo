@@ -1107,44 +1107,41 @@ var MessengerGame = {
 
         console.log("[MessengerGame] Found " + eventsToProcess.length + " events in time gap");
 
-        // Load and display events with 5 second intervals
-        var totalEventsCount = eventsToProcess.length;
+        // Load and display events immediately (no delays)
         eventsToProcess.forEach(function (scenario, index) {
-            setTimeout(function () {
-                // Initialize message history if needed
-                if (!this.state.messages[scenario.contactId]) {
-                    this.state.messages[scenario.contactId] = [];
-                }
+            // Initialize message history if needed
+            if (!this.state.messages[scenario.contactId]) {
+                this.state.messages[scenario.contactId] = [];
+            }
 
-                // Check if message already exists (avoid duplicates)
-                var messageExists = this.state.messages[scenario.contactId].some(msg =>
-                    msg.sender === scenario.contactId && msg.text === scenario.text
-                );
+            // Check if message already exists (avoid duplicates)
+            var messageExists = this.state.messages[scenario.contactId].some(msg =>
+                msg.sender === scenario.contactId && msg.text === scenario.text
+            );
 
-                if (!messageExists) {
-                    // Add scenario initial message
-                    this.addMessage(scenario.contactId, {
-                        sender: scenario.contactId,
-                        text: scenario.text,
-                        timestamp: scenario.triggerTime,
-                        isUrgent: scenario.type === 'ALERT',
-                        scenarioId: scenario.id,  // Mark this message as having a scenario/choices
-                        choicesRevealed: false    // Choices not revealed yet (will appear after 1 sec)
-                    });
-                }
+            if (!messageExists) {
+                // Add scenario initial message
+                this.addMessage(scenario.contactId, {
+                    sender: scenario.contactId,
+                    text: scenario.text,
+                    timestamp: scenario.triggerTime,
+                    isUrgent: scenario.type === 'ALERT',
+                    scenarioId: scenario.id,  // Mark this message as having a scenario/choices
+                    choicesRevealed: false    // Choices not revealed yet (will appear after 1 sec)
+                });
 
-                // Update UI to show new messages
-                if (this.state.activeContactId === scenario.contactId) {
-                    this.renderChatWindow(scenario.contactId);
-                }
+                // Schedule choices reveal for 1 second after message
+                this.scheduleChoicesReveal(scenario.contactId);
+            }
 
-                // After all events are loaded, check for escalations
-                if (index === totalEventsCount - 1) {
-                    this.checkTriggers();
-                }
-
-            }.bind(this), index * 5000); // 5 second intervals
+            // Update UI to show new messages
+            if (this.state.activeContactId === scenario.contactId) {
+                this.renderChatWindow(scenario.contactId);
+            }
         }, this);
+
+        // After all events are loaded, check for escalations
+        this.checkTriggers();
     },
 
     showTyping: function (contactId, show) {
@@ -1333,6 +1330,9 @@ var MessengerGame = {
                     scenarioId: scenario.id,  // Mark this message as having a scenario/choices
                     choicesRevealed: false    // Choices not revealed yet (will appear after 1 sec)
                 });
+
+                // Schedule choices reveal for 1 second after message
+                this.scheduleChoicesReveal(scenario.contactId);
             }
 
         }, this);
