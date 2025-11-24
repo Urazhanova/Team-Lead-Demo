@@ -3544,6 +3544,82 @@ textarea {
   background: #5c1f5d;
 }
 
+/* ========== DAY BRIEFING MODAL ========== */
+
+.day-briefing-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(31, 14, 40, 0.95), rgba(51, 14, 60, 0.95));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease;
+}
+
+.day-briefing-content {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 50px 40px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.briefing-header {
+  margin-bottom: 30px;
+}
+
+.briefing-date {
+  font-size: 28px;
+  font-weight: 700;
+  color: #3F0E40;
+  letter-spacing: 1px;
+}
+
+.briefing-body {
+  margin-bottom: 35px;
+}
+
+.briefing-text {
+  font-size: 16px;
+  color: #1d1c1d;
+  line-height: 1.8;
+  margin: 12px 0;
+  font-weight: 500;
+}
+
+.briefing-question {
+  font-size: 18px;
+  color: #3F0E40;
+  font-weight: 700;
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.day-briefing-content .start-day-btn {
+  background: #3F0E40;
+  color: white;
+  border: none;
+  padding: 14px 40px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+}
+
+.day-briefing-content .start-day-btn:hover {
+  background: #5c1f5d;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(63, 14, 64, 0.3);
+}
+
 /* ========== CHOICE/ACTION UI ========== */
 
 .choice-context {

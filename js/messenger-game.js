@@ -623,13 +623,55 @@ var MessengerGame = {
     },
 
     /**
-     * Continue from Good Start modal - load full game scenarios
+     * Continue from Good Start modal - show day briefing
      */
     continueFromGoodStart: function () {
         console.log("[MessengerGame] Continuing from Good Start...");
 
         // Remove Good Start modal
         var modal = this.container.querySelector('.good-start-modal');
+        if (modal) {
+            modal.remove();
+        }
+
+        // Show day briefing instead
+        this.showDayBriefing();
+    },
+
+    /**
+     * Show briefing about the day ahead
+     */
+    showDayBriefing: function () {
+        if (!this.container) return;
+
+        var modalHtml = `
+            <div class="day-briefing-modal">
+                <div class="day-briefing-content">
+                    <div class="briefing-header">
+                        <span class="briefing-date">ПЯТНИЦА, 9:00</span>
+                    </div>
+                    <div class="briefing-body">
+                        <p class="briefing-text">Конец первой недели на посту тимлида</p>
+                        <p class="briefing-text">Впереди тебя ждет непростой день.</p>
+                        <p class="briefing-text">В 18:00 у тебя важная личная встреча.</p>
+                        <p class="briefing-question">Сможешь успеть всё?</p>
+                    </div>
+                    <button class="start-day-btn" onclick="window.messengerGame.startDayGame()">НАЧАТЬ ДЕНЬ</button>
+                </div>
+            </div>
+        `;
+
+        var modalEl = document.createElement('div');
+        modalEl.innerHTML = modalHtml;
+        this.container.appendChild(modalEl.firstElementChild);
+    },
+
+    /**
+     * Start the actual game after briefing
+     */
+    startDayGame: function () {
+        // Remove briefing modal
+        var modal = this.container.querySelector('.day-briefing-modal');
         if (modal) {
             modal.remove();
         }
