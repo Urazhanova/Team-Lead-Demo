@@ -84,8 +84,8 @@ var MessengerGame = {
 
     loadScenarios: function () {
         var self = this;
-        // First load messenger-scenarios.json for the initial demo
-        fetch('data/messenger-scenarios.json?v=' + new Date().getTime())
+        // Load full game scenarios directly - skip demo phase
+        fetch('data/full-game-scenarios.json?v=' + new Date().getTime())
             .then(function (response) {
                 if (!response.ok) {
                     throw new Error("HTTP error " + response.status);
@@ -93,20 +93,22 @@ var MessengerGame = {
                 return response.json();
             })
             .then(function (data) {
-                if (!data || !data.scenarios) {
-                    throw new Error("Invalid messenger scenarios structure");
+                if (!data || !data.config || !data.contacts || !data.scenarios) {
+                    throw new Error("Invalid full game data structure");
                 }
-                // Store messenger scenarios for demo
-                self.messengerScenarios = data.scenarios;
-                self.messengerContacts = data.contacts;
-                // Store config for initial state
+                // Load full game data directly
                 self.config = data.config;
+                self.contacts = data.contacts;
+                self.scenarios = data.scenarios;
+
+                // Initialize state with full game config
                 self.initializeState();
-                // Show initial demo messages
-                self.showInitialMessages();
+
+                // Show day briefing immediately
+                self.showDayBriefing();
             })
             .catch(function (err) {
-                console.error("[MessengerGame] Error loading messenger scenarios:", err);
+                console.error("[MessengerGame] Error loading game scenarios:", err);
                 if (self.container) {
                     self.container.innerHTML = '<div class="error">Error loading game data: ' + err.message + '</div>';
                 }
@@ -684,8 +686,8 @@ var MessengerGame = {
             modal.remove();
         }
 
-        // Load full game scenarios
-        this.loadFullGameScenarios();
+        // Start the game (scenarios already loaded)
+        this.startGame();
     },
 
     renderBriefing: function () {
