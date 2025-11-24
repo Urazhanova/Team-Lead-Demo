@@ -367,6 +367,8 @@ var MessengerGame = {
         if (!chatArea || !inputArea) return;
 
         var contact = this.contacts.find(c => c.id === contactId);
+        if (!contact) return;
+
         var messages = this.state.messages[contactId] || [];
 
         // Render Header with Back Button
@@ -383,8 +385,7 @@ var MessengerGame = {
 
         // Render Messages (Slack style: Avatar left, content right)
         var messagesHtml = messages.map((msg) => {
-            // Determine avatar: if player, use player avatar, else contact avatar
-            // For channels, we might need specific sender avatars, but for MVP we use contact avatar or generic
+            // Determine avatar and name
             var avatar = msg.sender === 'player' ? 'assets/images/characters/alex/alex_avatar.svg' : contact.avatar;
             var name = msg.sender === 'player' ? 'Alex' : (msg.sender === 'System' ? 'System' : contact.name);
 
@@ -393,11 +394,8 @@ var MessengerGame = {
                 if (msg.sender === 'System') {
                     name = 'System';
                     avatar = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><circle cx='20' cy='20' r='20' fill='%23616061'/><text x='50%' y='50%' dy='.35em' text-anchor='middle' fill='white' font-size='20'>S</text></svg>";
-                } else if (msg.sender === 'lena') {
-                    name = 'Лена';
-                    avatar = 'assets/images/characters/lena/icon.svg';
                 } else {
-                    // Try to find sender in contacts to get their name/avatar
+                    // Try to find sender in contacts
                     var senderContact = this.contacts.find(c => c.id === msg.sender);
                     if (senderContact) {
                         avatar = senderContact.avatar;
@@ -420,44 +418,73 @@ var MessengerGame = {
             `;
         }, this).join('');
 
-        // Add typing indicator
-        messagesHtml += `
-            <div class="typing-indicator" id="typing-${contactId}" style="display: none;">
-                <span></span><span></span><span></span>
-            </div>
-        `;
-
         chatArea.innerHTML = headerHtml + '<div class="messages-list">' + messagesHtml + '</div>';
         chatArea.scrollTop = chatArea.scrollHeight;
 
-        // Render Choices
+        // Render Choices/Actions for Request scenarios
         inputArea.innerHTML = '';
 
-        // Find active scenario for this contact
+        // Find active scenario for this contact (REQUEST type that hasn't been answered)
         var activeScenario = this.scenarios.find(s =>
             s.contactId === contactId &&
-            !this.state.completedScenarios.includes(s.id) &&
-            this.isTimeTriggered(s.triggerTime)
+            this.isTimeTriggered(s.triggerTime) &&
+            s.choices && s.choices.length > 0 &&
+            !s.isLunchTime && // Don't show choices for lunch here
+            !this.state.choicesMade.some(choiceId => {
+                // Check if a choice from this scenario was already made
+                return s.choices.some(c => c.id === choiceId);
+            })
         );
 
-        if (activeScenario && activeScenario.choices && this.state.gameStarted) {
-            var choicesContainer = document.createElement('div');
-            choicesContainer.className = 'choices-container';
-
-            activeScenario.choices.forEach(function (choice) {
-                var btn = document.createElement('button');
-                btn.className = 'choice-btn';
-                btn.innerHTML = `
-                    <span class="choice-text">${choice.text}</span>
-                    <span class="choice-cost">⚡ -${choice.energyCost} | 🕒 ${choice.timeCost}m</span>
+        if (activeScenario && this.state.gameStarted) {
+            // Show context if available
+            var contextHtml = '';
+            if (activeScenario.context) {
+                contextHtml = `
+                    <div class="choice-context">
+                        <div class="context-label">💡 КОНТЕКСТ:</div>
+                        <div class="context-text">${activeScenario.context}</div>
+                    </div>
                 `;
-                btn.onclick = function () { this.makeChoice(activeScenario, choice); }.bind(this);
-                choicesContainer.appendChild(btn);
+            }
+
+            // Show title/description if available
+            var titleHtml = '';
+            if (activeScenario.title) {
+                titleHtml = `<div class="choice-title">❓ ${activeScenario.title}</div>`;
+            }
+
+            // Build choices container with up to 3 options (A, B, C)
+            var choicesHtml = `${contextHtml}${titleHtml}<div class="choices-container">`;
+
+            var optionLabels = ['[A]', '[B]', '[C]'];
+            activeScenario.choices.slice(0, 3).forEach(function (choice, index) {
+                var energyColor = choice.energyCost < 0 ? 'negative' : 'positive';
+                var choiceHtml = `
+                    <button class="choice-btn" onclick="window.messengerGame.makeChoice(window.activeScenario, window.activeChoice${index})">
+                        <div class="choice-label">${optionLabels[index]} ${choice.text}</div>
+                        <div class="choice-description">${choice.description || ''}</div>
+                        <div class="choice-cost">
+                            <span class="cost-time">⏱️ +${choice.timeCost} мин</span>
+                            <span class="cost-energy ${energyColor}">⚡ ${choice.energyCost > 0 ? '+' : ''}${choice.energyCost}%</span>
+                        </div>
+                    </button>
+                `;
+                choicesHtml += choiceHtml;
+
+                // Store choice globally for onclick handler
+                window['activeChoice' + index] = choice;
             }, this);
 
-            inputArea.appendChild(choicesContainer);
+            choicesHtml += '</div>';
+
+            // Store scenario globally for onclick handler
+            window.activeScenario = activeScenario;
+
+            inputArea.innerHTML = choicesHtml;
         } else {
-            // inputArea.innerHTML = '<div class="input-placeholder">Message...</div>';
+            // No active scenario
+            inputArea.innerHTML = '';
         }
     },
 
@@ -485,17 +512,16 @@ var MessengerGame = {
             timestamp: this.state.gameTime // Use new T_Game
         });
 
-        // Mark scenario as completed
-        this.state.completedScenarios.push(scenario.id);
-        if (!this.state.choicesMade) this.state.choicesMade = [];
-        this.state.choicesMade.push(choice.id);
-
         // Add choice response message
         this.addMessage(scenario.contactId, {
             sender: scenario.contactId,
             text: choice.response,
             timestamp: this.state.gameTime // Use new T_Game
         });
+
+        // Track the choice
+        if (!this.state.choicesMade) this.state.choicesMade = [];
+        this.state.choicesMade.push(choice.id);
 
         // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
         this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
@@ -519,6 +545,9 @@ var MessengerGame = {
             // Skip if already completed
             if (this.state.completedScenarios.includes(scenario.id)) return false;
 
+            // Skip lunch time scenarios
+            if (scenario.isLunchTime) return false;
+
             // Check if trigger time falls in the gap
             var triggerMins = this.timeToMinutes(scenario.triggerTime);
             return triggerMins > oldTimeMinutes && triggerMins <= newTimeMinutes;
@@ -539,17 +568,25 @@ var MessengerGame = {
                     this.state.messages[scenario.contactId] = [];
                 }
 
-                // Add scenario messages
-                scenario.messages.forEach(function (msg) {
-                    this.addMessage(scenario.contactId, {
-                        sender: msg.sender,
-                        text: msg.text,
-                        timestamp: scenario.triggerTime
-                    });
-                }, this);
+                // Check if message already exists (avoid duplicates)
+                var messageExists = this.state.messages[scenario.contactId].some(msg =>
+                    msg.sender === scenario.contactId && msg.text === scenario.text
+                );
 
-                // Mark as completed
-                this.state.completedScenarios.push(scenario.id);
+                if (!messageExists) {
+                    // Add scenario initial message
+                    this.addMessage(scenario.contactId, {
+                        sender: scenario.contactId,
+                        text: scenario.text,
+                        timestamp: scenario.triggerTime,
+                        isUrgent: scenario.type === 'ALERT'
+                    });
+                }
+
+                // Update UI to show new messages
+                if (this.state.activeContactId === scenario.contactId) {
+                    this.renderChatWindow(scenario.contactId);
+                }
 
             }.bind(this), index * 5000); // 5 second intervals
         }, this);
@@ -708,29 +745,38 @@ var MessengerGame = {
      */
     checkTriggers: function () {
         this.scenarios.forEach(function (scenario) {
-            // Skip if already completed
-            if (this.state.completedScenarios.includes(scenario.id)) return;
+            // Skip if choice was already made (scenario is answered)
+            if (this.state.choicesMade.some(choiceId => {
+                // Check if this choice belongs to this scenario
+                var choiceScenario = this.scenarios.find(s => s.choices && s.choices.find(c => c.id === choiceId));
+                return choiceScenario && choiceScenario.id === scenario.id;
+            })) return;
 
             // Check if T_Game has reached the trigger time
             if (!this.isTimeTriggered(scenario.triggerTime)) return;
 
-            // Trigger the scenario: add all its messages
+            // Skip lunch time scenarios (they're handled separately)
+            if (scenario.isLunchTime) return;
+
+            // Initialize message history for this contact
             if (!this.state.messages[scenario.contactId]) {
                 this.state.messages[scenario.contactId] = [];
             }
 
-            // Add scenario messages with current T_Game timestamp
-            scenario.messages.forEach(function (msg) {
-                this.addMessage(scenario.contactId, {
-                    sender: msg.sender,
-                    text: msg.text,
-                    timestamp: this.state.gameTime, // Use T_Game
-                    isUrgent: false
-                });
-            }, this);
+            // Check if this scenario's message already exists (avoid duplicates)
+            var messageExists = this.state.messages[scenario.contactId].some(msg =>
+                msg.sender === scenario.contactId && msg.text === scenario.text
+            );
 
-            // Mark scenario as completed
-            this.state.completedScenarios.push(scenario.id);
+            if (!messageExists) {
+                // Add initial message from the scenario
+                this.addMessage(scenario.contactId, {
+                    sender: scenario.contactId,
+                    text: scenario.text,
+                    timestamp: scenario.triggerTime,
+                    isUrgent: scenario.type === 'ALERT'
+                });
+            }
 
         }, this);
 

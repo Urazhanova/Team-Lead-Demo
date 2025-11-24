@@ -3527,3 +3527,145 @@ textarea {
 .good-start-content .continue-btn:hover {
   background: #5c1f5d;
 }
+
+/* ========== CHOICE/ACTION UI ========== */
+
+.choice-context {
+  background: #f0f4ff;
+  border-left: 4px solid #5d5c9c;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 4px;
+}
+
+.choice-context .context-label {
+  font-weight: 600;
+  color: #5d5c9c;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.choice-context .context-text {
+  color: #4a4a6a;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.choice-title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #1d1c1d;
+  margin-bottom: 12px;
+  padding: 8px 0;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.choices-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  background: #fafafa;
+  border-radius: 8px;
+}
+
+.choice-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.choice-btn:hover {
+  border-color: #3F0E40;
+  background: #f9f5ff;
+  box-shadow: 0 2px 8px rgba(63, 14, 64, 0.1);
+  transform: translateX(2px);
+}
+
+.choice-btn:active {
+  transform: translateX(0);
+}
+
+.choice-label {
+  font-weight: 600;
+  color: #1d1c1d;
+  font-size: 14px;
+}
+
+.choice-description {
+  color: #666;
+  font-size: 12px;
+  line-height: 1.3;
+  font-style: italic;
+}
+
+.choice-cost {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid #eee;
+}
+
+.cost-time {
+  color: #f97316;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.cost-energy {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.cost-energy.negative {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.cost-energy.positive {
+  color: #16a34a;
+  background: #dcfce7;
+}
+
+.cost-energy.neutral {
+  color: #6b7280;
+  background: #f3f4f6;
+}
+
+/* ========== MOBILE RESPONSIVE ========== */
+
+@media (max-width: 768px) {
+  .choices-container {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .choice-btn {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .choice-label {
+    font-size: 13px;
+  }
+
+  .choice-cost {
+    font-size: 11px;
+  }
+}
