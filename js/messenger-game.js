@@ -287,6 +287,9 @@ var MessengerGame = {
         // Update stats
         this.updateStats();
 
+        // Check if game is over
+        this.checkGameOver();
+
         // Remove modal
         var modal = this.container.querySelector('.lunch-modal');
         if (modal) {
@@ -341,9 +344,94 @@ var MessengerGame = {
         // Update stats
         this.updateStats();
 
+        // Check if game is over
+        this.checkGameOver();
+
         // Re-render chat to show new choices or clear resolved escalation
         this.renderChatWindow(contactId);
         this.renderContactList();
+    },
+
+    /**
+     * Check if game over conditions are met
+     */
+    checkGameOver: function () {
+        // Condition 1: Energy depleted
+        if (this.state.energy <= 0) {
+            console.log("[MessengerGame] GAME OVER: Energy depleted!");
+            this.showGameOver('loss', 'energy');
+            return;
+        }
+
+        // Condition 2: Time exceeded (past 18:00)
+        if (this.isTimeReached(this.state.gameTime, "18:00")) {
+            console.log("[MessengerGame] GAME OVER: End of workday exceeded!");
+            this.showGameOver('loss', 'time');
+            return;
+        }
+
+        // Note: Critical choice scenario (17:45) needs to be defined in JSON with game-ending consequences
+    },
+
+    /**
+     * Show game over screen (win or loss)
+     */
+    showGameOver: function (result, reason) {
+        if (!this.container) return;
+
+        var resultData = {
+            loss: {
+                energy: {
+                    title: '⚠️ ДЕНЬ ЗАВЕРШЁН ВАС ИСЧЕРПАЛИ',
+                    message: 'Ваша энергия полностью израсходована. Вы потеряли способность принимать решения.',
+                    advice: 'Нужно было лучше управлять своими ресурсами. Делегировать больше, спать, не пренебрегать обедом.'
+                },
+                time: {
+                    title: '⏰ ДЕНЬ ЗАКОНЧИЛСЯ',
+                    message: 'Рабочий день давно закончился, а вы всё ещё в офисе. Это непродуктивно.',
+                    advice: 'Работать эффективнее, расставлять приоритеты, говорить нет отвлекающим задачам.'
+                }
+            },
+            win: {
+                title: '✅ ДЕНЬ ПРОЖИТ УСПЕШНО!',
+                message: 'Вы выжили! День был сложным, но вы справились.',
+                advice: 'Отличная работа! Вы научились управлять командой и своими ресурсами.'
+            }
+        };
+
+        var data = result === 'loss' ? resultData.loss[reason] : resultData.win;
+
+        var screenHtml = `
+            <div class="game-over-modal">
+                <div class="game-over-content">
+                    <h2>${data.title}</h2>
+                    <p class="game-over-message">${data.message}</p>
+                    <p class="game-over-advice">💡 ${data.advice}</p>
+
+                    <div class="game-stats-summary">
+                        <div class="stat-summary-item">
+                            <span class="stat-label">⏱️ Финальное время:</span>
+                            <span class="stat-value">${this.state.gameTime}</span>
+                        </div>
+                        <div class="stat-summary-item">
+                            <span class="stat-label">⚡ Финальная энергия:</span>
+                            <span class="stat-value">${this.state.energy}%</span>
+                        </div>
+                        <div class="stat-summary-item">
+                            <span class="stat-label">📊 Решений принято:</span>
+                            <span class="stat-value">${this.state.choicesMade.length}</span>
+                        </div>
+                    </div>
+
+                    <div class="game-over-actions">
+                        <button class="game-over-btn restart-btn" onclick="location.reload()">НАЧАТЬ ЗАНОВО</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Replace entire interface with game over screen
+        this.container.innerHTML = screenHtml;
     },
 
     renderBriefing: function () {
@@ -737,6 +825,11 @@ var MessengerGame = {
 
         // Update UI
         this.updateStats();
+
+        // Check if game is over
+        this.checkGameOver();
+
+        // Re-render chat
         this.renderChatWindow(scenario.contactId);
     },
 
