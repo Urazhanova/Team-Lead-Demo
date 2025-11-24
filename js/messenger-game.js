@@ -188,8 +188,6 @@ var MessengerGame = {
         this.state.mealSkipped = false;                     // Track if meal was skipped for penalty
         this.state.pendingEscalations = [];                 // Track scenarios awaiting escalation
         this.state.gameEnded = false;                       // Flag to prevent multiple game over checks
-        this.state.nextScenarioIndex = 0;                   // Index of next scenario to load (R_Time based)
-        this.state.scenarioLoadInterval = null;             // Reference to interval for cleanup
 
         // Initialize message history for each contact
         this.contacts.forEach(function (contact) {
@@ -211,10 +209,10 @@ var MessengerGame = {
 
         this.render();
 
-        // Load first scenario immediately (R_Time = 0 sec)
-        this.loadNextScenarioByRealTime();
+        // Load initial scenarios at starting T_Game (09:10)
+        this.checkTriggers();
 
-        this.startRealTimeTracking(); // Start R_Time counter (subsequent scenarios every 5 sec)
+        this.startRealTimeTracking(); // Start R_Time counter (for lunch break tracking)
     },
 
     /**
@@ -232,12 +230,8 @@ var MessengerGame = {
 
         }.bind(this), 1000); // Update every 1 real second
 
-        // Start loading scenarios every 5 real seconds (independent of T_Game)
-        if (this.state.scenarioLoadInterval) clearInterval(this.state.scenarioLoadInterval);
-
-        this.state.scenarioLoadInterval = setInterval(function () {
-            this.loadNextScenarioByRealTime();
-        }.bind(this), 5000); // Every 5 real seconds
+        // Note: Scenarios load based on T_Game triggers via processTimeGap() and checkTriggers()
+        // R_Time is used only for lunch break tracking, not scenario loading
     },
 
     /**
@@ -432,7 +426,7 @@ var MessengerGame = {
         // Don't check if game is already ended
         if (this.state.gameEnded) return;
 
-        // Condition 1: Energy depleted
+        // Condition 1: Energy depleted - LOSS
         if (this.state.energy <= 0) {
             console.log("[MessengerGame] GAME OVER: Energy depleted!");
             this.state.gameEnded = true;
@@ -440,21 +434,24 @@ var MessengerGame = {
             return;
         }
 
-        // Condition 2: Time reached 18:00 (end of workday)
-        // If energy is still positive, it's a WIN
+        // Condition 2: Time reached 18:00 (end of workday) - determine WIN level
         if (this.isTimeReached(this.state.gameTime, "18:00")) {
-            console.log("[MessengerGame] Game reached 18:00!");
+            console.log("[MessengerGame] Game reached 18:00! Energy: " + this.state.energy);
+            this.state.gameEnded = true;
 
-            if (this.state.energy > 0) {
-                // Player survived the day with energy remaining - WIN!
-                console.log("[MessengerGame] GAME WON: Completed the day successfully!");
-                this.state.gameEnded = true;
-                this.showGameOver('win', null);
-            } else {
-                // Energy was depleted after reaching 18:00 - caught by condition 1 above, but handle just in case
-                console.log("[MessengerGame] GAME OVER: Energy depleted by end of day!");
-                this.state.gameEnded = true;
-                this.showGameOver('loss', 'energy');
+            // Determine win level based on remaining energy
+            if (this.state.energy > 50) {
+                // Gold victory - great resource management
+                console.log("[MessengerGame] GOLD VICTORY: Completed day with excellent energy management!");
+                this.showGameOver('win', 'gold');
+            } else if (this.state.energy >= 10) {
+                // Silver victory - decent resource management
+                console.log("[MessengerGame] SILVER VICTORY: Completed day with adequate energy management!");
+                this.showGameOver('win', 'silver');
+            } else if (this.state.energy > 0) {
+                // Bronze victory - survived but barely
+                console.log("[MessengerGame] BRONZE VICTORY: Barely survived the day!");
+                this.showGameOver('win', 'bronze');
             }
             return;
         }
@@ -472,21 +469,28 @@ var MessengerGame = {
                     title: '⚠️ ДЕНЬ ЗАВЕРШЁН ВАС ИСЧЕРПАЛИ',
                     message: 'Ваша энергия полностью израсходована. Вы потеряли способность принимать решения.',
                     advice: 'Нужно было лучше управлять своими ресурсами. Делегировать больше, спать, не пренебрегать обедом.'
-                },
-                time: {
-                    title: '⏰ ДЕНЬ ЗАКОНЧИЛСЯ',
-                    message: 'Рабочий день давно закончился, а вы всё ещё в офисе. Это непродуктивно.',
-                    advice: 'Работать эффективнее, расставлять приоритеты, говорить нет отвлекающим задачам.'
                 }
             },
             win: {
-                title: '✅ ДЕНЬ ПРОЖИТ УСПЕШНО!',
-                message: 'Вы выжили! День был сложным, но вы справились.',
-                advice: 'Отличная работа! Вы научились управлять командой и своими ресурсами.'
+                gold: {
+                    title: '🏆 ЗОЛОТАЯ ПОБЕДА! ДЕНЬ ПРОЖИТ БЛЕСТЯЩЕ!',
+                    message: 'Вы отлично управляли своей энергией и командой. К концу дня сохранили более 50% энергии.',
+                    advice: 'Исключительное управление ресурсами! Вы мастер тайм-менеджмента и делегирования.'
+                },
+                silver: {
+                    title: '🥈 СЕРЕБРЯНАЯ ПОБЕДА! ДЕНЬ ПРОЖИТ УСПЕШНО!',
+                    message: 'Вы справились с днём, сохранив 10-50% энергии. День был напряженным, но вы выстояли.',
+                    advice: 'Хороший результат! Работайте над поддержкой своей энергии и лучшим распределением задач.'
+                },
+                bronze: {
+                    title: '🥉 БРОНЗОВАЯ ПОБЕДА! ВЫ ВЫЖИЛИ!',
+                    message: 'Вы дотянули до конца дня, но энергия на исходе (менее 10%). Это было на пределе.',
+                    advice: 'Вы выстояли, но нужно срочно улучшить управление ресурсами. Делегируйте больше, не переутомляйтесь.'
+                }
             }
         };
 
-        var data = result === 'loss' ? resultData.loss[reason] : resultData.win;
+        var data = result === 'loss' ? resultData.loss[reason] : resultData.win[reason];
 
         var screenHtml = `
             <div class="game-over-modal">
@@ -1055,10 +1059,14 @@ var MessengerGame = {
             });
         }
 
-        // Mark scenario as completed (no need for processTimeGap - scenarios load automatically every 5 sec)
-        if (!this.state.completedScenarios.includes(scenario.id)) {
-            this.state.completedScenarios.push(scenario.id);
-        }
+        // IMPORTANT: Process time gap - load all events between oldGameTime and newGameTime
+        this.processTimeGap(oldGameTimeMinutes, this.state.gameTimeMinutes);
+
+        // Also check triggers after gap processing
+        var self = this;
+        setTimeout(function () {
+            self.checkTriggers();
+        }, 100);
 
         // Update UI
         this.updateStats();
@@ -1378,61 +1386,6 @@ var MessengerGame = {
         }
 
         this.renderContactList();
-    },
-
-    /**
-     * Load next scenario based on R_Time (real time)
-     * Called every 5 seconds to automatically add scenarios
-     */
-    loadNextScenarioByRealTime: function () {
-        // Check if we've loaded all scenarios
-        if (this.state.nextScenarioIndex >= this.scenarios.length) {
-            // Stop loading - all scenarios have been shown
-            if (this.state.scenarioLoadInterval) {
-                clearInterval(this.state.scenarioLoadInterval);
-                this.state.scenarioLoadInterval = null;
-            }
-            return;
-        }
-
-        // Get next scenario
-        var scenario = this.scenarios[this.state.nextScenarioIndex];
-
-        // Skip if already completed or lunch time scenarios
-        if (this.state.completedScenarios.includes(scenario.id) || scenario.isLunchTime) {
-            this.state.nextScenarioIndex++;
-            return;
-        }
-
-        console.log("[MessengerGame] Loading scenario (R_Time): " + scenario.id + " from " + scenario.contactId);
-
-        // Initialize message history if needed
-        if (!this.state.messages[scenario.contactId]) {
-            this.state.messages[scenario.contactId] = [];
-        }
-
-        // Check if message already exists (avoid duplicates)
-        var messageExists = this.state.messages[scenario.contactId].some(msg =>
-            msg.sender === scenario.contactId && msg.text === scenario.text
-        );
-
-        if (!messageExists) {
-            // Add scenario message
-            this.addMessage(scenario.contactId, {
-                sender: scenario.contactId,
-                text: scenario.text,
-                timestamp: scenario.triggerTime || this.state.gameTime,
-                isUrgent: scenario.type === 'ALERT',
-                scenarioId: scenario.id,
-                choicesRevealed: false  // Choices appear after 1 second
-            });
-
-            // Schedule choices reveal for 1 second after message
-            this.scheduleChoicesReveal(scenario.contactId);
-        }
-
-        // Move to next scenario
-        this.state.nextScenarioIndex++;
     },
 
     finishGame: function () {
