@@ -67,6 +67,7 @@ var MessengerGame = {
         this.state.gameStarted = false;
         this.state.allMessagesReadTime = null;
         this.state.goodStartShown = false;
+        this.state.lastMessageAddedTime = null;
 
         // Initialize message history for each contact
         this.contacts.forEach(function (contact) {
@@ -401,6 +402,9 @@ var MessengerGame = {
         }
         this.state.messages[contactId].push(message);
 
+        // Track when last message was added
+        this.state.lastMessageAddedTime = this.state.elapsedRealTime;
+
         // Set unread if not active
         if (this.state.activeContactId !== contactId) {
             if (!this.state.unread) this.state.unread = {};
@@ -450,6 +454,19 @@ var MessengerGame = {
             }
         }
 
+        // Need at least one contact with messages
+        if (Object.keys(contactsWithMessages).length === 0) {
+            return false;
+        }
+
+        // Require at least 2 seconds have passed since the last message was added
+        // This ensures all messages have arrived before checking if they're all viewed
+        if (this.state.lastMessageAddedTime === null ||
+            this.state.lastMessageAddedTime === undefined ||
+            (this.state.elapsedRealTime - this.state.lastMessageAddedTime) < 2) {
+            return false;
+        }
+
         // Check if all of them have been opened (not unread)
         for (var contactId in contactsWithMessages) {
             if (!this.state.unread) this.state.unread = {};
@@ -459,8 +476,8 @@ var MessengerGame = {
             }
         }
 
-        // All contacts with messages have been opened
-        return Object.keys(contactsWithMessages).length > 0;
+        // All contacts with messages have been opened AND 2+ seconds passed since last message
+        return true;
     },
 
     isTimeTriggered: function (triggerTime) {
