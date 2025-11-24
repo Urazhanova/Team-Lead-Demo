@@ -14,7 +14,8 @@ var MessengerGame = {
         messages: {}, // Map of contactId -> array of messages
         completedScenarios: [],
         choicesMade: [], // Track specific choices made
-        unreadCount: 0
+        unreadCount: 0,
+        allMessagesReadTime: null // Track when all messages were read
     },
     container: null,
 
@@ -64,6 +65,8 @@ var MessengerGame = {
         this.state.choicesMade = [];
         this.state.activeContactId = null;
         this.state.gameStarted = false;
+        this.state.allMessagesReadTime = null;
+        this.state.goodStartShown = false;
 
         // Initialize message history for each contact
         this.contacts.forEach(function (contact) {
@@ -216,6 +219,11 @@ var MessengerGame = {
         // Clear unread status
         if (!this.state.unread) this.state.unread = {};
         this.state.unread[contactId] = false;
+
+        // Check if all contacts with messages are now viewed
+        if (this.state.allMessagesReadTime === null && this.getAllContactsWithMessagesViewed()) {
+            this.state.allMessagesReadTime = this.state.elapsedRealTime;
+        }
 
         // Mobile: Show chat view
         var layout = this.container.querySelector('.messenger-layout');
@@ -420,6 +428,39 @@ var MessengerGame = {
     getLastMessage: function (contactId) {
         var msgs = this.state.messages[contactId];
         return msgs && msgs.length > 0 ? msgs[msgs.length - 1] : null;
+    },
+
+    getTotalUnreadCount: function () {
+        var total = 0;
+        if (!this.state.unread) return total;
+        for (var contactId in this.state.unread) {
+            if (this.state.unread[contactId]) {
+                total++;
+            }
+        }
+        return total;
+    },
+
+    getAllContactsWithMessagesViewed: function () {
+        // Get all contacts that have received messages
+        var contactsWithMessages = {};
+        for (var contactId in this.state.messages) {
+            if (this.state.messages[contactId] && this.state.messages[contactId].length > 0) {
+                contactsWithMessages[contactId] = true;
+            }
+        }
+
+        // Check if all of them have been opened (not unread)
+        for (var contactId in contactsWithMessages) {
+            if (!this.state.unread) this.state.unread = {};
+            if (this.state.unread[contactId]) {
+                // Still unread - not all viewed yet
+                return false;
+            }
+        }
+
+        // All contacts with messages have been opened
+        return Object.keys(contactsWithMessages).length > 0;
     },
 
     isTimeTriggered: function (triggerTime) {
