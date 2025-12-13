@@ -1,0 +1,45 @@
+# System files
+.DS_Store
+.DS_Store?
+*.swp
+*.swo
+*~
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# OS temp
+.Trash/
+.Temporary Items/
+
+# Build
+dist/
+build/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Backup files
+*.bak
+*.backup
+lessons.json.bak
